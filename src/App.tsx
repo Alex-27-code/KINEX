@@ -3,6 +3,7 @@ import BottomNav from './components/BottomNav';
 import Home from './pages/Home';
 import Onboarding from './pages/Onboarding';
 import Programs from './pages/Programs';
+import ProgramDetail from './pages/ProgramDetail';
 import Workout from './pages/Workout';
 import ActiveWorkout from './pages/ActiveWorkout';
 import Nutrition from './pages/Nutrition';
@@ -21,7 +22,15 @@ function AppShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function AuthenticatedShell() {
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <span className="text-primary font-black text-4xl animate-pulse-neon">KINEX</span>
+    </div>
+  );
+}
+
+function AuthenticatedApp() {
   const { profile } = useAuth();
 
   return (
@@ -29,6 +38,7 @@ function AuthenticatedShell() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/programs" element={<Programs />} />
+        <Route path="/programs/:id" element={<ProgramDetail />} />
         <Route path="/workout" element={<Workout />} />
         <Route path="/active-workout" element={<ActiveWorkout />} />
         <Route path="/nutrition" element={<Nutrition />} />
@@ -40,30 +50,12 @@ function AuthenticatedShell() {
   );
 }
 
-function LoadingScreen() {
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <span className="text-primary font-black text-4xl animate-pulse-neon">KINEX</span>
-    </div>
-  );
-}
-
-function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { fbUser, loading } = useAuth();
-
-  if (loading) return <LoadingScreen />;
-
-  if (!fbUser) return <Navigate to="/language-select" />;
-
-  return <AuthenticatedShell />;
-}
-
 export default function App() {
   const { fbUser, profile, loading } = useAuth();
 
   if (loading) return <LoadingScreen />;
 
-  // If logged in but onboarding not complete — go to onboarding
+  // Logged in but onboarding not done
   if (fbUser && profile && !profile.onboardingComplete) {
     return (
       <Routes>
@@ -73,9 +65,9 @@ export default function App() {
     );
   }
 
-  // If logged in and onboarding complete — go to app
+  // Logged in + onboarding done
   if (fbUser && profile?.onboardingComplete) {
-    return <AuthGuard>{null}</AuthGuard>;
+    return <AuthenticatedApp />;
   }
 
   // Not logged in
