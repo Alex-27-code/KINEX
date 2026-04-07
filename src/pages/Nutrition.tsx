@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
-import { collection, doc, getDocs, setDoc, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { collection, doc, getDocs, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { analyzeFoodImage } from '../utils/gemini';
 
@@ -24,13 +24,18 @@ function getLocalDateString() {
   return localDate.toISOString().split('T')[0];
 }
 
+type ScanState = 'idle' | 'scanning' | 'result' | 'correcting' | 'rescanning';
+
 export default function Nutrition() {
   const { t, i18n } = useTranslation();
   const { fbUser, profile, saveProfile } = useAuth();
   const [log, setLog] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [scanning, setScanning] = useState(false);
+  const [scanState, setScanState] = useState<ScanState>('idle');
+  const [scanResult, setScanResult] = useState<FoodItem | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
+  const [correctionText, setCorrectionText] = useState('');
+  const [base64Image, setBase64Image] = useState<string>('');
   const [targetModal, setTargetModal] = useState(false);
   const [tempTarget, setTempTarget] = useState('');
   const [manualModal, setManualModal] = useState(false);
@@ -39,9 +44,8 @@ export default function Nutrition() {
   const [manualProtein, setManualProtein] = useState('');
   const [manualCarbs, setManualCarbs] = useState('');
   const [manualFats, setManualFats] = useState('');
-  const [lastScan, setLastScan] = useState<FoodItem | null>(null);
-  const fileInputRef = useState<React.RefObject<HTMLInputElement>>({ current: null } as any);
-  const cameraInputRef = useState<React.RefObject<HTMLInputElement>>({ current: null } as any);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const isRu = i18n.language === 'ru';
 
   const targetCalories = profile?.dailyCalories || 2500;
@@ -96,32 +100,60 @@ export default function Nutrition() {
     grouped[key].push(item);
   });
 
-  const deleteItem = async (item: FoodItem) => {
-    if (!confirm(isRu ? 'Удалить эту запись?' : 'Delete this entry?')) return;
+  const saveFoodItem = async (item: FoodItem) => {
+    if (!fbUser) return;
+    const dateStr = getLocalDateString();
+    const logRef = doc(db, `users/${fbUser.uid}/nutrition`, dateStr);
+    const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
+    const existing = snap.docs.find(d => d.id === dateStr);
+    const existingItems = existing?.data()?.items || [];
+    await setDoc(logRef, { items: [...existingItems, item], date: dateStr }, { merge: true });
+    setLog(prev => [item, ...prev]);
+  };
+
+  const acceptScan = async () => {
+    if (!scanResult) return;
+    await saveFoodItem(scanResult);
+    setScanState('idle');
+    setScanResult(null);
+    setCorrectionText('');
+  };
+
+  const dislikeScan = () => {
+    setScanState('correcting');
+  };
+
+  const recalculateScan = async () => {
+    if (!base64Image || !correctionText.trim()) return;
+    setScanState('rescanning');
     try {
-      const dateStr = item.timestamp?.seconds
-        ? new Date(item.timestamp.seconds * 1000).toISOString().split('T')[0]
-        : getLocalDateString();
-      const logRef = doc(db, `users/${fbUser!.uid}/nutrition`, dateStr);
-      const snap = await getDocs(collection(db, `users/${fbUser!.uid}/nutrition`));
-      const docToUpdate = snap.docs.find(d => d.id === dateStr);
-      if (docToUpdate) {
-        const items = docToUpdate.data().items?.filter((i: any) => i.id !== item.id) || [];
-        if (items.length > 0) {
-          await setDoc(logRef, { items }, { merge: true });
-        } else {
-          await deleteDoc(logRef);
-        }
-      }
-      setLog(prev => prev.filter(i => i.id !== item.id));
-    } catch (_) {}
+      const result = await analyzeFoodImage(base64Image, correctionText);
+      const foodItem: FoodItem = {
+        id: Date.now().toString(),
+        name: result.meal || 'Food',
+        calories: result.calories || 0,
+        protein: result.protein || 0,
+        carbs: result.carbs || 0,
+        fats: result.fats || 0,
+        fiber: result.fiber || 0,
+        breakdown: result.breakdown,
+        timestamp: serverTimestamp(),
+      };
+      setScanResult(foodItem);
+      setCorrectionText('');
+      setScanState('result');
+    } catch (e: any) {
+      setScanError(e.message || (isRu ? 'Ошибка' : 'Error'));
+      setScanState('result');
+    }
   };
 
   const handleImageScan = async (file: File) => {
     if (!fbUser) return;
-    setScanning(true);
+    setScanState('scanning');
     setScanError(null);
-    setLastScan(null);
+    setScanResult(null);
+    setCorrectionText('');
     try {
       const reader = new FileReader();
       const base64 = await new Promise<string>((resolve, reject) => {
@@ -129,6 +161,7 @@ export default function Nutrition() {
         reader.onerror = reject;
         reader.readAsDataURL(file);
       });
+      setBase64Image(base64);
 
       const result = await analyzeFoodImage(base64);
       const foodItem: FoodItem = {
@@ -142,22 +175,32 @@ export default function Nutrition() {
         breakdown: result.breakdown,
         timestamp: serverTimestamp(),
       };
-
-      // Save to Firestore
-      const dateStr = getLocalDateString();
-      const logRef = doc(db, `users/${fbUser.uid}/nutrition`, dateStr);
-      const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
-      const existing = snap.docs.find(d => d.id === dateStr);
-      const existingItems = existing?.data()?.items || [];
-      await setDoc(logRef, { items: [...existingItems, foodItem], date: dateStr }, { merge: true });
-
-      setLog(prev => [foodItem, ...prev]);
-      setLastScan(foodItem);
+      setScanResult(foodItem);
+      setScanState('result');
     } catch (e: any) {
       setScanError(e.message || (isRu ? 'Ошибка сканирования' : 'Scan failed'));
-    } finally {
-      setScanning(false);
+      setScanState('idle');
     }
+  };
+
+  const deleteItem = async (item: FoodItem) => {
+    if (!confirm(isRu ? 'Удалить эту запись?' : 'Delete this entry?')) return;
+    try {
+      const dateStr = item.timestamp?.seconds
+        ? new Date(item.timestamp.seconds * 1000).toISOString().split('T')[0]
+        : getLocalDateString();
+      const snap = await getDocs(collection(db, `users/${fbUser!.uid}/nutrition`));
+      const docToUpdate = snap.docs.find(d => d.id === dateStr);
+      if (docToUpdate) {
+        const items = docToUpdate.data().items?.filter((i: any) => i.id !== item.id) || [];
+        if (items.length > 0) {
+          await setDoc(doc(db, `users/${fbUser!.uid}/nutrition`, dateStr), { items }, { merge: true });
+        } else {
+          await deleteDoc(doc(db, `users/${fbUser!.uid}/nutrition`, dateStr));
+        }
+      }
+      setLog(prev => prev.filter(i => i.id !== item.id));
+    } catch (_) {}
   };
 
   const saveManual = async () => {
@@ -171,13 +214,7 @@ export default function Nutrition() {
       fats: Number(manualFats) || 0,
       timestamp: serverTimestamp(),
     };
-    const dateStr = getLocalDateString();
-    const logRef = doc(db, `users/${fbUser.uid}/nutrition`, dateStr);
-    const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
-    const existing = snap.docs.find(d => d.id === dateStr);
-    const existingItems = existing?.data()?.items || [];
-    await setDoc(logRef, { items: [...existingItems, item], date: dateStr }, { merge: true });
-    setLog(prev => [item, ...prev]);
+    await saveFoodItem(item);
     setManualModal(false);
     setManualName('');
     setManualCals('');
@@ -230,13 +267,72 @@ export default function Nutrition() {
         </div>
       </div>
 
-      {/* Last Scan Result */}
-      {lastScan && (
-        <div className="bg-primary/10 border border-primary/30 rounded-2xl p-4 mb-4">
-          <p className="text-primary font-bold text-sm mb-2">✓ {l('Food added:', 'Еда добавлена:')} {lastScan.name}</p>
-          <p className="text-white font-bold text-lg">{lastScan.calories} kcal</p>
-          <p className="text-gray-400 text-xs">P: {lastScan.protein}g  C: {lastScan.carbs}g  F: {lastScan.fats}g</p>
-          {lastScan.breakdown && <p className="text-gray-500 text-xs mt-1 italic">{lastScan.breakdown}</p>}
+      {/* Scan Result Card */}
+      {(scanState === 'result' || scanState === 'correcting' || scanState === 'rescanning') && scanResult && (
+        <div className="bg-surface border border-primary/40 rounded-2xl p-5 mb-4">
+          {scanState === 'correcting' && (
+            <p className="text-primary text-sm font-bold mb-3">✗ {isRu ? 'Результат не понравился. Введите исправление:' : 'Result not right. Enter correction:'}</p>
+          )}
+
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <p className="text-primary font-bold text-lg">{scanResult.name}</p>
+              <p className="text-white text-3xl font-black">{scanResult.calories} <span className="text-primary text-lg font-normal">kcal</span></p>
+            </div>
+            <button onClick={() => { setScanState('idle'); setScanResult(null); setCorrectionText(''); }} className="text-gray-400 p-1">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-4 gap-2 mb-4 bg-black/20 rounded-xl p-3">
+            <div className="text-center"><p className="text-gray-500 text-xs">P</p><p className="text-white font-bold">{scanResult.protein}g</p></div>
+            <div className="text-center"><p className="text-gray-500 text-xs">C</p><p className="text-white font-bold">{scanResult.carbs}g</p></div>
+            <div className="text-center"><p className="text-gray-500 text-xs">F</p><p className="text-white font-bold">{scanResult.fats}g</p></div>
+            <div className="text-center"><p className="text-gray-500 text-xs">Fib</p><p className="text-white font-bold">{scanResult.fiber || 0}g</p></div>
+          </div>
+
+          {scanResult.breakdown && (
+            <p className="text-gray-500 text-xs italic mb-4">{scanResult.breakdown}</p>
+          )}
+
+          {scanState === 'correcting' && (
+            <div className="mb-3">
+              <input
+                type="text"
+                value={correctionText}
+                onChange={e => setCorrectionText(e.target.value)}
+                placeholder={isRu ? 'Что было не так? Опишите...' : 'What was wrong? Describe...'}
+                className="input-field w-full text-sm mb-2"
+              />
+            </div>
+          )}
+
+          {scanState === 'rescanning' ? (
+            <div className="flex items-center justify-center py-3">
+              <svg className="w-5 h-5 text-primary animate-spin mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <span className="text-primary text-sm font-bold">{l('Recalculating...', 'Пересчитываем...')}</span>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={acceptScan} className="flex-1 bg-primary text-black font-extrabold py-3 rounded-xl active:scale-95 transition-transform">
+                ✓ {l('Like', 'Нравится')}
+              </button>
+              {scanState !== 'correcting' && (
+                <button onClick={dislikeScan} className="flex-1 bg-white/10 text-white font-bold py-3 rounded-xl active:scale-95 transition-transform">
+                  ✗ {l('Dislike', 'Не нравится')}
+                </button>
+              )}
+              {scanState === 'correcting' && (
+                <button onClick={recalculateScan} disabled={!correctionText.trim()} className="flex-1 bg-primary text-black font-extrabold py-3 rounded-xl active:scale-95 transition-transform disabled:opacity-40">
+                  {l('Recalculate', 'Пересчитать')}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -247,13 +343,23 @@ export default function Nutrition() {
         </div>
       )}
 
+      {/* Scanning indicator */}
+      {scanState === 'scanning' && (
+        <div className="bg-surface border border-primary/30 rounded-2xl p-6 mb-4 text-center">
+          <svg className="w-8 h-8 text-primary animate-spin mx-auto mb-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          <p className="text-primary font-bold">{l('Scanning...', 'Сканируем...')}</p>
+        </div>
+      )}
+
       {/* Image Buttons */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <input type="file" accept="image/*" ref={fileInputRef as any} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
-        <input type="file" accept="image/*" capture="environment" ref={cameraInputRef as any} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
+        <input type="file" accept="image/*" capture="environment" ref={cameraInputRef} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
         <button
-          onClick={() => (fileInputRef as any).current?.click()}
-          disabled={scanning}
+          onClick={() => fileInputRef.current?.click()}
+          disabled={scanState === 'scanning'}
           className="bg-surface border border-border rounded-2xl py-5 flex flex-col items-center gap-2 active:bg-white/5 transition-colors disabled:opacity-50"
         >
           <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -264,26 +370,15 @@ export default function Nutrition() {
           <span className="text-white text-sm font-bold">{l('Gallery', 'Галерея')}</span>
         </button>
         <button
-          onClick={() => (cameraInputRef as any).current?.click()}
-          disabled={scanning}
+          onClick={() => cameraInputRef.current?.click()}
+          disabled={scanState === 'scanning'}
           className="bg-primary text-black rounded-2xl py-5 flex flex-col items-center gap-2 active:scale-95 transition-transform disabled:opacity-50"
         >
-          {scanning ? (
-            <>
-              <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-              </svg>
-              <span className="font-bold">{l('Scanning...', 'Сканирование...')}</span>
-            </>
-          ) : (
-            <>
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-              <span className="font-bold">{l('Photo', 'Фото')}</span>
-            </>
-          )}
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+          <span className="font-bold text-sm">{l('Photo', 'Фото')}</span>
         </button>
       </div>
 
@@ -354,9 +449,9 @@ export default function Nutrition() {
               <input type="text" value={manualName} onChange={e => setManualName(e.target.value)} className="input-field" placeholder={l('Food name', 'Название')} />
               <input type="number" value={manualCals} onChange={e => setManualCals(e.target.value)} className="input-field" placeholder={l('Calories (kcal)', 'Калории (ккал)')} />
               <div className="grid grid-cols-3 gap-2">
-                <input type="number" value={manualProtein} onChange={e => setManualProtein(e.target.value)} className="input-field text-center text-sm" placeholder={l('Protein g', 'Белок g')} />
-                <input type="number" value={manualCarbs} onChange={e => setManualCarbs(e.target.value)} className="input-field text-center text-sm" placeholder={l('Carbs g', 'Угл g')} />
-                <input type="number" value={manualFats} onChange={e => setManualFats(e.target.value)} className="input-field text-center text-sm" placeholder={l('Fats g', 'Жиры g')} />
+                <input type="number" value={manualProtein} onChange={e => setManualProtein(e.target.value)} className="input-field text-center text-sm" placeholder="Белок g" />
+                <input type="number" value={manualCarbs} onChange={e => setManualCarbs(e.target.value)} className="input-field text-center text-sm" placeholder="Угл g" />
+                <input type="number" value={manualFats} onChange={e => setManualFats(e.target.value)} className="input-field text-center text-sm" placeholder="Жиры g" />
               </div>
             </div>
             <div className="flex gap-3 mt-4">

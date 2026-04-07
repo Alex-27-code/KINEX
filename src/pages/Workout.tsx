@@ -95,17 +95,18 @@ export default function Workout() {
         ) : (
           <div className="space-y-3">
             {history.map(workout => (
-              <div key={workout.id} className="bg-surface border border-border rounded-2xl p-4 active:bg-white/5 transition-colors">
+              <Link key={workout.id} to={`/workout/${workout.id}`}
+                className="block bg-surface border border-border rounded-2xl p-4 active:bg-white/5 transition-colors">
                 <div className="flex justify-between items-center mb-2">
                   <h3 className="font-bold text-white">{workout.title || 'Workout'}</h3>
                   <span className="text-primary font-bold">{workout.duration} min</span>
                 </div>
                 <p className="text-sm text-gray-400">
-                  {workout.date
-                    ? new Date(workout.date).toLocaleDateString()
+                  {workout.timestamp
+                    ? new Date(workout.timestamp.seconds ? workout.timestamp.seconds * 1000 : workout.timestamp).toLocaleDateString()
                     : 'Recent'} • {workout.exercises?.length || 0} Exercises
                 </p>
-              </div>
+              </Link>
             ))}
           </div>
         )}

@@ -72,6 +72,13 @@
   "programs_powerbuilding": "Пауэрбилдинг",
   "programs_bodybuilding": "Бодибилдинг",
   "programs_strength": "Сила и гипертрофия",
+  "programs_powerlifting_desc": "Максимум силы в приседе, жиме лёжа и становой.",
+  "programs_powerbuilding_desc": "Сила и масса одновременно.",
+  "programs_bodybuilding_desc": "Фокус на гипертрофию и эстетику.",
+  "programs_strength_desc": "Атлетизм и баланс.",
+  "programs_all": "Программ",
+  "programs_title": "Тренировки",
+  "programs_subtitle": "Выберите свой путь",
 
   "goal_aggressive_loss": "Быстрое похудение",
   "goal_mild_loss": "Плавное похудение",
@@ -122,5 +129,27 @@
   "profile_logout": "Выйти из аккаунта",
   "profile_my_data": "Мои данные",
 
-  "or": "или"
+  "or": "или",
+
+  "workout_detail": "Детали тренировки",
+  "edit_workout": "Редактировать",
+  "delete_workout": "Удалить тренировку",
+  "delete_workout_confirm": "Удалить эту тренировку?",
+  "remove_exercise_confirm": "Удалить это упражнение?",
+  "add_set": "Добавить подход",
+  "save": "Сохранить",
+  "delete": "Удалить",
+  "set": "Подход",
+  "kg": "кг",
+  "reps": "Повторения",
+  "workout_not_found": "Тренировка не найдена",
+  "back": "Назад",
+
+  "nutrition_like": "Нравится",
+  "nutrition_dislike": "Не нравится",
+  "nutrition_recalculate": "Пересчитать",
+  "nutrition_correction_hint": "Что не так?",
+  "nutrition_accepted": "Еда добавлена!",
+  "nutrition_wait_scan": "Ожидание сканирования...",
+  "nutrition_re_scan": "Пересканировать"
 }

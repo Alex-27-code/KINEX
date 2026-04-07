@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Onboarding from './pages/Onboarding';
 import Programs from './pages/Programs';
 import ProgramDetail from './pages/ProgramDetail';
+import WorkoutDetail from './pages/WorkoutDetail';
 import Workout from './pages/Workout';
 import ActiveWorkout from './pages/ActiveWorkout';
 import Nutrition from './pages/Nutrition';
@@ -40,6 +41,7 @@ function AuthenticatedApp() {
         <Route path="/programs" element={<Programs />} />
         <Route path="/programs/:id" element={<ProgramDetail />} />
         <Route path="/workout" element={<Workout />} />
+        <Route path="/workout/:id" element={<WorkoutDetail />} />
         <Route path="/active-workout" element={<ActiveWorkout />} />
         <Route path="/nutrition" element={<Nutrition />} />
         <Route path="/calculators" element={<Calculators />} />

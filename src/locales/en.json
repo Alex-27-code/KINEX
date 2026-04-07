@@ -54,6 +54,13 @@
   "programs_powerbuilding": "Powerbuilding",
   "programs_bodybuilding": "Bodybuilding",
   "programs_strength": "Strength + Hypertrophy",
+  "programs_powerlifting_desc": "Maximize your strength in squat, bench, and deadlift.",
+  "programs_powerbuilding_desc": "Build strength and muscle mass simultaneously.",
+  "programs_bodybuilding_desc": "Focus on muscle hypertrophy and aesthetics.",
+  "programs_strength_desc": "Athleticism and aesthetic balance.",
+  "programs_all": "Programs",
+  "programs_title": "Workouts",
+  "programs_subtitle": "Choose your path to start",
   "workout_title": "Schedule",
   "workout_today": "Today's Workout",
   "workout_no_program": "Ready to workout?",
@@ -124,5 +131,19 @@
   "profile_logout": "Log Out",
   "profile_my_data": "My Data",
 
-  "or": "or"
+  "or": "or",
+
+  "workout_detail": "Workout Detail",
+  "edit_workout": "Edit Workout",
+  "delete_workout": "Delete Workout",
+  "delete_workout_confirm": "Delete this workout?",
+  "remove_exercise_confirm": "Remove this exercise?",
+  "add_set": "Add Set",
+  "save": "Save",
+  "delete": "Delete",
+  "set": "Set",
+  "kg": "kg",
+  "reps": "Reps",
+  "workout_not_found": "Workout not found",
+  "back": "Back"
 }
