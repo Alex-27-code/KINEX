@@ -70,6 +70,16 @@ export default function Programs() {
     grouped[cat] = PROGRAMS_DATA.filter(p => p.category === cat);
   });
 
+  const catLabel = (cat: string) => {
+    const map: Record<string, string> = {
+      Powerlifting: t('programs_powerlifting'),
+      Powerbuilding: t('programs_powerbuilding'),
+      Bodybuilding: t('programs_bodybuilding'),
+      'Strength + Hypertrophy': t('programs_strength'),
+    };
+    return map[cat] || cat;
+  };
+
   if (selectedCategory) {
     const config = CATEGORY_CONFIG[selectedCategory];
     return (
@@ -82,8 +92,8 @@ export default function Programs() {
             </svg>
           </button>
           <div>
-            <h1 className="text-2xl font-extrabold" style={{ color: config.color }}>{selectedCategory}</h1>
-            <p className="text-gray-400 text-sm">{grouped[selectedCategory]?.length} Programs</p>
+            <h1 className="text-2xl font-extrabold" style={{ color: config.color }}>{catLabel(selectedCategory)}</h1>
+            <p className="text-gray-400 text-sm">{grouped[selectedCategory]?.length} {t('programs_all')}</p>
           </div>
         </div>
 
@@ -117,8 +127,8 @@ export default function Programs() {
 
   return (
     <div className="min-h-screen bg-background px-5 pt-8 pb-8">
-      <h1 className="text-3xl font-extrabold text-primary mb-1 tracking-tight">Workouts</h1>
-      <p className="text-gray-400 mb-6 text-sm">Choose your path to start</p>
+      <h1 className="text-3xl font-extrabold text-primary mb-1 tracking-tight">{t('programs_title')}</h1>
+      <p className="text-gray-400 mb-6 text-sm">{t('programs_subtitle')}</p>
 
       <div className="space-y-4 pb-8">
         {categories.map(cat => {
@@ -133,9 +143,9 @@ export default function Programs() {
               <div className="absolute top-4 right-4 opacity-20 group-hover:opacity-30 transition-opacity">
                 {config.icon}
               </div>
-              <h2 className="text-2xl font-black mb-1" style={{ color: config.color }}>{cat}</h2>
+              <h2 className="text-2xl font-black mb-1" style={{ color: config.color }}>{catLabel(cat)}</h2>
               <p className="text-gray-400 text-sm mb-3 pr-12">{config.description}</p>
-              <span className="text-gray-400 text-xs font-bold tracking-widest uppercase">{count} Programs</span>
+              <span className="text-gray-400 text-xs font-bold tracking-widest uppercase">{count} {t('programs_all')}</span>
             </button>
           );
         })}
