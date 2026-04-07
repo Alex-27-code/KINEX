@@ -3,7 +3,7 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC-oeYsRunBHbVEFeh4fsTqQ_LCzhcJE8I",
+  apiKey: "AIzaSyBPGg8bLfPz8GYuDKGP6BhIC6C3Hg0YS58",
   authDomain: "kinex-f9aff.firebaseapp.com",
   projectId: "kinex-f9aff",
   storageBucket: "kinex-f9aff.firebasestorage.app",
