@@ -65,7 +65,7 @@ const defaultProfile: UserProfile = {
   age: 25,
   goal: 'maintain',
   dailyCalories: 2500,
-  onboardingComplete: false,
+  onboardingComplete: false, // новые пользователи проходят онбординг
   isPremium: false,
   premiumEndsAt: null,
 };
@@ -84,7 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Listen to Firebase auth state
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setFbUser({
           uid: user.uid,
@@ -92,14 +92,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           displayName: user.displayName,
           photoURL: user.photoURL,
         });
+
+        // Fetch profile from Firestore
+        try {
+          const userRef = doc(db, 'users', user.uid);
+          const snap = await getDoc(userRef);
+
+          if (snap.exists()) {
+            const data = snap.data() as UserProfile;
+            setProfile(data);
+          } else {
+            // New user — start with onboarding incomplete
+            setProfile({ ...defaultProfile, onboardingComplete: false });
+          }
+        } catch {
+          setProfile({ ...defaultProfile, onboardingComplete: false });
+        }
       } else {
         setFbUser(null);
+        setProfile(null);
       }
+      setLoading(false);
     });
     return unsub;
   }, []);
 
-  // Handle redirect result on app load
+  // Handle redirect result (Google sign-in redirect)
   useEffect(() => {
     const handleRedirect = async () => {
       try {
@@ -117,57 +135,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
     handleRedirect();
-  }, []);
-
-  // Init Telegram / browser auth
-  useEffect(() => {
-    const initAuth = async () => {
-      try {
-        WebApp.ready();
-        WebApp.expand();
-      } catch (_) {
-        // Not inside Telegram
-      }
-
-      const user = WebApp.initDataUnsafe?.user;
-
-      if (user && user.id) {
-        const lang = user.language_code || 'en';
-        if (['ru', 'de', 'es'].includes(lang)) {
-          i18n.changeLanguage(lang);
-        }
-
-        try {
-          const userRef = doc(db, 'users', user.id.toString());
-          const snap = await getDoc(userRef);
-
-          if (snap.exists()) {
-            const data = snap.data() as UserProfile;
-            if (data.onboardingComplete === undefined) {
-              data.onboardingComplete = true;
-            }
-            setProfile(data);
-          } else {
-            const initialProfile: UserProfile = {
-              ...defaultProfile,
-              tg_first_name: user.first_name,
-              tg_username: user.username,
-              createdAt: serverTimestamp(),
-            };
-            await setDoc(userRef, initialProfile, { merge: true });
-            setProfile(initialProfile);
-          }
-        } catch {
-          setProfile({ ...defaultProfile, onboardingComplete: true });
-        }
-      } else {
-        setProfile({ ...defaultProfile, onboardingComplete: true });
-      }
-
-      setLoading(false);
-    };
-
-    initAuth();
   }, []);
 
   const clearMessages = () => {
@@ -203,7 +170,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       clearMessages();
       await createUserWithEmailAndPassword(auth, email, password);
-      setAuthMessage('Аккаунт создан! Войдите.');
+      // New user document will be created with onboardingComplete: false
+      // when onAuthStateChanged fires after registration
+      setAuthMessage('Аккаунт создан!');
     } catch (e: any) {
       const errors: Record<string, string> = {
         'auth/email-already-in-use': 'Email уже зарегистрирован',
@@ -215,10 +184,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const saveProfile = async (data: Partial<UserProfile>) => {
+    if (!fbUser) return;
     const updated: UserProfile = { ...defaultProfile, ...profile, ...data };
     try {
-      const userId = fbUser?.uid || 'anonymous';
-      await setDoc(doc(db, 'users', userId), updated, { merge: true });
+      await setDoc(doc(db, 'users', fbUser.uid), updated, { merge: true });
     } catch (_) {
       // ignore
     }

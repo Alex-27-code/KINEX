@@ -12,39 +12,78 @@ import LanguageSelect from './pages/LanguageSelect';
 import Auth from './pages/Auth';
 import { useAuth } from './hooks/useAuth';
 
-function AuthRoute({ children }: { children: React.ReactNode }) {
-  const { fbUser, profile, loading } = useAuth();
-
-  if (loading) return <div className="min-h-screen flex text-primary items-center justify-center animate-pulse-neon">KINEX</div>;
-  if (!fbUser) return <Navigate to="/language-select" />;
-  if (profile && !profile.onboardingComplete) return <Navigate to="/onboarding" />;
-
+function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <div className="pb-16">{children}</div>
+      <div className="pb-16 min-h-screen">{children}</div>
       <BottomNav />
     </>
   );
 }
 
-export default function App() {
+function AuthenticatedShell() {
+  const { profile } = useAuth();
+
+  return (
+    <AppShell>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/programs" element={<Programs />} />
+        <Route path="/workout" element={<Workout />} />
+        <Route path="/active-workout" element={<ActiveWorkout />} />
+        <Route path="/nutrition" element={<Nutrition />} />
+        <Route path="/calculators" element={<Calculators />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AppShell>
+  );
+}
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <span className="text-primary font-black text-4xl animate-pulse-neon">KINEX</span>
+    </div>
+  );
+}
+
+function AuthGuard({ children }: { children: React.ReactNode }) {
   const { fbUser, loading } = useAuth();
 
-  if (loading) return <div className="min-h-screen bg-background flex flex-col items-center justify-center text-primary font-black text-4xl animate-pulse-neon">KINEX</div>;
+  if (loading) return <LoadingScreen />;
 
+  if (!fbUser) return <Navigate to="/language-select" />;
+
+  return <AuthenticatedShell />;
+}
+
+export default function App() {
+  const { fbUser, profile, loading } = useAuth();
+
+  if (loading) return <LoadingScreen />;
+
+  // If logged in but onboarding not complete — go to onboarding
+  if (fbUser && profile && !profile.onboardingComplete) {
+    return (
+      <Routes>
+        <Route path="/onboarding" element={<Onboarding />} />
+        <Route path="*" element={<Navigate to="/onboarding" replace />} />
+      </Routes>
+    );
+  }
+
+  // If logged in and onboarding complete — go to app
+  if (fbUser && profile?.onboardingComplete) {
+    return <AuthGuard>{null}</AuthGuard>;
+  }
+
+  // Not logged in
   return (
     <Routes>
       <Route path="/language-select" element={<LanguageSelect />} />
       <Route path="/auth" element={<Auth />} />
-      <Route path="/onboarding" element={fbUser ? <Onboarding /> : <Navigate to="/language-select" />} />
-      <Route path="/" element={<AuthRoute><Home /></AuthRoute>} />
-      <Route path="/programs" element={<AuthRoute><Programs /></AuthRoute>} />
-      <Route path="/workout" element={<AuthRoute><Workout /></AuthRoute>} />
-      <Route path="/active-workout" element={<AuthRoute><ActiveWorkout /></AuthRoute>} />
-      <Route path="/nutrition" element={<AuthRoute><Nutrition /></AuthRoute>} />
-      <Route path="/calculators" element={<AuthRoute><Calculators /></AuthRoute>} />
-      <Route path="/profile" element={<AuthRoute><Profile /></AuthRoute>} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/language-select" replace />} />
     </Routes>
   );
 }

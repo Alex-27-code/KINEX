@@ -7,8 +7,8 @@ const firebaseConfig = {
   authDomain: "kinex-f9aff.firebaseapp.com",
   projectId: "kinex-f9aff",
   storageBucket: "kinex-f9aff.firebasestorage.app",
-  messagingSenderId: "559498407587",
-  appId: "1:559498407587:web:6ace5d9f7fbb98de7e9e27"
+  messagingSenderId: "803771213054",
+  appId: "1:803771213054:web:b5113166e9798eca3cb1af"
 };
 
 const app = initializeApp(firebaseConfig);

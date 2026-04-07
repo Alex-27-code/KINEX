@@ -1,16 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 export default function Auth() {
   const { fbUser, loginWithGoogle, loginWithEmail, registerWithEmail, loading, authError, authMessage, clearMessages } = useAuth();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Redirect when user logs in
+  useEffect(() => {
+    if (fbUser) navigate('/');
+  }, [fbUser]);
 
   if (loading) {
     return (
@@ -20,7 +26,7 @@ export default function Auth() {
     );
   }
 
-  if (fbUser) return <Navigate to="/" />;
+  if (fbUser) return null;
 
   const handleEmailSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
