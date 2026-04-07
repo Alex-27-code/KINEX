@@ -2,7 +2,15 @@ import { useState, useEffect, createContext, useContext } from 'react';
 import WebApp from '@twa-dev/sdk';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig';
-import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
+import {
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import '../i18n';
+import { useTranslation } from 'react-i18next';
 
 interface FirebaseUser {
   uid: string;
@@ -10,8 +18,6 @@ interface FirebaseUser {
   displayName: string | null;
   photoURL: string | null;
 }
-import '../i18n';
-import { useTranslation } from 'react-i18next';
 
 interface TelegramUser {
   id: number;
@@ -38,35 +44,53 @@ interface UserProfile {
 }
 
 interface AuthContextType {
-  tgUser: TelegramUser | null;
-  fbUser: User | null;
+  fbUser: FirebaseUser | null;
   profile: UserProfile | null;
   loading: boolean;
   saveProfile: (data: Partial<UserProfile>) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithEmail: (email: string, password: string) => Promise<void>;
+  registerWithEmail: (email: string, password: string) => Promise<void>;
+  authError: string | null;
+  clearError: () => void;
 }
 
 const defaultProfile: UserProfile = {
-  unit: 'metric', gender: 'male', weight: 75, height: 180, age: 25,
-  goal: 'maintain', dailyCalories: 2500, onboardingComplete: false,
-  isPremium: false, premiumEndsAt: null
+  unit: 'metric',
+  gender: 'male',
+  weight: 75,
+  height: 180,
+  age: 25,
+  goal: 'maintain',
+  dailyCalories: 2500,
+  onboardingComplete: false,
+  isPremium: false,
+  premiumEndsAt: null,
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [tgUser, setTgUser] = useState<TelegramUser | null>(null);
   const [fbUser, setFbUser] = useState<FirebaseUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
   const { i18n } = useTranslation();
 
   const googleProvider = new GoogleAuthProvider();
 
   useEffect(() => {
-    // Listen to Firebase auth state
     const unsub = onAuthStateChanged(auth, (user) => {
-      setFbUser(user);
+      if (user) {
+        setFbUser({
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        });
+      } else {
+        setFbUser(null);
+      }
     });
     return unsub;
   }, []);
@@ -83,8 +107,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const user = WebApp.initDataUnsafe?.user;
 
       if (user && user.id) {
-        setTgUser(user as TelegramUser);
-
         const lang = user.language_code || 'en';
         if (['ru', 'de', 'es'].includes(lang)) {
           i18n.changeLanguage(lang);
@@ -114,8 +136,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setProfile({ ...defaultProfile, onboardingComplete: true });
         }
       } else {
-        // Browser test mode
-        setTgUser({ id: 999999999, first_name: 'Browser', language_code: 'en' });
         setProfile({ ...defaultProfile, onboardingComplete: true });
       }
 
@@ -125,27 +145,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
+  const clearError = () => setAuthError(null);
+
   const loginWithGoogle = async () => {
     try {
+      setAuthError(null);
       await signInWithPopup(auth, googleProvider);
-    } catch (e) {
-      console.error('Google sign-in failed:', e);
+    } catch (e: any) {
+      setAuthError(e.code || 'google-signin-failed');
+    }
+  };
+
+  const loginWithEmail = async (email: string, password: string) => {
+    try {
+      setAuthError(null);
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (e: any) {
+      setAuthError(e.code || 'signin-failed');
+    }
+  };
+
+  const registerWithEmail = async (email: string, password: string) => {
+    try {
+      setAuthError(null);
+      await createUserWithEmailAndPassword(auth, email, password);
+    } catch (e: any) {
+      setAuthError(e.code || 'signup-failed');
     }
   };
 
   const saveProfile = async (data: Partial<UserProfile>) => {
-    if (!tgUser) return;
     const updated: UserProfile = { ...defaultProfile, ...profile, ...data };
     try {
-      await setDoc(doc(db, 'users', tgUser.id.toString()), updated, { merge: true });
+      const userId = fbUser?.uid || 'anonymous';
+      await setDoc(doc(db, 'users', userId), updated, { merge: true });
     } catch (_) {
-      // Browser mode
+      // ignore
     }
     setProfile(updated);
   };
 
   return (
-    <AuthContext.Provider value={{ tgUser, fbUser, profile, loading, saveProfile, loginWithGoogle }}>
+    <AuthContext.Provider
+      value={{
+        fbUser,
+        profile,
+        loading,
+        saveProfile,
+        loginWithGoogle,
+        loginWithEmail,
+        registerWithEmail,
+        authError,
+        clearError,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

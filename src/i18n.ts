@@ -6,6 +6,11 @@ import ruTranslation from './locales/ru.json';
 import deTranslation from './locales/de.json';
 import esTranslation from './locales/es.json';
 
+const savedLang =
+  typeof window !== 'undefined'
+    ? localStorage.getItem('kinex_lang') || 'en'
+    : 'en';
+
 i18n
   .use(initReactI18next)
   .init({
@@ -15,10 +20,10 @@ i18n
       de: { translation: deTranslation },
       es: { translation: esTranslation },
     },
-    lng: 'en', // default language
+    lng: savedLang,
     fallbackLng: 'en',
     interpolation: {
-      escapeValue: false, // react already safes from xss
+      escapeValue: false,
     },
   });
 
