@@ -17,5 +17,30 @@
   "nav_programs": "Программы",
   "nav_workout": "План",
   "nav_nutrition": "Питание",
-  "nav_profile": "Профиль"
+  "nav_profile": "Профиль",
+
+  "auth_title": "Добро пожаловать в KINEX",
+  "auth_subtitle": "Тренируйся умнее",
+  "email_placeholder": "Email адрес",
+  "password_placeholder": "Пароль",
+  "confirm_password_placeholder": "Подтвердите пароль",
+  "sign_in": "Войти",
+  "sign_up": "Регистрация",
+  "or_continue": "или",
+  "google": "Войти через Google",
+  "no_account": "Нет аккаунта?",
+  "already_have": "Уже есть аккаунт?",
+  "forgot_password": "Забыли пароль?",
+  "reset_password": "Сбросить пароль",
+  "reset_sent": "Ссылка отправлена!",
+  "invalid_credentials": "Неверный email или пароль",
+  "email_required": "Введите email",
+  "password_required": "Введите пароль",
+  "password_mismatch": "Пароли не совпадают",
+  "password_too_short": "Пароль минимум 6 символов",
+  "sign_in_error": "Не удалось войти",
+  "terms_notice": "Продолжая, вы соглашаетесь с условиями использования",
+
+  "language_title": "Выберите язык",
+  "language_subtitle": "Выберите предпочтительный язык"
 }

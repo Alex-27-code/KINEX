@@ -4,7 +4,8 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig';
 import {
   GoogleAuthProvider,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -52,7 +53,8 @@ interface AuthContextType {
   loginWithEmail: (email: string, password: string) => Promise<void>;
   registerWithEmail: (email: string, password: string) => Promise<void>;
   authError: string | null;
-  clearError: () => void;
+  authMessage: string | null;
+  clearMessages: () => void;
 }
 
 const defaultProfile: UserProfile = {
@@ -75,10 +77,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [authMessage, setAuthMessage] = useState<string | null>(null);
   const { i18n } = useTranslation();
 
   const googleProvider = new GoogleAuthProvider();
 
+  // Listen to Firebase auth state
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -95,6 +99,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsub;
   }, []);
 
+  // Handle redirect result on app load
+  useEffect(() => {
+    const handleRedirect = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          setFbUser({
+            uid: result.user.uid,
+            email: result.user.email,
+            displayName: result.user.displayName,
+            photoURL: result.user.photoURL,
+          });
+        }
+      } catch (e: any) {
+        setAuthError(e.code || 'redirect-error');
+      }
+    };
+    handleRedirect();
+  }, []);
+
+  // Init Telegram / browser auth
   useEffect(() => {
     const initAuth = async () => {
       try {
@@ -145,12 +170,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth();
   }, []);
 
-  const clearError = () => setAuthError(null);
+  const clearMessages = () => {
+    setAuthError(null);
+    setAuthMessage(null);
+  };
 
   const loginWithGoogle = async () => {
     try {
-      setAuthError(null);
-      await signInWithPopup(auth, googleProvider);
+      clearMessages();
+      await signInWithRedirect(auth, googleProvider);
     } catch (e: any) {
       setAuthError(e.code || 'google-signin-failed');
     }
@@ -158,19 +186,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithEmail = async (email: string, password: string) => {
     try {
-      setAuthError(null);
+      clearMessages();
       await signInWithEmailAndPassword(auth, email, password);
     } catch (e: any) {
-      setAuthError(e.code || 'signin-failed');
+      const errors: Record<string, string> = {
+        'auth/user-not-found': 'Пользователь не найден',
+        'auth/wrong-password': 'Неверный пароль',
+        'auth/invalid-email': 'Неверный формат email',
+        'auth/too-many-requests': 'Слишком много попыток. Попробуйте позже',
+      };
+      setAuthError(errors[e.code] || 'Ошибка входа');
     }
   };
 
   const registerWithEmail = async (email: string, password: string) => {
     try {
-      setAuthError(null);
+      clearMessages();
       await createUserWithEmailAndPassword(auth, email, password);
+      setAuthMessage('Аккаунт создан! Войдите.');
     } catch (e: any) {
-      setAuthError(e.code || 'signup-failed');
+      const errors: Record<string, string> = {
+        'auth/email-already-in-use': 'Email уже зарегистрирован',
+        'auth/weak-password': 'Пароль слишком слабый (минимум 6 символов)',
+        'auth/invalid-email': 'Неверный формат email',
+      };
+      setAuthError(errors[e.code] || 'Ошибка регистрации');
     }
   };
 
@@ -196,7 +236,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginWithEmail,
         registerWithEmail,
         authError,
-        clearError,
+        authMessage,
+        clearMessages,
       }}
     >
       {children}

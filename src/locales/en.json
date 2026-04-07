@@ -17,5 +17,30 @@
   "nav_programs": "Programs",
   "nav_workout": "Workout",
   "nav_nutrition": "Nutrition",
-  "nav_profile": "Profile"
+  "nav_profile": "Profile",
+
+  "auth_title": "Welcome to KINEX",
+  "auth_subtitle": "Train Smarter",
+  "email_placeholder": "Email address",
+  "password_placeholder": "Password",
+  "confirm_password_placeholder": "Confirm password",
+  "sign_in": "Sign In",
+  "sign_up": "Create Account",
+  "or_continue": "or continue with",
+  "google": "Continue with Google",
+  "no_account": "Don't have an account?",
+  "already_have": "Already have an account?",
+  "forgot_password": "Forgot password?",
+  "reset_password": "Reset Password",
+  "reset_sent": "Reset link sent!",
+  "invalid_credentials": "Invalid email or password",
+  "email_required": "Email is required",
+  "password_required": "Password is required",
+  "password_mismatch": "Passwords do not match",
+  "password_too_short": "Password must be at least 6 characters",
+  "sign_in_error": "Could not sign in",
+  "terms_notice": "By continuing you agree to our Terms of Service and Privacy Policy",
+
+  "language_title": "Choose your language",
+  "language_subtitle": "Select your preferred language"
 }
