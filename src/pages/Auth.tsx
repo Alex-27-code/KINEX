@@ -2,7 +2,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 
 export default function Auth() {
-  const { user, loginWithGoogle, loading } = useAuth();
+  const { fbUser, loginWithGoogle, loading } = useAuth();
 
   if (loading) {
     return (
@@ -12,7 +12,7 @@ export default function Auth() {
     );
   }
 
-  if (user) return <Navigate to="/" />;
+  if (fbUser) return <Navigate to="/" />;
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">

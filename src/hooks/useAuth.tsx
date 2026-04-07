@@ -1,8 +1,16 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import WebApp from '@twa-dev/sdk';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import '../i18n'; // Ensure i18n is initialized
+import { db, auth } from '../firebaseConfig';
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from 'firebase/auth';
+
+interface FirebaseUser {
+  uid: string;
+  email: string | null;
+  displayName: string | null;
+  photoURL: string | null;
+}
+import '../i18n';
 import { useTranslation } from 'react-i18next';
 
 interface TelegramUser {
@@ -24,13 +32,18 @@ interface UserProfile {
   onboardingComplete: boolean;
   isPremium: boolean;
   premiumEndsAt: any | null;
+  tg_first_name?: string;
+  tg_username?: string;
+  createdAt?: any;
 }
 
 interface AuthContextType {
   tgUser: TelegramUser | null;
+  fbUser: User | null;
   profile: UserProfile | null;
   loading: boolean;
   saveProfile: (data: Partial<UserProfile>) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
 }
 
 const defaultProfile: UserProfile = {
@@ -43,73 +56,96 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [tgUser, setTgUser] = useState<TelegramUser | null>(null);
+  const [fbUser, setFbUser] = useState<FirebaseUser | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const { i18n } = useTranslation();
 
-  useEffect(() => {
-    // 1. Initialize Telegram Mini App safely
-    try {
-      WebApp.ready();
-      WebApp.expand();
-    } catch (e) {
-      // Not inside Telegram, ignore
-    }
+  const googleProvider = new GoogleAuthProvider();
 
-    const user = WebApp.initDataUnsafe?.user;
-    if (user) {
-      setTgUser(user as TelegramUser);
-      
-      // Auto-set language based on Telegram settings
-      const lang = user.language_code || 'en';
-      if (['ru', 'de', 'es'].includes(lang)) {
-        i18n.changeLanguage(lang);
+  useEffect(() => {
+    // Listen to Firebase auth state
+    const unsub = onAuthStateChanged(auth, (user) => {
+      setFbUser(user);
+    });
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        WebApp.ready();
+        WebApp.expand();
+      } catch (_) {
+        // Not inside Telegram
       }
 
-      // 2. Fetch or Create Firestore Profile using Telegram ID
-      const fetchProfile = async () => {
+      const user = WebApp.initDataUnsafe?.user;
+
+      if (user && user.id) {
+        setTgUser(user as TelegramUser);
+
+        const lang = user.language_code || 'en';
+        if (['ru', 'de', 'es'].includes(lang)) {
+          i18n.changeLanguage(lang);
+        }
+
         try {
           const userRef = doc(db, 'users', user.id.toString());
           const snap = await getDoc(userRef);
-          
+
           if (snap.exists()) {
-            setProfile(snap.data() as UserProfile);
+            const data = snap.data() as UserProfile;
+            if (data.onboardingComplete === undefined) {
+              data.onboardingComplete = true;
+            }
+            setProfile(data);
           } else {
-            const initialProfile = { 
-              ...defaultProfile, 
+            const initialProfile: UserProfile = {
+              ...defaultProfile,
               tg_first_name: user.first_name,
               tg_username: user.username,
-              createdAt: serverTimestamp() 
+              createdAt: serverTimestamp(),
             };
-            await setDoc(userRef, initialProfile);
+            await setDoc(userRef, initialProfile, { merge: true });
             setProfile(initialProfile);
           }
-        } catch (error) {
-          console.error("Firebase error:", error);
-          setProfile(defaultProfile);
-        } finally {
-          setLoading(false);
+        } catch {
+          setProfile({ ...defaultProfile, onboardingComplete: true });
         }
-      };
+      } else {
+        // Browser test mode
+        setTgUser({ id: 999999999, first_name: 'Browser', language_code: 'en' });
+        setProfile({ ...defaultProfile, onboardingComplete: true });
+      }
 
-      fetchProfile();
-    } else {
-      // Outside Telegram → mock user for browser testing
-      setTgUser({ id: 12345678, first_name: 'Developer', language_code: 'ru' });
-      setProfile(defaultProfile);
       setLoading(false);
-    }
+    };
+
+    initAuth();
   }, []);
+
+  const loginWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (e) {
+      console.error('Google sign-in failed:', e);
+    }
+  };
 
   const saveProfile = async (data: Partial<UserProfile>) => {
     if (!tgUser) return;
-    const updated = { ...defaultProfile, ...profile, ...data };
-    await setDoc(doc(db, 'users', tgUser.id.toString()), updated, { merge: true });
+    const updated: UserProfile = { ...defaultProfile, ...profile, ...data };
+    try {
+      await setDoc(doc(db, 'users', tgUser.id.toString()), updated, { merge: true });
+    } catch (_) {
+      // Browser mode
+    }
     setProfile(updated);
   };
 
   return (
-    <AuthContext.Provider value={{ tgUser, profile, loading, saveProfile }}>
+    <AuthContext.Provider value={{ tgUser, fbUser, profile, loading, saveProfile, loginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );
@@ -117,6 +153,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
+  if (!ctx) throw new Error('useAuth must be inside AuthProvider');
   return ctx;
 }
