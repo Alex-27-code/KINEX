@@ -15,7 +15,7 @@ export default function Workout() {
     const loadHistory = async () => {
       try {
         const q = query(
-          collection(db, 'workouts'),
+          collection(db, 'users', auth.currentUser!.uid, 'workouts'),
           where('userId', '==', auth.currentUser!.uid),
           orderBy('timestamp', 'desc')
         );

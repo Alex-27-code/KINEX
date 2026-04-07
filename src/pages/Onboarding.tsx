@@ -39,15 +39,22 @@ export default function Onboarding() {
   const [goal, setGoal] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  const total = 6;
+  const total = 7;
+
+  const computedCalories = () => {
+    if (!gender || !goal || !weight || !height || !age) return null;
+    return calcCalories(gender, Number(weight), Number(height), Number(age), goal);
+  };
+  const calInfo = computedCalories();
 
   const canNext = () => {
-    if (step === 0) return true; // unit always has default
+    if (step === 0) return true;
     if (step === 1) return !!gender;
     if (step === 2) return Number(weight) > 0;
     if (step === 3) return Number(height) > 0;
     if (step === 4) return Number(age) > 0;
     if (step === 5) return !!goal;
+    if (step === 6) return true;
     return false;
   };
 
@@ -198,6 +205,57 @@ export default function Onboarding() {
                 </button>
               ))}
             </div>
+          </>
+        )}
+
+        {step === 6 && calInfo !== null && (
+          <>
+            <div className="text-center mb-8">
+              <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+                <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.055 4.024.165C17.155 8.51 18 9.473 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75l-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0"/>
+                </svg>
+              </div>
+              <h1 className="text-3xl font-extrabold text-primary text-center mb-2">{t('onboarding_summary_title') || 'Your Daily Calories'}</h1>
+              <p className="text-gray-400 text-sm text-center">{t('onboarding_summary_sub') || 'Based on your data'}</p>
+            </div>
+
+            <div className="bg-surface border border-primary/50 rounded-3xl p-6 mb-6 text-center">
+              <p className="text-gray-400 text-sm mb-1">{t('daily_calorie_target', 'Дневная норма калорий')}</p>
+              <p className="text-primary text-5xl font-black">{calInfo}</p>
+              <p className="text-gray-500 text-sm mt-1">kcal / day</p>
+            </div>
+
+            <div className="bg-surface rounded-2xl p-5 mb-2">
+              <h3 className="text-white font-bold mb-4 text-sm">{t('your_data', 'Ваши данные')}</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-background rounded-xl p-3 text-center">
+                  <p className="text-gray-500 text-xs mb-1">{t('gender_male', 'Gender')}</p>
+                  <p className="text-white font-bold">{gender === 'male' ? 'Male' : 'Female'}</p>
+                </div>
+                <div className="bg-background rounded-xl p-3 text-center">
+                  <p className="text-gray-500 text-xs mb-1">{t('age', 'Age')}</p>
+                  <p className="text-white font-bold">{age} y.o.</p>
+                </div>
+                <div className="bg-background rounded-xl p-3 text-center">
+                  <p className="text-gray-500 text-xs mb-1">{t('weight', 'Weight')}</p>
+                  <p className="text-white font-bold">{weight}{unit === 'metric' ? ' kg' : ' lbs'}</p>
+                </div>
+                <div className="bg-background rounded-xl p-3 text-center">
+                  <p className="text-gray-500 text-xs mb-1">{t('height', 'Height')}</p>
+                  <p className="text-white font-bold">{height} cm</p>
+                </div>
+              </div>
+            </div>
+
+            {goal && GOALS[goal] && (
+              <div className="bg-surface rounded-2xl p-5 mb-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400 text-sm">{t('goal', 'Goal')}</span>
+                  <span className="text-primary font-bold">{GOALS[goal].calDelta === 0 ? 'Maintain' : (GOALS[goal].calDelta > 0 ? '+' : '') + GOALS[goal].calDelta + ' kcal/day'}</span>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

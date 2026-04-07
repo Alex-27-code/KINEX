@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
-import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '../firebaseConfig';
+import { collection, doc, getDocs, setDoc, deleteDoc, serverTimestamp, query, orderBy } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import { analyzeFoodImage } from '../utils/gemini';
 
 type FoodItem = {
   id: string;
@@ -12,19 +13,24 @@ type FoodItem = {
   carbs: number;
   fats: number;
   fiber?: number;
-  timestamp: any;
-  imageUri?: string;
+  timestamp?: any;
+  breakdown?: string;
 };
 
-type DailyLog = {
-  [date: string]: FoodItem[];
-};
+function getLocalDateString() {
+  const d = new Date();
+  const offset = d.getTimezoneOffset();
+  const localDate = new Date(d.getTime() - offset * 60000);
+  return localDate.toISOString().split('T')[0];
+}
 
 export default function Nutrition() {
   const { t, i18n } = useTranslation();
   const { fbUser, profile, saveProfile } = useAuth();
   const [log, setLog] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
   const [targetModal, setTargetModal] = useState(false);
   const [tempTarget, setTempTarget] = useState('');
   const [manualModal, setManualModal] = useState(false);
@@ -33,6 +39,9 @@ export default function Nutrition() {
   const [manualProtein, setManualProtein] = useState('');
   const [manualCarbs, setManualCarbs] = useState('');
   const [manualFats, setManualFats] = useState('');
+  const [lastScan, setLastScan] = useState<FoodItem | null>(null);
+  const fileInputRef = useState<React.RefObject<HTMLInputElement>>({ current: null } as any);
+  const cameraInputRef = useState<React.RefObject<HTMLInputElement>>({ current: null } as any);
   const isRu = i18n.language === 'ru';
 
   const targetCalories = profile?.dailyCalories || 2500;
@@ -41,13 +50,20 @@ export default function Nutrition() {
     if (!fbUser) return;
     const load = async () => {
       try {
-        const snap = await getDocs(collection(db, `nutrition_${fbUser.uid}`));
-        const items = snap.docs.map(d => ({ id: d.id, ...d.data() } as FoodItem));
-        setLog(items.sort((a, b) => {
+        const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
+        const items: FoodItem[] = [];
+        snap.docs.forEach(d => {
+          const data = d.data();
+          if (data.items && Array.isArray(data.items)) {
+            data.items.forEach((item: any) => items.push(item));
+          }
+        });
+        items.sort((a, b) => {
           const ta = a.timestamp?.seconds || 0;
           const tb = b.timestamp?.seconds || 0;
           return tb - ta;
-        }));
+        });
+        setLog(items);
       } catch (_) {
         setLog([]);
       }
@@ -71,21 +87,77 @@ export default function Nutrition() {
   const progress = Math.min(currentCals / targetCalories, 1);
   const remaining = targetCalories - currentCals;
 
-  const grouped: DailyLog = {};
+  const grouped: Record<string, FoodItem[]> = {};
   log.forEach(item => {
     if (!item.timestamp) return;
     const ts = item.timestamp?.seconds ? new Date(item.timestamp.seconds * 1000) : new Date(item.timestamp);
-    const key = ts.toDateString() === todayStr ? isRu ? 'Сегодня' : 'Today' : ts.toLocaleDateString();
+    const key = ts.toDateString() === todayStr ? (isRu ? 'Сегодня' : 'Today') : ts.toLocaleDateString();
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(item);
   });
 
-  const deleteItem = async (id: string) => {
+  const deleteItem = async (item: FoodItem) => {
     if (!confirm(isRu ? 'Удалить эту запись?' : 'Delete this entry?')) return;
     try {
-      await deleteDoc(doc(db, `nutrition_${fbUser!.uid}`, id));
-      setLog(prev => prev.filter(i => i.id !== id));
+      const dateStr = item.timestamp?.seconds
+        ? new Date(item.timestamp.seconds * 1000).toISOString().split('T')[0]
+        : getLocalDateString();
+      const logRef = doc(db, `users/${fbUser!.uid}/nutrition`, dateStr);
+      const snap = await getDocs(collection(db, `users/${fbUser!.uid}/nutrition`));
+      const docToUpdate = snap.docs.find(d => d.id === dateStr);
+      if (docToUpdate) {
+        const items = docToUpdate.data().items?.filter((i: any) => i.id !== item.id) || [];
+        if (items.length > 0) {
+          await setDoc(logRef, { items }, { merge: true });
+        } else {
+          await deleteDoc(logRef);
+        }
+      }
+      setLog(prev => prev.filter(i => i.id !== item.id));
     } catch (_) {}
+  };
+
+  const handleImageScan = async (file: File) => {
+    if (!fbUser) return;
+    setScanning(true);
+    setScanError(null);
+    setLastScan(null);
+    try {
+      const reader = new FileReader();
+      const base64 = await new Promise<string>((resolve, reject) => {
+        reader.onload = (e) => resolve((e.target?.result as string).split(',')[1] || '');
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
+      const result = await analyzeFoodImage(base64);
+      const foodItem: FoodItem = {
+        id: Date.now().toString(),
+        name: result.meal || 'Food',
+        calories: result.calories || 0,
+        protein: result.protein || 0,
+        carbs: result.carbs || 0,
+        fats: result.fats || 0,
+        fiber: result.fiber || 0,
+        breakdown: result.breakdown,
+        timestamp: serverTimestamp(),
+      };
+
+      // Save to Firestore
+      const dateStr = getLocalDateString();
+      const logRef = doc(db, `users/${fbUser.uid}/nutrition`, dateStr);
+      const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
+      const existing = snap.docs.find(d => d.id === dateStr);
+      const existingItems = existing?.data()?.items || [];
+      await setDoc(logRef, { items: [...existingItems, foodItem], date: dateStr }, { merge: true });
+
+      setLog(prev => [foodItem, ...prev]);
+      setLastScan(foodItem);
+    } catch (e: any) {
+      setScanError(e.message || (isRu ? 'Ошибка сканирования' : 'Scan failed'));
+    } finally {
+      setScanning(false);
+    }
   };
 
   const saveManual = async () => {
@@ -99,10 +171,13 @@ export default function Nutrition() {
       fats: Number(manualFats) || 0,
       timestamp: serverTimestamp(),
     };
-    try {
-      await setDoc(doc(db, `nutrition_${fbUser.uid}`, item.id), item);
-      setLog(prev => [item, ...prev]);
-    } catch (_) {}
+    const dateStr = getLocalDateString();
+    const logRef = doc(db, `users/${fbUser.uid}/nutrition`, dateStr);
+    const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
+    const existing = snap.docs.find(d => d.id === dateStr);
+    const existingItems = existing?.data()?.items || [];
+    await setDoc(logRef, { items: [...existingItems, item], date: dateStr }, { merge: true });
+    setLog(prev => [item, ...prev]);
     setManualModal(false);
     setManualName('');
     setManualCals('');
@@ -126,7 +201,7 @@ export default function Nutrition() {
         <h1 className="text-3xl font-extrabold text-primary">AI {l('Nutrition', 'Питание')}</h1>
         <button onClick={() => { setTempTarget(String(targetCalories)); setTargetModal(true); }} className="w-10 h-10 rounded-full bg-surface border border-border flex items-center justify-center">
           <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.149-.894z"/>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
         </button>
@@ -144,32 +219,81 @@ export default function Nutrition() {
         <div className="flex justify-between text-xs mb-4">
           <span className="text-gray-600">0</span>
           <span className={`font-bold ${remaining >= 0 ? 'text-primary' : 'text-red-400'}`}>
-            {remaining >= 0 ? `${remaining} ${l('kcal Left', 'ккал осталось')}` : `${Math.abs(remaining)} ${l('kcal Over', 'ккал перебор')}`}
+            {remaining >= 0 ? `${remaining} ${l('kcal left', 'ккал осталось')}` : `${Math.abs(remaining)} ${l('kcal over', 'ккал перебор')}`}
           </span>
         </div>
-        {/* Macros */}
         <div className="grid grid-cols-4 gap-2 text-center border-t border-border pt-4">
-          <div><p className="text-[10px] text-gray-500 uppercase mb-1">{l('Protein', 'Белок')}</p><p className="font-bold text-white text-sm">{currentProtein}g</p></div>
-          <div><p className="text-[10px] text-gray-500 uppercase mb-1">{l('Carbs', 'Угл')}</p><p className="font-bold text-white text-sm">{currentCarbs}g</p></div>
-          <div><p className="text-[10px] text-gray-500 uppercase mb-1">{l('Fats', 'Жиры')}</p><p className="font-bold text-white text-sm">{currentFats}g</p></div>
-          <div><p className="text-[10px] text-gray-500 uppercase mb-1">{l('Fiber', 'Клетч')}</p><p className="font-bold text-white text-sm">{currentFiber}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Protein', 'Белок')}</p><p className="font-bold text-white text-sm">{currentProtein}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Carbs', 'Угл')}</p><p className="font-bold text-white text-sm">{currentCarbs}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Fats', 'Жиры')}</p><p className="font-bold text-white text-sm">{currentFats}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Fiber', 'Клетч')}</p><p className="font-bold text-white text-sm">{currentFiber}g</p></div>
         </div>
       </div>
 
-      {/* Manual Add */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        <button onClick={() => setManualModal(true)} className="bg-surface border border-border rounded-2xl py-5 flex flex-col items-center gap-2 active:bg-white/5 transition-colors">
-          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
-          </svg>
-          <span className="text-white text-sm font-bold">{l('Add manually', 'Добавить вручную')}</span>
-        </button>
-        <div className="bg-primary text-black rounded-2xl py-5 flex flex-col items-center gap-2">
-          <span className="text-2xl">⭐</span>
-          <span className="text-sm font-bold">{l('AI Scan', 'ИИ Скан')}</span>
-          <span className="text-xs opacity-70">{l('Coming soon', 'Скоро')}</span>
+      {/* Last Scan Result */}
+      {lastScan && (
+        <div className="bg-primary/10 border border-primary/30 rounded-2xl p-4 mb-4">
+          <p className="text-primary font-bold text-sm mb-2">✓ {l('Food added:', 'Еда добавлена:')} {lastScan.name}</p>
+          <p className="text-white font-bold text-lg">{lastScan.calories} kcal</p>
+          <p className="text-gray-400 text-xs">P: {lastScan.protein}g  C: {lastScan.carbs}g  F: {lastScan.fats}g</p>
+          {lastScan.breakdown && <p className="text-gray-500 text-xs mt-1 italic">{lastScan.breakdown}</p>}
         </div>
+      )}
+
+      {/* Error */}
+      {scanError && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 mb-4">
+          <p className="text-red-400 text-sm">{scanError}</p>
+        </div>
+      )}
+
+      {/* Image Buttons */}
+      <div className="grid grid-cols-2 gap-3 mb-6">
+        <input type="file" accept="image/*" ref={fileInputRef as any} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
+        <input type="file" accept="image/*" capture="environment" ref={cameraInputRef as any} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
+        <button
+          onClick={() => (fileInputRef as any).current?.click()}
+          disabled={scanning}
+          className="bg-surface border border-border rounded-2xl py-5 flex flex-col items-center gap-2 active:bg-white/5 transition-colors disabled:opacity-50"
+        >
+          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+          <span className="text-white text-sm font-bold">{l('Gallery', 'Галерея')}</span>
+        </button>
+        <button
+          onClick={() => (cameraInputRef as any).current?.click()}
+          disabled={scanning}
+          className="bg-primary text-black rounded-2xl py-5 flex flex-col items-center gap-2 active:scale-95 transition-transform disabled:opacity-50"
+        >
+          {scanning ? (
+            <>
+              <svg className="w-6 h-6 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+              <span className="font-bold">{l('Scanning...', 'Сканирование...')}</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+                <circle cx="12" cy="13" r="4"/>
+              </svg>
+              <span className="font-bold">{l('Photo', 'Фото')}</span>
+            </>
+          )}
+        </button>
       </div>
+
+      {/* Manual Add */}
+      <button onClick={() => setManualModal(true)} className="w-full bg-surface border border-border rounded-2xl py-4 flex items-center justify-center gap-2 mb-6 active:bg-white/5 transition-colors">
+        <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span className="text-primary font-bold text-sm">{l('Add manually', 'Добавить вручную')}</span>
+      </button>
 
       {/* Food History */}
       <h2 className="text-xl font-bold text-white mb-4">{l('Food History', 'История питания')}</h2>
@@ -190,10 +314,11 @@ export default function Nutrition() {
                   <div className="flex-1">
                     <p className="text-white font-bold text-sm">{item.name}</p>
                     <p className="text-gray-500 text-xs">P: {item.protein}g  C: {item.carbs}g  F: {item.fats}g</p>
+                    {item.breakdown && <p className="text-gray-600 text-xs mt-0.5 italic">{item.breakdown}</p>}
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-primary font-bold">{item.calories}</span>
-                    <button onClick={() => deleteItem(item.id)} className="text-red-400 p-1">
+                    <button onClick={() => deleteItem(item)} className="text-red-400 p-1">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.167 48.167 0 00-7.5 0"/>
                       </svg>

@@ -2,13 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { EXERCISES_DATA } from '../data/exercises';
+import { useAuth } from '../hooks/useAuth';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../firebaseConfig';
+import { getGifUrl } from '../utils/gifLookup';
 
 type ExerciseDefinition = {
   id: string; name: string; category: string; equipment: string; gifName?: string;
 };
-import { useAuth } from '../hooks/useAuth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '../firebaseConfig';
 
 type Set = {
   id: string;
@@ -24,8 +25,6 @@ type WorkoutExercise = {
   sets: Set[];
   gifName?: string;
 };
-
-const GIF_BASE = 'https://raw.githubusercontent.com/Bourdon94m/Workout-Animated-GIF/main/media';
 
 export default function ActiveWorkout() {
   const navigate = useNavigate();
@@ -130,14 +129,13 @@ export default function ActiveWorkout() {
     setSaving(true);
     try {
       if (fbUser && auth.currentUser) {
-        const workoutRef = doc(db, 'workouts', `${auth.currentUser.uid}_${Date.now()}`);
+        const workoutRef = doc(db, 'users', auth.currentUser.uid, 'workouts', `${Date.now()}`);
         await setDoc(workoutRef, {
           userId: auth.currentUser.uid,
           title: 'Workout',
           duration: Math.round(elapsed / 60),
           exercises,
-          date: serverTimestamp(),
-          timestamp: serverTimestamp(),
+          timestamp: new Date(),
         }, { merge: true });
       }
       navigate('/workout');
@@ -186,7 +184,7 @@ export default function ActiveWorkout() {
           exercises.map(exercise => {
             const def = EXERCISES_DATA.find(e => e.id === exercise.exerciseId);
             const gifUrl = def?.gifName
-              ? `${GIF_BASE}/${encodeURIComponent(def.gifName)}`
+              ? getGifUrl(def.gifName) || ''
               : null;
 
             return (
@@ -325,7 +323,7 @@ export default function ActiveWorkout() {
           {/* Exercise list */}
           <div className="flex-1 overflow-y-auto pb-4">
             {filtered.map(def => {
-              const gifUrl = def.gifName ? `${GIF_BASE}/${encodeURIComponent(def.gifName)}` : null;
+              const gifUrl = getGifUrl(def.gifName) || null;
               return (
                 <button
                   key={def.id}
