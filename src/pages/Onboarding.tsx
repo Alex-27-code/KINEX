@@ -4,19 +4,26 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const UNITS = { metric: 'kg, cm', imperial: 'lbs, ft' };
-const GOALS: Record<string, {label: string; calDelta: number}> = {
-  aggressive_loss: { label: 'Aggressive weight loss', calDelta: -500 },
-  mild_loss:       { label: 'Mild weight loss',       calDelta: -250 },
-  maintain:        { label: 'Maintain weight',        calDelta: 0   },
-  lean_gain:       { label: 'Lean muscle gain',        calDelta: 250 },
-  active_gain:     { label: 'Active muscle gain',       calDelta: 500 },
+const GOALS: Record<string, {labelEn: string; labelRu: string; calDelta: number}> = {
+  aggressive_loss: { labelEn: 'Aggressive weight loss', labelRu: 'Быстрое похудение', calDelta: -700 },
+  mild_loss:       { labelEn: 'Mild weight loss',       labelRu: 'Плавное похудение', calDelta: -400 },
+  maintain:        { labelEn: 'Maintain weight',        labelRu: 'Поддержание веса',  calDelta: 0   },
+  lean_gain:       { labelEn: 'Lean muscle gain',        labelRu: 'Набор массы (чистый)', calDelta: 400 },
+  active_gain:     { labelEn: 'Active muscle gain',     labelRu: 'Набор массы (быстрый)', calDelta: 800 },
 };
 
 function calcCalories(gender: string, weight: number, height: number, age: number, goal: string) {
-  const bmr = gender === 'male'
-    ? 10 * weight + 6.25 * height - 5 * age + 5
-    : 10 * weight + 6.25 * height - 5 * age - 161;
-  return Math.round(bmr * 1.55 + (GOALS[goal]?.calDelta || 0));
+  // Katch-McArdle: BMR = 370 + 21.6 * LBM
+  // Mifflin-St Jeor: BMR = 10w + 6.25h - 5a + 5/-161
+  // Take the HIGHER (better for muscular athletes)
+  const bf = gender === 'male' ? 0.15 : 0.25;
+  const lbm = weight * (1 - bf);
+  const bmrKatch = 370 + 21.6 * lbm;
+  let bmrMifflin = 10 * weight + 6.25 * height - 5 * age + (gender === 'male' ? 5 : -161);
+  const bmr = Math.max(bmrKatch, bmrMifflin);
+  // Default moderate activity: 1.55
+  const tdee = Math.round(bmr * 1.55);
+  return Math.round(tdee + (GOALS[goal]?.calDelta || 0));
 }
 
 export default function Onboarding() {
@@ -176,7 +183,7 @@ export default function Onboarding() {
                 <button key={key} onClick={() => setGoal(key)}
                   className={`w-full p-4 rounded-2xl border-2 text-left flex justify-between items-center transition-all ${goal === key ? 'border-primary bg-primary/5' : 'border-border bg-surface'}`}>
                   <div>
-                    <span className={`font-bold block ${goal === key ? 'text-primary' : 'text-white'}`}>{g.label}</span>
+                    <span className={`font-bold block ${goal === key ? 'text-primary' : 'text-white'}`}>{g.labelEn}</span>
                     <span className="text-gray-500 text-xs mt-0.5">
                       {g.calDelta === 0 ? 'Balance' : (g.calDelta > 0 ? '+' : '') + g.calDelta + ' kcal/day'}
                     </span>

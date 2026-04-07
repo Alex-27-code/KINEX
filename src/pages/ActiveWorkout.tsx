@@ -186,7 +186,7 @@ export default function ActiveWorkout() {
           exercises.map(exercise => {
             const def = EXERCISES_DATA.find(e => e.id === exercise.exerciseId);
             const gifUrl = def?.gifName
-              ? `${GIF_BASE}/${encodeURIComponent(def.gifName)}.gif`
+              ? `${GIF_BASE}/${encodeURIComponent(def.gifName)}`
               : null;
 
             return (
@@ -195,7 +195,7 @@ export default function ActiveWorkout() {
                 <div className="flex items-start gap-3 mb-4">
                   {gifUrl && (
                     <button onClick={() => setImageModal(gifUrl)} className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 border border-white/10 bg-black/20">
-                      <img src={gifUrl} alt={exercise.name} className="w-full h-full object-cover" />
+                      <img src={gifUrl} alt={exercise.name} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }} />
                     </button>
                   )}
                   <div className="flex-1">
@@ -325,7 +325,7 @@ export default function ActiveWorkout() {
           {/* Exercise list */}
           <div className="flex-1 overflow-y-auto pb-4">
             {filtered.map(def => {
-              const gifUrl = def.gifName ? `${GIF_BASE}/${encodeURIComponent(def.gifName)}.gif` : null;
+              const gifUrl = def.gifName ? `${GIF_BASE}/${encodeURIComponent(def.gifName)}` : null;
               return (
                 <button
                   key={def.id}
