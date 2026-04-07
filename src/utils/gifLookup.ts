@@ -1,11 +1,8 @@
 // GIF URL resolver for Bourdon94m/Workout-Animated-GIF repository
-// Repo has 1000 GIF files only. Data files reference .webp which don't exist.
-// We strip extensions and map to actual .gif filenames.
-
 const GIF_BASE = 'https://raw.githubusercontent.com/Bourdon94m/Workout-Animated-GIF/main/media';
 
-// Map: normalized key (no ext, lowercase, dashes) → actual filename in repo
 const NAME_MAP: Record<string, string> = {
+  // Exercises from exercises.ts → actual repo filenames
   'arnold-press': 'dumbbell_arnold_press.gif',
   'arnold-press-webp': 'dumbbell_arnold_press.gif',
   'arnold-press-v2': 'dumbbell_arnold_press_v._2.gif',
@@ -23,6 +20,7 @@ const NAME_MAP: Record<string, string> = {
   'barbell-lying-tricep-extension-webp': 'barbell_lying_tricep_extension.gif',
   'barbell-row': 'barbell_bent_over_row.gif',
   'barbell-row-webp': 'barbell_bent_over_row.gif',
+  'barbell-row.gif': 'barbell_bent_over_row.gif',
   'barbell-shrug': 'barbell_shrug.gif',
   'barbell-shrug-webp': 'barbell_shrug.gif',
   'barbell-standing-calf-raise-2': 'barbell_standing_calf_raise.gif',
@@ -30,6 +28,7 @@ const NAME_MAP: Record<string, string> = {
   'barbell-standing-calf-raise': 'barbell_standing_calf_raise.gif',
   'bench-press': 'barbell_bench_press.gif',
   'bench-press-webp': 'barbell_bench_press.gif',
+  'bench-press.gif': 'barbell_bench_press.gif',
   'bent-over-row': 'dumbbell_bent_over_row.gif',
   'bent-over-row-webp': 'dumbbell_bent_over_row.gif',
   'bicep-curl': 'dumbbell_biceps_curl.gif',
@@ -124,33 +123,24 @@ function normalize(str: string): string {
   return str
     .toLowerCase()
     .replace(/\.(webp|gif|png|jpg|jpeg)$/i, '')
-    .replace(/[_\s]+/g, '-')
+    .replace(/[_\s-]+/g, '-')
     .replace(/[^a-z0-9-]/g, '')
     .trim();
 }
 
 export function getGifUrl(gifName: string | undefined): string | null {
   if (!gifName || gifName.trim() === '') return null;
-
   const original = gifName.trim();
-
-  // 1. Direct lookup with extension stripped
   const key1 = normalize(original);
   const mapped1 = NAME_MAP[key1];
   if (mapped1) return `${GIF_BASE}/${mapped1}`;
-
-  // 2. Try with .webp suffix removed
   const key2 = normalize(original).replace(/\.webp$/, '');
   const mapped2 = NAME_MAP[key2];
   if (mapped2) return `${GIF_BASE}/${mapped2}`;
-
-  // 3. Try just the base name (last part after /)
   const base = original.split('/').pop() || original;
   const key3 = normalize(base);
   const mapped3 = NAME_MAP[key3];
   if (mapped3) return `${GIF_BASE}/${mapped3}`;
-
-  // 4. Last resort: try to construct from normalized name
   const fallback = key3.replace(/-/g, '_') + '.gif';
   return `${GIF_BASE}/${fallback}`;
 }

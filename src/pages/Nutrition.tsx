@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { collection, doc, getDocs, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
@@ -44,8 +44,8 @@ export default function Nutrition() {
   const [manualProtein, setManualProtein] = useState('');
   const [manualCarbs, setManualCarbs] = useState('');
   const [manualFats, setManualFats] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef: RefObject<HTMLInputElement | null> = useRef(null);
+  const cameraInputRef: RefObject<HTMLInputElement | null> = useRef(null);
   const isRu = i18n.language === 'ru';
 
   const targetCalories = profile?.dailyCalories || 2500;

@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const UNITS = { metric: 'kg, cm', imperial: 'lbs, ft' };
-const GOALS: Record<string, {labelEn: string; labelRu: string; calDelta: number}> = {
-  aggressive_loss: { labelEn: 'Aggressive weight loss', labelRu: 'Быстрое похудение', calDelta: -700 },
-  mild_loss:       { labelEn: 'Mild weight loss',       labelRu: 'Плавное похудение', calDelta: -400 },
-  maintain:        { labelEn: 'Maintain weight',        labelRu: 'Поддержание веса',  calDelta: 0   },
-  lean_gain:       { labelEn: 'Lean muscle gain',        labelRu: 'Набор массы (чистый)', calDelta: 400 },
-  active_gain:     { labelEn: 'Active muscle gain',     labelRu: 'Набор массы (быстрый)', calDelta: 800 },
+const GOALS: Record<string, {labelKey: string; descKey: string; calDelta: number}> = {
+  aggressive_loss: { labelKey: 'goal_aggressive_loss', descKey: 'goal_aggressive_loss_desc', calDelta: -700 },
+  mild_loss:       { labelKey: 'goal_mild_loss',       descKey: 'goal_mild_loss_desc',       calDelta: -400 },
+  maintain:        { labelKey: 'goal_maintain',         descKey: 'goal_maintain_desc',          calDelta: 0   },
+  lean_gain:       { labelKey: 'goal_lean_gain',        descKey: 'goal_lean_gain_desc',        calDelta: 400 },
+  active_gain:     { labelKey: 'goal_active_gain',      descKey: 'goal_active_gain_desc',      calDelta: 800 },
 };
 
 function calcCalories(gender: string, weight: number, height: number, age: number, goal: string) {
@@ -190,9 +190,9 @@ export default function Onboarding() {
                 <button key={key} onClick={() => setGoal(key)}
                   className={`w-full p-4 rounded-2xl border-2 text-left flex justify-between items-center transition-all ${goal === key ? 'border-primary bg-primary/5' : 'border-border bg-surface'}`}>
                   <div>
-                    <span className={`font-bold block ${goal === key ? 'text-primary' : 'text-white'}`}>{g.labelEn}</span>
+                    <span className={`font-bold block ${goal === key ? 'text-primary' : 'text-white'}`}>{t(g.labelKey)}</span>
                     <span className="text-gray-500 text-xs mt-0.5">
-                      {g.calDelta === 0 ? 'Balance' : (g.calDelta > 0 ? '+' : '') + g.calDelta + ' kcal/day'}
+                      {t(g.descKey) || (g.calDelta === 0 ? t('goal_balance') : (g.calDelta > 0 ? '+' : '') + g.calDelta + ' kcal/day')}
                     </span>
                   </div>
                   {goal === key && (
