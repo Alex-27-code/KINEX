@@ -126,22 +126,24 @@ export default function ActiveWorkout() {
 
   const finishWorkout = async () => {
     if (exercises.length === 0) return;
+    if (!auth.currentUser) {
+      alert('Not logged in. Please refresh and log in again.');
+      return;
+    }
     setSaving(true);
     try {
-      if (fbUser && auth.currentUser) {
-        const workoutRef = doc(db, 'users', auth.currentUser.uid, 'workouts', `${Date.now()}`);
-        await setDoc(workoutRef, {
-          userId: auth.currentUser.uid,
-          title: 'Workout',
-          duration: Math.round(elapsed / 60),
-          exercises,
-          timestamp: new Date(),
-        }, { merge: true });
-      }
+      const workoutRef = doc(db, 'users', auth.currentUser.uid, 'workouts', `${Date.now()}`);
+      await setDoc(workoutRef, {
+        userId: auth.currentUser.uid,
+        title: 'Workout',
+        duration: Math.round(elapsed / 60),
+        exercises,
+        timestamp: new Date(),
+      });
       navigate('/workout');
-    } catch (e) {
-      console.error(e);
-      navigate('/workout');
+    } catch (e: any) {
+      console.error('Workout save error:', e);
+      alert('Failed to save workout: ' + (e.message || 'Check console'));
     } finally {
       setSaving(false);
     }

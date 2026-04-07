@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig';
 
 export default function Workout() {
@@ -14,16 +14,17 @@ export default function Workout() {
     if (!fbUser || !auth.currentUser) return;
     const loadHistory = async () => {
       try {
-        const q = query(
-          collection(db, 'users', auth.currentUser!.uid, 'workouts'),
-          where('userId', '==', auth.currentUser!.uid),
-          orderBy('timestamp', 'desc')
-        );
-        const snap = await getDocs(q);
-        const workouts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const workoutsRef = collection(db, 'users', auth.currentUser!.uid, 'workouts');
+        const snap = await getDocs(workoutsRef);
+        const workouts = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .sort((a: any, b: any) => {
+            const ta = a.timestamp instanceof Date ? a.timestamp.getTime() : new Date(a.timestamp).getTime();
+            const tb = b.timestamp instanceof Date ? b.timestamp.getTime() : new Date(b.timestamp).getTime();
+            return tb - ta;
+          });
         setHistory(workouts);
       } catch (_) {
-        // Firestore may not have index
         setHistory([]);
       }
     };
