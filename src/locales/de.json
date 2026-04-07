@@ -1,0 +1,21 @@
+{
+  "greeting": "Hallo,",
+  "focus_day": "FOKUS DES TAGES",
+  "ready_train": "Bereit zum Training?",
+  "log_workout": "Neues Training eintragen",
+  "start_workout": "Training Starten →",
+  "quick_actions": "Schnelle Aktionen",
+  "food_log": "Ernährung",
+  "food_log_sub": "KI Scanner",
+  "find_program": "Programme",
+  "find_program_sub": "Alle ansehen",
+  "calculator": "Rechner",
+  "calculator_sub": "1RM & Kalorien",
+  "history": "Verlauf",
+  "history_sub": "Vergangene",
+  "nav_home": "Home",
+  "nav_programs": "Pläne",
+  "nav_workout": "Training",
+  "nav_nutrition": "Ernährung",
+  "nav_profile": "Profil"
+}

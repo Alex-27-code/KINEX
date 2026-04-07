@@ -1,0 +1,21 @@
+{
+  "greeting": "Привет,",
+  "focus_day": "ТРЕНИРОВКА ДНЯ",
+  "ready_train": "Готов к тренировке?",
+  "log_workout": "Записать новую тренировку",
+  "start_workout": "Начать тренировку →",
+  "quick_actions": "Быстрые действия",
+  "food_log": "Дневник еды",
+  "food_log_sub": "AI сканер",
+  "find_program": "Программы",
+  "find_program_sub": "Смотреть все",
+  "calculator": "Калькуляторы",
+  "calculator_sub": "1ПМ и Калории",
+  "history": "История",
+  "history_sub": "Ваши тренировки",
+  "nav_home": "Главная",
+  "nav_programs": "Программы",
+  "nav_workout": "План",
+  "nav_nutrition": "Питание",
+  "nav_profile": "Профиль"
+}

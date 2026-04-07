@@ -1,0 +1,21 @@
+{
+  "greeting": "Hola,",
+  "focus_day": "ENFOQUE DEL DÍA",
+  "ready_train": "¿Listo para entrenar?",
+  "log_workout": "Registrar entrenamiento",
+  "start_workout": "Comenzar →",
+  "quick_actions": "Acciones rápidas",
+  "food_log": "Dieta",
+  "food_log_sub": "Escáner IA",
+  "find_program": "Programas",
+  "find_program_sub": "Ver todos",
+  "calculator": "Calculadora",
+  "calculator_sub": "1RM y Calorías",
+  "history": "Historial",
+  "history_sub": "Tus rutinas",
+  "nav_home": "Inicio",
+  "nav_programs": "Planes",
+  "nav_workout": "Rutina",
+  "nav_nutrition": "Nutrición",
+  "nav_profile": "Perfil"
+}

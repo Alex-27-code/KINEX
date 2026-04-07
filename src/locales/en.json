@@ -1,0 +1,21 @@
+{
+  "greeting": "Hello,",
+  "focus_day": "FOCUS OF THE DAY",
+  "ready_train": "Ready to train?",
+  "log_workout": "Log a new workout",
+  "start_workout": "Start Workout →",
+  "quick_actions": "Quick Actions",
+  "food_log": "Food Log",
+  "food_log_sub": "AI Food Scanner",
+  "find_program": "Find a Program",
+  "find_program_sub": "Browse all programs",
+  "calculator": "Calculator",
+  "calculator_sub": "1RM & Calories",
+  "history": "History",
+  "history_sub": "Past workouts",
+  "nav_home": "Home",
+  "nav_programs": "Programs",
+  "nav_workout": "Workout",
+  "nav_nutrition": "Nutrition",
+  "nav_profile": "Profile"
+}
