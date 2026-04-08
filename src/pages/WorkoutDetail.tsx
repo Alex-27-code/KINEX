@@ -5,6 +5,8 @@ import { useAuth } from '../hooks/useAuth';
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig';
 import { getGifUrl } from '../utils/gifLookup';
+import { EXERCISES_DATA } from '../data/exercises';
+type ExerciseDefinition = { id: string; name: string; category: string; equipment: string; gifName?: string; };
 
 type Set = {
   id: string;
@@ -37,6 +39,10 @@ export default function WorkoutDetail() {
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [customExercise, setCustomExercise] = useState('');
 
   useEffect(() => {
     if (!id || !fbUser || !auth.currentUser) return;
@@ -98,6 +104,40 @@ export default function WorkoutDetail() {
       s.id === setId ? { ...s, completed: !s.completed } : s
     );
     setWorkout(updated);
+  };
+
+  const addExercise = (def: ExerciseDefinition) => {
+    if (!workout) return;
+    const updated = { ...workout };
+    updated.exercises = [...updated.exercises, {
+      id: Math.random().toString(),
+      exerciseId: def.id,
+      name: def.name,
+      gifName: def.gifName,
+      sets: [{ id: Math.random().toString(), reps: '', weight: '', completed: false }],
+    }];
+    setWorkout(updated);
+    setModalOpen(false);
+    setSearch('');
+    setSelectedCategory(null);
+  };
+
+  const addCustomExercise = () => {
+    const name = customExercise.trim();
+    if (!name || !workout) return;
+    const updated = { ...workout };
+    updated.exercises = [...updated.exercises, {
+      id: Math.random().toString(),
+      exerciseId: 'custom',
+      name,
+      gifName: undefined,
+      sets: [{ id: Math.random().toString(), reps: '', weight: '', completed: false }],
+    }];
+    setWorkout(updated);
+    setCustomExercise('');
+    setModalOpen(false);
+    setSearch('');
+    setSelectedCategory(null);
   };
 
   const addSet = (exIdx: number) => {
@@ -236,7 +276,131 @@ export default function WorkoutDetail() {
             </div>
           );
         })}
+
+        {/* Add Exercise button */}
+        <button onClick={() => setModalOpen(true)} className="w-full py-3 text-primary font-bold border border-dashed border-primary/30 rounded-xl active:bg-primary/5 transition-colors mt-2">
+          + {t('add_exercise') || 'Add Exercise'}
+        </button>
       </div>
+
+      {/* Exercise Picker Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
+          <div className="bg-surface border-b border-border px-4 py-4 flex items-center justify-between">
+            <h2 className="text-white font-bold text-lg">{t('select_exercise') || 'Select Exercise'}</h2>
+            <button onClick={() => { setModalOpen(false); setSearch(''); setSelectedCategory(null); }} className="text-gray-400">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="px-4 py-3 bg-surface border-b border-border">
+            <div className="flex items-center gap-2 bg-background border border-border rounded-xl px-3 py-2">
+              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 10.803z"/>
+              </svg>
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder={t('search_exercises') || 'Search exercises...'}
+                className="flex-1 bg-transparent text-white text-sm outline-none placeholder-gray-500"
+                autoFocus
+              />
+              {search && (
+                <button onClick={() => setSearch('')} className="text-gray-500">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Custom exercise input */}
+          <div className="px-4 py-2 bg-surface border-b border-border">
+            <div className="flex items-center gap-2">
+              <input
+                value={customExercise}
+                onChange={e => setCustomExercise(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addCustomExercise()}
+                placeholder={t('add_custom_exercise_placeholder') || '... or add your own exercise'}
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-white text-sm outline-none placeholder-gray-500"
+              />
+              <button
+                onClick={addCustomExercise}
+                disabled={!customExercise.trim()}
+                className="px-4 py-2 bg-primary text-black font-bold rounded-xl disabled:opacity-30 text-sm"
+              >
+                + {t('add') || 'Add'}
+              </button>
+            </div>
+          </div>
+
+          {/* Category chips */}
+          <div className="px-4 py-2 bg-surface border-b border-border overflow-x-auto hide-scrollbar">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setSelectedCategory(null)}
+                className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${!selectedCategory ? 'bg-primary text-black' : 'bg-white/10 text-gray-300'}`}
+              >
+                {t('all') || 'All'}
+              </button>
+              {[...new Set(EXERCISES_DATA.map(e => e.category))].map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${selectedCategory === cat ? 'bg-primary text-black' : 'bg-white/10 text-gray-300'}`}
+                >
+                  {t(cat)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Exercise list */}
+          <div className="flex-1 min-h-0 overflow-y-auto">
+            {EXERCISES_DATA.filter(e => {
+              const matchCat = !selectedCategory || e.category === selectedCategory;
+              const matchSearch = e.name.toLowerCase().includes(search.toLowerCase());
+              const hasGif = !!getGifUrl(e.gifName);
+              return matchCat && matchSearch && hasGif;
+            }).map(def => {
+              const gifUrl = getGifUrl(def.gifName) || null;
+              return (
+                <button
+                  key={def.id}
+                  onClick={() => addExercise(def)}
+                  className="w-full flex items-center gap-3 px-4 py-3 border-b border-border/50 active:bg-white/5 text-left"
+                >
+                  <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 bg-black/20 border border-white/10">
+                    {gifUrl ? (
+                      <img src={gifUrl} alt={def.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" d="M6.5 6.5h-3v11h3M17.5 6.5h3v11h-3M6.5 12h11M4 9v6M20 9v6M8 6v12M16 6v12"/>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white font-bold text-sm">{t(def.name)}</p>
+                    <p className="text-gray-500 text-xs">{t(def.category)} · {t(def.equipment)}</p>
+                  </div>
+                  <svg className="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" d="M12 4v16m8-8H4"/>
+                  </svg>
+                </button>
+              );
+            })}
+            {EXERCISES_DATA.filter(e => (!selectedCategory || e.category === selectedCategory) && e.name.toLowerCase().includes(search.toLowerCase()) && !!getGifUrl(e.gifName)).length === 0 && (
+              <p className="text-gray-500 text-center py-8">{t('no_exercises_found') || 'No exercises found'}</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

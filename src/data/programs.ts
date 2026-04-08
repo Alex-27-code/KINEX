@@ -6,7 +6,6 @@ export interface Program {
     difficulty: "Beginner" | "Intermediate" | "Advanced" | "All Levels";
     category: "Powerlifting" | "Bodybuilding" | "Powerbuilding" | "Strength + Hypertrophy";
     weeks: number; daysPerWeek: number;
-    nutritionGuide?: string;
     schedule: WeeklySchedule[];
     badge?: "⭐ Best for Beginners" | "🔥 Most Popular" | "💪 Editor's Pick" | "🏆 Gold Standard" | "💎 Elite Performance";
     isPremium?: boolean;
@@ -17,59 +16,47 @@ const _rawPrograms: Program[] = [
     // ─── POWERLIFTING ──────────────────────────────────
     {
         id: "starting-strength", title: "Starting Strength", category: "Powerlifting",
-        badge: "⭐ Best for Beginners",
-        description: "The gold standard for strength. We've adjusted it for a smoother entry: start with 50% effort and focus on form.",
+        badge: "🏆 Gold Standard",
+        description: "The gold standard for strength beginners. Master the five foundational barbell lifts with linear progression. Add weight every workout.",
         difficulty: "Beginner", weeks: 8, daysPerWeek: 3,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Workout A (Mon/Fri)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "5", note: "Start comfortable, +1-2kg" },
-                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "5", note: "Focus on bar path" },
-                        { id: "ex_27", name: "Deadlift", sets: "1", reps: "5", note: "Keep back flat" },
-                        { id: "ex_1", name: "Arnold Press", sets: "2", reps: "30s", note: "Core stability" },
+                    title: "Day A (Mon/Wed/Fri)", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "5", note: "3-5 warm-up sets then work sets" },
+                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "5", note: "Alternate with Overhead Press" },
+                        { id: "ex_27", name: "Deadlift", sets: "1", reps: "5", note: "Focus on bar path, keep back flat" },
                     ]
                 },
                 {
-                    title: "Workout B (Wed)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "5", note: "Recovery focus" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5", note: "Small jumps in weight" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "5", note: "Control the weight" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "10", note: "Optional accessory" },
+                    title: "Day B (Tue/Thu/Sat)", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "5", note: "Same weight as Day A" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "5", note: "Alternate with Bench Press" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "5", note: "Control the weight, full range" },
                     ]
                 },
             ]
         }]
     },
     {
-        id: "DELETE_ME", title: "StrongLifts 5x5 (Modified)", category: "Powerlifting",
-        badge: "🔥 Most Popular",
-        description: "Classic 5x5 modernized with specific percentages and increased volume. Focus on 75-85% 1RM for main lifts. Add 2.5kg to Squat/Bench/Row and 5kg to Deadlift every successful session.",
+        id: "stronglifts-5x5", title: "StrongLifts 5x5", category: "Powerlifting",
+        badge: "⭐ Best for Beginners",
+        description: "Classic 5x5 program modernized. Alternate Workout A and B three days per week. Squat every session by design.",
         difficulty: "Beginner", weeks: 12, daysPerWeek: 3,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Mon: Squat + Press", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "5", note: "Start @ 75% 1RM" },
+                    title: "Workout A (Mon/Fri)", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "5", reps: "5", note: "Start @ 75% 1RM, add 2.5kg each session" },
                         { id: "ex_12", name: "Bench Press", sets: "5", reps: "5", note: "Start @ 75% 1RM" },
-                        { id: "ex_7", name: "Barbell Row", sets: "5", reps: "5", note: "+2.5kg next Mon" },
-                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "AMRAP", note: "Accessory" },
+                        { id: "ex_7", name: "Barbell Row", sets: "5", reps: "5", note: "Add 2.5kg each session" },
                     ]
                 },
                 {
-                    title: "Wed: Squat + Deadlift", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "5", note: "Same weight as Monday" },
-                        { id: "ex_1", name: "Arnold Press", sets: "5", reps: "5", note: "Start @ 70% 1RM" },
-                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Start @ 80% 1RM, +5kg next Wed" },
-                        { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP", note: "Accessory" },
-                    ]
-                },
-                {
-                    title: "Fri: Squat + Pull", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "5", note: "+2.5kg for next Mon" },
-                        { id: "ex_12", name: "Bench Press", sets: "5", reps: "5", note: "+2.5kg for next Mon" },
-                        { id: "ex_7", name: "Barbell Row", sets: "5", reps: "5", note: "+2.5kg for next Mon" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20", note: "Core" },
+                    title: "Workout B (Wed)", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "5", reps: "5", note: "Same weight as Workout A" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "5", reps: "5", note: "Start @ 70% 1RM" },
+                        { id: "ex_27", name: "Deadlift", sets: "1", reps: "5", note: "Start @ 80% 1RM, add 5kg each session" },
                     ]
                 },
             ]
@@ -77,34 +64,30 @@ const _rawPrograms: Program[] = [
     },
     {
         id: "texas-method", title: "Texas Method", category: "Powerlifting",
-        description: "Intermediate program for strength. Mon: Volume (5x5 @ 75%), Wed: Recovery (2x5 @ 65%), Fri: Intensity (1x5 @ 90%). Add 2.5kg to your 5x5 and 1x5 every week.",
+        description: "Intermediate program for strength. Mon: Volume (5x5 @ 75%), Wed: Recovery (2x5 @ 65%), Fri: Intensity (1x5 @ 90%). Classic 3-day split.",
         difficulty: "Intermediate", weeks: 8, daysPerWeek: 3,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Mon: Volume Day (75%)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "5", note: "75% 1RM" },
+                    title: "Monday — Volume Day", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "5", reps: "5", note: "75% 1RM, 5 total sets" },
                         { id: "ex_12", name: "Bench Press", sets: "5", reps: "5", note: "75% 1RM" },
                         { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "75% 1RM" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" },
                     ]
                 },
                 {
-                    title: "Wed: Recovery Day (65%)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "2", reps: "5", note: "65% 1RM" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5", note: "60-65% 1RM" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-10" },
-                        { id: "ex_26", name: "Crunch", sets: "3", reps: "20" },
+                    title: "Wednesday — Recovery Day", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "2", reps: "5", note: "65% 1RM, lighter recovery" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "5", note: "60-65% 1RM" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-10", note: "Moderate weight, hypertrophy rep range" },
+                        { id: "ex_26", name: "Crunch", sets: "3", reps: "20", note: "Core work" },
                     ]
                 },
                 {
-                    title: "Fri: Intensity Day (90%)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "1", reps: "5", note: "90% 1RM — New 5RM PR" },
-                        { id: "ex_12", name: "Bench Press", sets: "1", reps: "5", note: "90% 1RM — New 5RM PR" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8", note: "Secondary press" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" },
+                    title: "Friday — Intensity Day", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "1", reps: "5", note: "90% 1RM, true max attempt" },
+                        { id: "ex_12", name: "Bench Press", sets: "1", reps: "5", note: "90% 1RM" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "5", note: "Hip hinge pattern, moderate weight" },
                     ]
                 },
             ]
@@ -112,72 +95,43 @@ const _rawPrograms: Program[] = [
     },
     {
         id: "wendler-531", title: "Wendler 5/3/1", category: "Powerlifting",
-        badge: "🏆 Gold Standard",
-        description: "4-week wave loading based on Training Max (TM). Week 1: 75%x5x5, Week 2: 85%x4x3, Week 3: 90%x3x1, Week 4: Deload. Add 2.5kg to upper and 5kg to lower TM after each 4-week cycle.",
-        difficulty: "Intermediate", weeks: 4, daysPerWeek: 4,
-        nutritionGuide: "Calculate Training Max = 90% of true 1RM. All percentages are based on Training Max.",
-        schedule: [
-            {
-                weekLabel: "Week 1 — 75% x 5x5", days: [
-                    { title: "Day 1: Squat", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "5", note: "75% TM" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_26", name: "Crunch", sets: "3", reps: "20" }] },
-                    { title: "Day 2: Bench", exercises: [{ id: "ex_12", name: "Bench Press", sets: "5", reps: "5", note: "75% TM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                    { title: "Day 3: Deadlift", exercises: [{ id: "ex_27", name: "Deadlift", sets: "5", reps: "5", note: "75% TM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
-                    { title: "Day 4: OHP", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "5", reps: "5", note: "75% TM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }] },
-                ]
-            },
-            {
-                weekLabel: "Week 2 — 85% x 4x3", days: [
-                    { title: "Day 1: Squat", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "3", note: "85% TM" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_26", name: "Crunch", sets: "3", reps: "20" }] },
-                    { title: "Day 2: Bench", exercises: [{ id: "ex_12", name: "Bench Press", sets: "4", reps: "3", note: "85% TM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                    { title: "Day 3: Deadlift", exercises: [{ id: "ex_27", name: "Deadlift", sets: "4", reps: "3", note: "85% TM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
-                    { title: "Day 4: OHP", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "3", note: "85% TM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }] },
-                ]
-            },
-            {
-                weekLabel: "Week 3 — 90% x 3x1", days: [
-                    { title: "Day 1: Squat", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "1", note: "90% TM" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "8" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" }, { id: "ex_26", name: "Crunch", sets: "3", reps: "20" }] },
-                    { title: "Day 2: Bench", exercises: [{ id: "ex_12", name: "Bench Press", sets: "3", reps: "1", note: "90% TM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "12" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                    { title: "Day 3: Deadlift", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "1", note: "90% TM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
-                    { title: "Day 4: OHP", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "1", note: "90% TM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }] },
-                ]
-            },
-            {
-                weekLabel: "Week 4 — Deload", days: [
-                    { title: "Day 1: Squat", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "5", note: "50% TM" }] },
-                    { title: "Day 2: Bench", exercises: [{ id: "ex_12", name: "Bench Press", sets: "3", reps: "5", note: "50% TM" }] },
-                    { title: "Day 3: Deadlift", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "50% TM" }] },
-                    { title: "Day 4: OHP", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "5", note: "50% TM" }] },
-                ]
-            }
-        ]
-    },
-
-    {
-        id: "DELETE_ME", title: "5-Day Advanced Powerlifting", category: "Powerlifting",
-        description: "High volume strength peaking. Specific percentages for main lifts (75-90%) and technical accessories. Add 2.5kg to main lifts when RPE is below 8.",
-        difficulty: "Advanced", weeks: 8, daysPerWeek: 4,
+        badge: "🔥 Most Popular",
+        description: "4-week wave loading based on Training Max (TM). Week 1: 65%x5, Week 2: 75%x5, Week 3: 85%x5, Week 4: Deload. Classic powerlifting periodization.",
+        difficulty: "Intermediate", weeks: 12, daysPerWeek: 4,
         schedule: [{
-            weekLabel: "Standard Week", days: [
-                { title: "Day 1: Squat Force", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "3", note: "85% 1RM" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "12" }, { id: "ex_26", name: "Crunch", sets: "3", reps: "20" }] },
-                { title: "Day 2: Bench Power", exercises: [{ id: "ex_12", name: "Bench Press", sets: "5", reps: "3", note: "85% 1RM" }, { id: "ex_28", name: "Dips", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                { title: "Day 3: Deadlift Pull", exercises: [{ id: "ex_27", name: "Deadlift", sets: "5", reps: "2", note: "80% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "6" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12" }] },
-                { title: "Day 4: Bench Technical", exercises: [{ id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8", note: "70% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }] },
-                { title: "Day 5: Squat Technical", exercises: [{ id: "ex_51", name: "Leg Press", sets: "4", reps: "12", note: "Hypertrophy" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
-            ]
-        }]
-    },
-    {
-        id: "DELETE_ME", title: "6-Day High Frequency Power", category: "Powerlifting",
-        description: "Extreme frequency for elite trainees. Main lifts hit 3x per week @ 70-85% intensity. High recovery capacity required.",
-        difficulty: "Advanced", weeks: 6, daysPerWeek: 6,
-        schedule: [{
-            weekLabel: "Standard Week", days: [
-                { title: "Mon: Squat + Upper", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "5", note: "75% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_28", name: "Dips", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }] },
-                { title: "Tue: Bench + Rows", exercises: [{ id: "ex_12", name: "Bench Press", sets: "5", reps: "5", note: "75% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "12" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                { title: "Wed: Deadlift + Core", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "3", note: "80% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_26", name: "Crunch", sets: "3", reps: "20" }] },
-                { title: "Thu: Squat (Light)", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8", note: "65% 1RM" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "12" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" }] },
-                { title: "Fri: Bench (Volume)", exercises: [{ id: "ex_12", name: "Bench Press", sets: "5", reps: "10", note: "65% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" }, { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12" }] },
-                { title: "Sat: Deadlift (Technique)", exercises: [{ id: "ex_27", name: "Deadlift", sets: "5", reps: "3", note: "70% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "AMRAP" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "15" }] },
+            weekLabel: "4-Week Cycle", days: [
+                {
+                    title: "Day 1 — Squat", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "1", reps: "5", note: "Week 1: 65%, Week 2: 75%, Week 3: 85%" },
+                        { id: "ex_77", name: "Squat", sets: "1", reps: "5", note: "Same percentage, second set" },
+                        { id: "ex_77", name: "Squat", sets: "1", reps: "5+", note: "AMRAP final set" },
+                        { id: "ex_15", name: "Cable Crunch", sets: "5", reps: "10", note: "Accessory" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Bench Press", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "1", reps: "5", note: "65/75/85% scheme" },
+                        { id: "ex_12", name: "Bench Press", sets: "1", reps: "5", note: "" },
+                        { id: "ex_12", name: "Bench Press", sets: "1", reps: "5+", note: "AMRAP final set" },
+                        { id: "ex_16", name: "Cable Curl With Bar", sets: "5", reps: "10", note: "Biceps accessory" },
+                    ]
+                },
+                {
+                    title: "Day 3 — Deadlift", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "1", reps: "5", note: "65/75/85% scheme" },
+                        { id: "ex_27", name: "Deadlift", sets: "1", reps: "5", note: "" },
+                        { id: "ex_27", name: "Deadlift", sets: "1", reps: "5+", note: "AMRAP final set" },
+                        { id: "ex_40", name: "Hanging Leg Raise", sets: "5", reps: "10-15", note: "Core" },
+                    ]
+                },
+                {
+                    title: "Day 4 — Overhead Press", exercises: [
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "1", reps: "5", note: "65/75/85% scheme" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "1", reps: "5", note: "" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "1", reps: "5+", note: "AMRAP final set" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "5", reps: "10", note: "Triceps accessory" },
+                    ]
+                },
             ]
         }]
     },
@@ -185,79 +139,35 @@ const _rawPrograms: Program[] = [
     // ─── BODYBUILDING ──────────────────────────────────
     {
         id: "ppl-3day", title: "Push / Pull / Legs (3-Day)", category: "Bodybuilding",
-        badge: "⭐ Best for Beginners",
-        description: "Classic PPL in 3 sessions per week. Each muscle group trained once with full volume.",
+        description: "Classic PPL split adapted for 3 days per week. Train each muscle group once per week with balanced volume and compound focus.",
         difficulty: "Beginner", weeks: 8, daysPerWeek: 3,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Mon: Push", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-10" },
-                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "10-12" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "12-15" },
-                        { id: "ex_28", name: "Dips", sets: "2", reps: "AMRAP" },
+                    title: "Monday — Push", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "6-8", note: "Compound, heavy" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8-10", note: "Upper chest focus" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8-10", note: "Compound shoulder" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "3", reps: "12-15", note: "Isolation, lateral delts" },
+                        { id: "ex_60", name: "Overhead Cable Triceps Extension From Upper Position", sets: "3", reps: "12-15", note: "Triceps isolation" },
                     ]
                 },
                 {
-                    title: "Wed: Pull", exercises: [
-                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5" },
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8-10" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10-12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_39", name: "Hammer Curl", sets: "2", reps: "15" },
+                    title: "Wednesday — Pull", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "4", reps: "5-6", note: "Compound, heavy" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-12", note: "Vertical pull" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-10", note: "Horizontal pull" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12-15", note: "Biceps, brachialis" },
+                        { id: "ex_20", name: "Cable Rear Delt Row", sets: "3", reps: "12-15", note: "Rear delts, upper back" },
                     ]
                 },
                 {
-                    title: "Fri: Legs", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "8-10" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10-12" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12-15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15-20" },
-                    ]
-                },
-            ]
-        }]
-    },
-    {
-        id: "DELETE_ME", title: "3-Day Hypertrophy Split", category: "Bodybuilding",
-        description: "Three full-body focused sessions per week with heavy compounds and isolation work.",
-        difficulty: "Intermediate", weeks: 6, daysPerWeek: 3,
-        schedule: [{
-            weekLabel: "Standard Week", days: [
-                {
-                    title: "Day 1: Chest + Triceps", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-10" },
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "10" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12-15" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "15" },
-                    ]
-                },
-                {
-                    title: "Day 2: Back + Biceps", exercises: [
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10-12" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10-12" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "2", reps: "15" },
-                    ]
-                },
-                {
-                    title: "Day 3: Shoulders + Legs", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "8-10" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12-15" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10" },
-                        { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15-20" },
+                    title: "Friday — Legs", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "6-8", note: "Compound, heavy" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8-10", note: "Hamstrings, hip hinge" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-12", note: "Quad dominant" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "10-12", note: "Hamstrings isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "12-15", note: "Gastrocnemius" },
                     ]
                 },
             ]
@@ -265,357 +175,171 @@ const _rawPrograms: Program[] = [
     },
     {
         id: "bodybuilding-4day", title: "4-Day Bro Split", category: "Bodybuilding",
-        badge: "🔥 Most Popular",
-        description: "Classic bodybuilding split. One muscle group per day, maximum volume and isolation.",
-        difficulty: "Intermediate", weeks: 6, daysPerWeek: 4,
-        schedule: [{
-            weekLabel: "Standard Week", days: [
-                {
-                    title: "Mon: Chest + Triceps", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12" },
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "10-12" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12-15" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15-20" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "15" },
-                        { id: "ex_28", name: "Dips", sets: "2", reps: "AMRAP" },
-                    ]
-                },
-                {
-                    title: "Tue: Back + Biceps", exercises: [
-                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "AMRAP" },
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8-10" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10-12" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "10-12" },
-                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12-15" },
-                    ]
-                },
-                {
-                    title: "Thu: Shoulders", exercises: [
-                        { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-10" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15-20" },
-                        { id: "ex_19", name: "Cable Lateral Raise", sets: "3", reps: "15" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "2", reps: "15" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" },
-                    ]
-                },
-                {
-                    title: "Fri: Legs", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "8-12" },
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "10-12" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "4", reps: "10" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "15-20" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15-20" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12-15" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "5", reps: "15-20" },
-                    ]
-                },
-            ]
-        }]
-    },
-    {
-        id: "DELETE_ME", title: "CBum 6-Day Split", category: "Bodybuilding",
-        description: "Training split of 5x Classic Physique Olympia champion Chris Bumstead. High volume, extreme isolation.",
-        difficulty: "Advanced", weeks: 8, daysPerWeek: 6,
-        schedule: [{
-            weekLabel: "Standard Week", days: [
-                {
-                    title: "Mon: Chest", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12" },
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "10-12" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12-15" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15-20" },
-                        { id: "ex_66", name: "Push Press", sets: "2", reps: "AMRAP" },
-                    ]
-                },
-                {
-                    title: "Tue: Back", exercises: [
-                        { id: "ex_27", name: "Deadlift", sets: "4", reps: "5-8" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "AMRAP" },
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8-12" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10-15" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "12-15" },
-                    ]
-                },
-                {
-                    title: "Wed: Shoulders", exercises: [
-                        { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15-20" },
-                        { id: "ex_19", name: "Cable Lateral Raise", sets: "3", reps: "15-20" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" },
-                    ]
-                },
-                {
-                    title: "Thu: Arms", exercises: [
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "10-12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12-15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12-15" },
-                        { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10-12" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "15-20" },
-                        { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" },
-                    ]
-                },
-                {
-                    title: "Fri: Legs (Quads)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "8-12" },
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "10-15" },
-                        { id: "ex_51", name: "Leg Press", sets: "4", reps: "15-20" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "4", reps: "15-20" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "5", reps: "15-20" },
-                    ]
-                },
-                {
-                    title: "Sat: Legs (Hamstrings)", exercises: [
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "4", reps: "10-12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "12-15" },
-                        { id: "ex_34", name: "Dumbbell Lunge", sets: "3", reps: "12 each" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "20" },
-                    ]
-                },
-            ]
-        }]
-    },
-
-    {
-        id: "DELETE_ME", title: "5-Day UL/PPL Split", category: "Bodybuilding",
-        description: "Comprehensive hypertrophy split: Upper-Lower strength foundation followed by a PPL hypertrophy block. Target every muscle group twice for maximum growth. Follow 70-80% 1RM on strength days.",
+        badge: "💪 Editor's Pick",
+        description: "Classic bodybuilding split. One muscle group per day for maximum volume and pump. Proven approach for hypertrophy.",
         difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
         schedule: [{
             weekLabel: "Standard Week", days: [
-                { title: "Day 1: Upper Strength", exercises: [{ id: "ex_12", name: "Bench Press", sets: "3", reps: "5", note: "80% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "5", note: "80% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "6-8" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" }] },
-                { title: "Day 2: Lower Strength", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "5", note: "80% 1RM" }, { id: "ex_27", name: "Deadlift", sets: "2", reps: "5", note: "80% 1RM" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "10" }, { id: "ex_26", name: "Crunch", sets: "3", reps: "15" }] },
-                { title: "Day 3: Push Hypertrophy", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "12-15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }] },
-                { title: "Day 4: Pull Hypertrophy", exercises: [{ id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10-12" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12-15" }, { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "15" }] },
-                { title: "Day 5: Legs Hypertrophy", exercises: [{ id: "ex_51", name: "Leg Press", sets: "3", reps: "12-15" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15-20" }, { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
+                {
+                    title: "Monday — Chest + Triceps", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8", note: "Heavy compound" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "10", note: "Upper chest" },
+                        { id: "ex_29", name: "Dumbbell Chest Fly", sets: "3", reps: "12", note: "Stretch under load" },
+                        { id: "ex_14", name: "Cable Chest Press", sets: "3", reps: "12", note: "Constant tension" },
+                        { id: "ex_60", name: "Overhead Cable Triceps Extension From Upper Position", sets: "3", reps: "12", note: "Long head triceps" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "12", note: "Lateral head triceps" },
+                    ]
+                },
+                {
+                    title: "Tuesday — Back + Biceps", exercises: [
+                        { id: "ex_65", name: "Pull Ups", sets: "4", reps: "8-10", note: "Heavy vertical pull" },
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8", note: "Heavy horizontal pull" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "3", reps: "12", note: "Lat isolation" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "12", note: "Mid-back thickness" },
+                        { id: "ex_36", name: "EZ Curl", sets: "3", reps: "12", note: "Biceps" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Brachialis, indirect" },
+                    ]
+                },
+                {
+                    title: "Thursday — Shoulders + Arms", exercises: [
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "4", reps: "8", note: "Compound shoulder" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10", note: "Dumbbell variation" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "4", reps: "15", note: "Lateral delts" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delts" },
+                        { id: "ex_44", name: "Incline Dumbbell Curl", sets: "3", reps: "12", note: "Long head biceps" },
+                        { id: "ex_43", name: "Incline Bench SkullCrushers", sets: "3", reps: "12", note: "Triceps long head" },
+                    ]
+                },
+                {
+                    title: "Friday — Legs", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "8", note: "Heavy quad compound" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "10", note: "Glute focus" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12", note: "Volume for quads" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "Hamstrings" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "15", note: "Calf development" },
+                    ]
+                },
             ]
         }]
     },
 
-    // ─── POWERBUILDING ─────────────────────────────────
+    // ─── POWERBUILDING ──────────────────────────────────
     {
         id: "powerbuilding-3day", title: "3-Day Powerbuilding", category: "Powerbuilding",
-        description: "Heavy compound lifts for strength + accessory work for size. Best bang for buck in 3 days.",
-        difficulty: "Intermediate", weeks: 8, daysPerWeek: 3,
+        description: "Heavy compound lifts for strength combined with accessory work for size. Best strength-to-size ratio in 3 days per week.",
+        difficulty: "Beginner", weeks: 8, daysPerWeek: 3,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Day 1: Push", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "5", reps: "3-5", note: "Work up to heavy top set" },
-                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-10" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "15" },
-                        { id: "ex_28", name: "Dips", sets: "2", reps: "AMRAP" },
+                    title: "Day 1 — Upper Strength", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "Heavy compound, 85% 1RM" },
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "5", note: "Heavy quad compound" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "6-8", note: "Heavy back" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8", note: "Accessory press" },
                     ]
                 },
                 {
-                    title: "Day 2: Pull", exercises: [
-                        { id: "ex_27", name: "Deadlift", sets: "5", reps: "3-5", note: "Work up to heavy top set" },
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "6-8" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10-12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_39", name: "Hammer Curl", sets: "2", reps: "15" },
+                    title: "Day 2 — Lower Strength", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "4", reps: "5", note: "Heavy hip hinge" },
+                        { id: "ex_37", name: "Front Squat", sets: "3", reps: "6-8", note: "Quad strength, anterior core" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "10", note: "Lat width" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "12", note: "Calf work" },
                     ]
                 },
                 {
-                    title: "Day 3: Legs", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "3-5", note: "Work up to heavy top set" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" },
+                    title: "Day 3 — Hypertrophy Push", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8-10", note: "Chest hypertrophy" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "10-12", note: "Vertical pull hypertrophy" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "10", note: "Triceps focus" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Biceps" },
                     ]
                 },
             ]
         }]
-    },
-    {
-        id: "DELETE_ME", title: "One Lift Focus Block", category: "Powerbuilding",
-        badge: "💪 Editor's Pick",
-        description: "Intensive 5-week block with undulating daily intensity. Mon: 75% (Volume), Wed: 85% (Strength), Fri: 90% (Peak). Increase intensity by +2.5% every week. Week 5 is for full recovery.",
-        difficulty: "Intermediate", weeks: 5, daysPerWeek: 3,
-        schedule: [
-            {
-                weekLabel: "Week 1 — Undulating Wave (Base)", days: [
-                    { title: "Day 1 (75%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "5", reps: "5", note: "75% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }] },
-                    { title: "Day 2 (85%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "3", note: "85% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] },
-                    { title: "Day 3 (90%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "1", note: "90% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "12" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }, { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10" }] },
-                ]
-            },
-            {
-                weekLabel: "Week 2 — Undulating Wave (+2.5%)", days: [
-                    { title: "Day 1 (77.5%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "5", reps: "5", note: "77.5% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }] },
-                    { title: "Day 2 (87.5%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "3", note: "87.5% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] },
-                    { title: "Day 3 (92.5%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "1", note: "92.5% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "12" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }, { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10" }] },
-                ]
-            },
-            {
-                weekLabel: "Week 3 — Undulating Wave (+5%)", days: [
-                    { title: "Day 1 (80%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "5", reps: "5", note: "80% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }] },
-                    { title: "Day 2 (90%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "3", note: "90% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }] },
-                    { title: "Day 3 (95%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "1", note: "95% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }, { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8" }] },
-                ]
-            },
-            {
-                weekLabel: "Week 4 — Peak Wave (+7.5%)", days: [
-                    { title: "Day 1 (82.5%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "5", reps: "5", note: "82.5% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }] },
-                    { title: "Day 2 (92.5%)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "2", note: "92.5% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }] },
-                    { title: "Day 3 (97.5% PR)", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "1", reps: "1", note: "97.5%+ 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10" }, { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" }, { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8" }] },
-                ]
-            },
-            {
-                weekLabel: "Week 5 — Active Recovery", days: [
-                    { title: "Day 1", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "5", note: "50% 1RM" }, { id: "ex_26", name: "Crunch", sets: "3", reps: "20" }] },
-                    { title: "Day 2", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "5", note: "50% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "60s" }] },
-                    { title: "Day 3", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "50% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "15 min" }] },
-                ]
-            }
-        ]
     },
     {
         id: "powerbuilding-4day", title: "4-Day Powerbuilding", category: "Powerbuilding",
-        description: "Upper/Lower split with heavy strength days and hypertrophy-focused volume days.",
+        badge: "💎 Elite Performance",
+        description: "Upper/Lower split with alternating strength and hypertrophy days. Four days per week for serious development of strength and muscle.",
         difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Mon: Upper Strength", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "5", reps: "3", note: "Heavy" },
-                        { id: "ex_7", name: "Barbell Row", sets: "5", reps: "3", note: "Heavy" },
-                        { id: "ex_1", name: "Arnold Press", sets: "4", reps: "6" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" },
+                    title: "Monday — Upper Strength", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "Heavy compound, 85-90% 1RM" },
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "5-6", note: "Heavy horizontal pull" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "6-8", note: "Heavy press" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-10", note: "Weighted if possible" },
                     ]
                 },
                 {
-                    title: "Tue: Lower Strength", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "3", note: "Heavy" },
-                        { id: "ex_27", name: "Deadlift", sets: "4", reps: "3", note: "Heavy" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "8" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" },
+                    title: "Tuesday — Lower Strength", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "5", note: "Heavy quad compound" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hip hinge" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8", note: "Hamstring focus" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "10-12", note: "Hamstring isolation" },
                     ]
                 },
                 {
-                    title: "Thu: Upper Hypertrophy", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "10" },
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "15" },
+                    title: "Thursday — Upper Hypertrophy", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8-10", note: "Chest hypertrophy" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "4", reps: "10-12", note: "Lat width" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10-12", note: "Shoulder volume" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "12-15", note: "Triceps isolation" },
+                        { id: "ex_36", name: "EZ Curl", sets: "3", reps: "12-15", note: "Biceps isolation" },
                     ]
                 },
                 {
-                    title: "Fri: Lower Hypertrophy", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "10" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "4", reps: "10" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "20" },
+                    title: "Friday — Lower Hypertrophy", exercises: [
+                        { id: "ex_37", name: "Front Squat", sets: "4", reps: "8-10", note: "Quad and core focus" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "4", reps: "10-12", note: "Glute hypertrophy" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12-15", note: "Quad volume" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "15", note: "Calf development" },
                     ]
                 },
             ]
         }]
     },
 
-    {
-        id: "DELETE_ME", title: "5-Day PHAT (Advanced)", category: "Powerbuilding",
-        badge: "🏆 Gold Standard",
-        description: "Power Hypertrophy Adaptive Training. Two days of heavy power (RPE 8-9) followed by three days of hypertrophy (RPE 7-8). Ideal for strength and size.",
-        difficulty: "Advanced", weeks: 12, daysPerWeek: 4,
-        schedule: [{
-            weekLabel: "Standard Week", days: [
-                { title: "Day 1: Upper Power", exercises: [{ id: "ex_12", name: "Bench Press", sets: "3", reps: "5", note: "80-85% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "5", note: "85% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6", note: "75% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "6-8" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8" }] },
-                { title: "Day 2: Lower Power", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "5", note: "80-85% 1RM" }, { id: "ex_27", name: "Deadlift", sets: "2", reps: "5", note: "80% 1RM" }, { id: "ex_51", name: "Leg Press", sets: "2", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "10" }] },
-                { title: "Day 3: Chest/Arms Hyper", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }, { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12" }] },
-                { title: "Day 4: Back/Shoulders Hyper", exercises: [{ id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "12" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "12" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
-                { title: "Day 5: Lower Hypertrophy", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "12" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "20" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
-            ]
-        }]
-    },
-    {
-        id: "DELETE_ME", title: "6-Day Power PPL", category: "Powerbuilding",
-        description: "Push/Pull/Legs split with a Heavy/Light wave. Smash PRs (85-90%) in the first half of the week, build size in the second (70%). Follow progressive overload: +2.5kg per week.",
-        difficulty: "Advanced", weeks: 8, daysPerWeek: 6,
-        schedule: [{
-            weekLabel: "Standard Week", days: [
-                { title: "Day 1: Heavy Push", exercises: [{ id: "ex_12", name: "Bench Press", sets: "5", reps: "3-5", note: "85% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5", note: "80% 1RM" }, { id: "ex_28", name: "Dips", sets: "3", reps: "8-10" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "12" }] },
-                { title: "Day 2: Heavy Pull", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "3", note: "85% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "6", note: "80% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8-10" }] },
-                { title: "Day 3: Heavy Legs", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "5", reps: "3-5", note: "85% 1RM" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12" }] },
-                { title: "Day 4: Hypertrophy Push", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "12" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                { title: "Day 5: Hypertrophy Pull", exercises: [{ id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "12" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "15" }] },
-                { title: "Day 6: Hypertrophy Legs", exercises: [{ id: "ex_51", name: "Leg Press", sets: "4", reps: "15" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "20" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }] },
-            ]
-        }]
-    },
-    {
-        id: "DELETE_ME", title: "6-Day Elite Powerbuilding", category: "Powerbuilding",
-        badge: "💎 Elite Performance",
-        description: "Based on the 760kg Total Prep. 6-day split focusing on RPE (Rate of Perceived Exertion) and technical mastery. Balanced mix of high-volume main lifts and target accessory work.",
-        difficulty: "Advanced", weeks: 6, daysPerWeek: 6,
-        schedule: [{
-            weekLabel: "Standard Week", days: [
-                { title: "Day 1: Squat / Lower Body", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3-5", reps: "4-6", note: "75-83% 1RM / RPE 7" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12-15" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }] },
-                { title: "Day 2: Bench / Upper Body", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3-5", reps: "4-6", note: "75-83% 1RM / RPE 7" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "AMRAP" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-15" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                { title: "Day 3: Deadlift / Back", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3-5", reps: "4-6", note: "75-83% 1RM / RPE 7" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "6-8", note: "Horizontal Row" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10-15", note: "Vertical Row" }, { id: "ex_15", name: "Cable Crunch", sets: "3", reps: "15-20" }] },
-                { title: "Day 4: Shoulders & Arms", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "10-15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "6-8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }] },
-                { title: "Day 5: Technical Practice", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "6-7", note: "70% 1RM / RPE 6" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-7", note: "70% 1RM / No Leg Drive" }, { id: "ex_65", name: "Pull Ups", sets: "3", reps: "AMRAP" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "20" }] },
-                { title: "Day 6: Heavy Intensity", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "1-4", note: "Peak Intensity" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "1-4", note: "Peak Intensity" }, { id: "ex_27", name: "Deadlift", sets: "1", reps: "1-4", note: "Peak Intensity Target" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "10-15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "2", reps: "10-15" }] },
-            ]
-        }]
-    },
-
-    // ─── STRENGTH + HYPERTROPHY ────────────────────────
+    // ─── STRENGTH + HYPERTROPHY ──────────────────────────
     {
         id: "upper-lower-beginner", title: "Upper / Lower Split (Beginner)", category: "Strength + Hypertrophy",
-        badge: "⭐ Best for Beginners",
-        description: "Train every muscle group twice per week. Perfect step up from 3-day programs.",
-        difficulty: "Beginner", weeks: 6, daysPerWeek: 4,
+        description: "Perfect step up from 3-day full body programs. Train each muscle group twice per week with balanced strength and hypertrophy work.",
+        difficulty: "Beginner", weeks: 8, daysPerWeek: 4,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Mon: Upper A (Strength)", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5" },
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "5" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "2", reps: "12" },
-                        { id: "ex_66", name: "Push Press", sets: "2", reps: "12" },
+                    title: "Monday — Upper A", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "6-8", note: "Heavy compound" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "6-8", note: "Horizontal pull" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8", note: "Shoulder compound" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "10", note: "Vertical pull" },
                     ]
                 },
                 {
-                    title: "Tue: Lower A (Strength)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "5" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" },
+                    title: "Tuesday — Lower A", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "6-8", note: "Heavy quad compound" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8-10", note: "Hamstring focus" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "10-12", note: "Hamstring isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "3", reps: "12-15", note: "Calf work" },
                     ]
                 },
                 {
-                    title: "Thu: Upper B (Hypertrophy)", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "10" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "10" },
-                        { id: "ex_39", name: "Hammer Curl", sets: "2", reps: "12" },
-                        { id: "ex_28", name: "Dips", sets: "2", reps: "AMRAP" },
+                    title: "Thursday — Upper B", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8-10", note: "Upper chest" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "10-12", note: "Back thickness" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10-12", note: "Dumbbell press variation" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "3", reps: "12-15", note: "Delt isolation" },
                     ]
                 },
                 {
-                    title: "Fri: Lower B (Hypertrophy)", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "10" },
-                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "12" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" },
+                    title: "Friday — Lower B", exercises: [
+                        { id: "ex_37", name: "Front Squat", sets: "3", reps: "8-10", note: "Quad and anterior core" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "10-12", note: "Glute focus" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12-15", note: "Quad volume" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
                     ]
                 },
             ]
@@ -623,48 +347,42 @@ const _rawPrograms: Program[] = [
     },
     {
         id: "upper-lower-intermediate", title: "Upper / Lower Split (Intermediate)", category: "Strength + Hypertrophy",
-        badge: "🔥 Most Popular",
-        description: "Higher volume Upper/Lower with wave loading on main lifts. Best intermediate program for strength and size.",
+        description: "Higher volume Upper/Lower with wave loading on main lifts. Best intermediate program for simultaneous strength and size development.",
         difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Mon: Upper Strength", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "4-6" },
-                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "4-6" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-12" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" },
+                    title: "Monday — Upper Strength", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "Heavy compound 85% 1RM" },
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "5-6", note: "Heavy pull" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "6-8", note: "Heavy press" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-10", note: "Weighted pull" },
                     ]
                 },
                 {
-                    title: "Tue: Lower Strength", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "4-6" },
-                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "4-6" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "8-10" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" },
+                    title: "Tuesday — Lower Strength", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "5", note: "Heavy quad work" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hinge" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8", note: "Hamstring accessory" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "12", note: "Calf work" },
                     ]
                 },
                 {
-                    title: "Thu: Upper Hypertrophy", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "8-12" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "15" },
-                        { id: "ex_28", name: "Dips", sets: "2", reps: "AMRAP" },
+                    title: "Thursday — Upper Hypertrophy", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8-10", note: "Chest volume" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "4", reps: "10-12", note: "Lat width" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10-12", note: "Shoulder volume" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "12-15", note: "Triceps" },
+                        { id: "ex_36", name: "EZ Curl", sets: "3", reps: "12-15", note: "Biceps" },
                     ]
                 },
                 {
-                    title: "Fri: Lower Hypertrophy", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "10-12" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "4", reps: "10" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "12-15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" },
-                        { id: "ex_34", name: "Dumbbell Lunge", sets: "3", reps: "10 each" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "20" },
+                    title: "Friday — Lower Hypertrophy", exercises: [
+                        { id: "ex_37", name: "Front Squat", sets: "4", reps: "8-10", note: "Quad and core" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "4", reps: "10-12", note: "Glute development" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12-15", note: "Quad volume" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "Hamstring isolation" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
                     ]
                 },
             ]
@@ -672,421 +390,703 @@ const _rawPrograms: Program[] = [
     },
     {
         id: "ppl-6day", title: "Reddit PPL (6-Day)", category: "Strength + Hypertrophy",
-        badge: "🏆 Gold Standard",
-        description: "Legendary Reddit PPL: strength progression on main lifts + bodybuilding accessories. Trusted by hundreds of thousands.",
+        badge: "🔥 Most Popular",
+        description: "The legendary Reddit PPL program. 6 days per week with Push/Pull/Legs split. High volume, proven results. Not for the faint-hearted.",
         difficulty: "Intermediate", weeks: 8, daysPerWeek: 6,
         schedule: [{
             weekLabel: "Standard Week", days: [
                 {
-                    title: "Mon: Push Strength", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "3-5", note: "+2.5 kg when you hit all 5 reps" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8" },
-                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-12" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15-20" },
-                        { id: "ex_66", name: "Push Press", sets: "3", reps: "10-15" },
-                        { id: "ex_28", name: "Dips", sets: "3", reps: "AMRAP" },
+                    title: "Monday — Push A", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "Heavy compound" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "6", note: "Upper chest" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "6", note: "Compound press" },
+                        { id: "ex_55", name: "Machine Chest Press", sets: "3", reps: "8-10", note: "Machine push" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "3", reps: "15", note: "Isolation" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "15", note: "Isolation" },
                     ]
                 },
                 {
-                    title: "Tue: Pull Strength", exercises: [
-                        { id: "ex_27", name: "Deadlift", sets: "4", reps: "3-5", note: "+5 kg when you hit all 5 reps" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "6-8" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "AMRAP" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-15" },
-                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "10-15" },
+                    title: "Tuesday — Pull A", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy compound" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-10", note: "Vertical pull" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "6", note: "Horizontal pull" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "10", note: "Lat width" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Biceps" },
+                        { id: "ex_20", name: "Cable Rear Delt Row", sets: "3", reps: "15", note: "Rear delts" },
                     ]
                 },
                 {
-                    title: "Wed: Legs Strength", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "3-5", note: "+2.5 kg when you hit all 5 reps" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "6-8" },
-                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-15" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "5", reps: "8-12" },
+                    title: "Wednesday — Legs A", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "5", note: "Heavy quad compound" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "8", note: "Glute focus" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8", note: "Hamstring hinge" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "12", note: "Quad isolation" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "Hamstring isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "5", reps: "12", note: "Calf development" },
                     ]
                 },
                 {
-                    title: "Thu: Push Hypertrophy", exercises: [
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "10-12" },
-                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "10-12" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15-20" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15-20" },
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-15" },
+                    title: "Thursday — Push B", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "6", note: "Heavy incline" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "6", note: "Triceps focus" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "8", note: "Dumbbell variation" },
+                        { id: "ex_29", name: "Dumbbell Chest Fly", sets: "3", reps: "10", note: "Chest isolation" },
+                        { id: "ex_18", name: "Cable Front Raise", sets: "3", reps: "15", note: "Front delt" },
+                        { id: "ex_60", name: "Overhead Cable Triceps Extension From Upper Position", sets: "3", reps: "15", note: "Long head triceps" },
                     ]
                 },
                 {
-                    title: "Fri: Pull Hypertrophy", exercises: [
-                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "AMRAP" },
-                        { id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "10-12" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10-15" },
-                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10-15" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-15" },
+                    title: "Friday — Pull B", exercises: [
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "5", note: "Heavy horizontal pull" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "4", reps: "8", note: "Heavy lat work" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "3", reps: "10", note: "Machine variation" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "10", note: "Back thickness" },
+                        { id: "ex_36", name: "EZ Curl", sets: "3", reps: "10", note: "Biceps mass" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delt" },
                     ]
                 },
                 {
-                    title: "Sat: Legs Hypertrophy", exercises: [
-                        { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "10-12" },
-                        { id: "ex_51", name: "Leg Press", sets: "4", reps: "10-15" },
-                        { id: "ex_70", name: "Romanian Deadlift", sets: "4", reps: "10-12" },
-                        { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15-20" },
-                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15-20" },
-                        { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "5", reps: "15-20" },
+                    title: "Saturday — Legs B", exercises: [
+                        { id: "ex_37", name: "Front Squat", sets: "4", reps: "6", note: "Quad focus" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "8", note: "Heavy leg press" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "10", note: "Glute pump" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "4", reps: "12", note: "Hamstring volume" },
+                        { id: "ex_49", name: "Leg Extension One Leg", sets: "3", reps: "15", note: "Quad unilateral" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "5", reps: "15", note: "Calf volume" },
+                    ]
+                },
+            ]
+        }]
+    },
+
+    // ─── FULL BODY ──────────────────────────────────────
+    {
+        id: "full-body-3x", title: "Full Body 3x/Week", category: "Bodybuilding",
+        badge: "⭐ Best for Beginners",
+        description: "Three full-body sessions per week for maximum efficiency. Perfect for beginners and those with limited time. Compounds + isolation.",
+        difficulty: "Beginner", weeks: 8, daysPerWeek: 3,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Day 1 — Push Focus", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "6-8", note: "Full body compound" },
+                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "6-8", note: "Horizontal push" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8-10", note: "Vertical push" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "Hamstring work" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "2", reps: "15", note: "Quick triceps" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Pull Focus", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Full body hinge" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-10", note: "Vertical pull" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8", note: "Horizontal pull" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "3", reps: "15", note: "Calf work" },
+                        { id: "ex_36", name: "EZ Curl", sets: "2", reps: "15", note: "Quick biceps" },
+                    ]
+                },
+                {
+                    title: "Day 3 — Accessory Focus", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "8-10", note: "Moderate weight, higher volume" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8-10", note: "Chest volume" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "12", note: "Lat work" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_15", name: "Cable Crunch", sets: "3", reps: "20", note: "Core work" },
+                    ]
+                },
+            ]
+        }]
+    },
+
+    // ─── SPECIALIZED ────────────────────────────────────
+    {
+        id: "bench-spec-2x", title: "Bench Specialization (2x/week)", category: "Powerlifting",
+        description: "Targeted bench press program for those looking to break through plateaus. High frequency bench work with accessory exercises.",
+        difficulty: "Intermediate", weeks: 6, daysPerWeek: 4,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Monday — Heavy Bench", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "5", reps: "3", note: "Heavy singles/doubles, 90%+ 1RM" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "6", note: "Upper chest accessory" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "8", note: "Triceps strength" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delts for stability" },
+                    ]
+                },
+                {
+                    title: "Wednesday — Volume Bench", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "6", note: "Moderate weight, volume" },
+                        { id: "ex_14", name: "Cable Chest Press", sets: "3", reps: "10", note: "Machine press for volume" },
+                        { id: "ex_55", name: "Machine Chest Press", sets: "3", reps: "12", note: "Constant tension" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "15", note: "Triceps endurance" },
+                    ]
+                },
+                {
+                    title: "Friday — Intensity Bench", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "2", note: "True intensity, singles at 95%+" },
+                        { id: "ex_12", name: "Bench Press", sets: "2", reps: "3", note: "Back-off sets" },
+                        { id: "ex_43", name: "Incline Bench SkullCrushers", sets: "3", reps: "8-10", note: "Heavy triceps work" },
+                        { id: "ex_47", name: "Lateral Raise Machine", sets: "3", reps: "15", note: "Side delt specialization" },
                     ]
                 },
             ]
         }]
     },
     {
-        id: "intermediate-4day-cycle", title: "4-Day Intermediate Cycle", category: "Powerlifting",
-        description: "8-week linear progression wave. Gradually tapering reps from 5 to 2 while increasing intensity, ending in a 1RM test.",
+        id: "fst-7-split", title: "FST-7 Bodybuilding Split", category: "Bodybuilding",
+        badge: "🔥 Most Popular",
+        description: "FST-7 (Faszien-SToffwechsel-7) — German high-volume training protocol. End every muscle group with 7 sets of 8-12 reps at 30-40% 1RM to maximize pump and hypertrophy.",
         difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
-        schedule: [
-            {
-                weekLabel: "Week 1", days: [
-                    { title: "Day 1: Heavy Bench", exercises: [{ id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "72.5% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8", note: "Light" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "2", reps: "8-12", note: "Light" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "8-12", note: "Medium" }] },
-                    { title: "Day 2: Heavy Squat", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "5", note: "72.5% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_27", name: "Deadlift", sets: "4", reps: "5", note: "80% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Medium" }] },
-                    { title: "Day 3: Heavy OHP", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "5", note: "42.5% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8", note: "Medium (60% 1RM)" }, { id: "ex_7", name: "Barbell Row", sets: "2", reps: "8-12", note: "Medium" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "8-12", note: "Medium" }] },
-                    { title: "Day 4: Heavy Deadlift", exercises: [{ id: "ex_27", name: "Deadlift", sets: "4", reps: "5", note: "92.5% 1RM (Heavy)" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "2", reps: "8-12", note: "Medium" }, { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8", note: "Medium (60% 1RM)" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8-12", note: "Light" }] }
-                ]
-            },
-            {
-                weekLabel: "Week 4", days: [
-                    { title: "Day 1: Heavy Bench", exercises: [{ id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "80% 1RM" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8", note: "Light" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "2", reps: "8-12", note: "Light" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "8-12", note: "Medium" }] },
-                    { title: "Day 2: Heavy Squat", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "5", note: "80% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_27", name: "Deadlift", sets: "4", reps: "5", note: "85% 1RM" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Medium" }] },
-                    { title: "Day 3: Heavy OHP", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "5", note: "50% 1RM" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8", note: "Medium (65% 1RM)" }, { id: "ex_7", name: "Barbell Row", sets: "2", reps: "8-12", note: "Medium" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "8-12", note: "Medium" }] },
-                    { title: "Day 4: Heavy Deadlift", exercises: [{ id: "ex_27", name: "Deadlift", sets: "4", reps: "5", note: "105% 1RM (Heavy)" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "2", reps: "8-12", note: "Medium" }, { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8", note: "Medium (65% 1RM)" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8-12", note: "Light" }] }
-                ]
-            },
-            {
-                weekLabel: "Week 8 (Test)", days: [
-                    { title: "Day 1", exercises: [{ id: "ex_12", name: "Bench Press", sets: "1", reps: "1", note: "Test 1RM" }] },
-                    { title: "Day 2", exercises: [{ id: "ex_77", name: "Squat", sets: "1", reps: "1", note: "Test 1RM" }] },
-                    { title: "Day 3", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "1", reps: "1", note: "Test 1RM" }] },
-                    { title: "Day 4", exercises: [{ id: "ex_27", name: "Deadlift", sets: "1", reps: "1", note: "Test 1RM" }] }
-                ]
-            }
-        ]
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Monday — Chest + FST-7", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8", note: "Compound foundation" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "10", note: "Upper chest" },
+                        { id: "ex_29", name: "Dumbbell Chest Fly", sets: "3", reps: "12", note: "Stretch work" },
+                        { id: "ex_54", name: "Machine Chest Fly", sets: "7", reps: "8-12", note: "FST-7 finisher @ 30-40%" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "7", reps: "8-12", note: "FST-7 triceps finisher" },
+                    ]
+                },
+                {
+                    title: "Tuesday — Back + FST-7", exercises: [
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8", note: "Heavy compound row" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "10", note: "Vertical pull" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "12", note: "Lat width" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "7", reps: "8-12", note: "FST-7 lat finisher" },
+                        { id: "ex_36", name: "EZ Curl", sets: "7", reps: "8-12", note: "FST-7 biceps finisher" },
+                    ]
+                },
+                {
+                    title: "Thursday — Shoulders + Arms + FST-7", exercises: [
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "4", reps: "8", note: "Compound shoulder" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10", note: "Dumbbell variation" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "7", reps: "8-12", note: "FST-7 lateral delt finisher" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "7", reps: "8-12", note: "FST-7 biceps finisher" },
+                    ]
+                },
+                {
+                    title: "Friday — Legs + FST-7", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "8", note: "Heavy quad compound" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10", note: "Hamstring emphasis" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12", note: "Quad volume" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "7", reps: "8-12", note: "FST-7 quad finisher" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "7", reps: "8-12", note: "FST-7 calf finisher" },
+                    ]
+                },
+            ]
+        }]
+    },
+
+    // ─── MORE BODYBUILDING ──────────────────────────────
+    {
+        id: "ppl-4day", title: "Push / Pull / Legs (4-Day)", category: "Bodybuilding",
+        badge: "🔥 Most Popular",
+        description: "Classic PPL split in 4 days — each muscle group hit twice per week with optimal volume. Best bang-for-buck split for intermediate lifters.",
+        difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Monday — Push A", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "6-8", note: "Heavy compound" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8-10", note: "Upper chest" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8", note: "Compound press" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "3", reps: "12-15", note: "Lateral delt isolation" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "12-15", note: "Triceps isolation" },
+                        { id: "ex_25", name: "Crossbody Cable Triceps Extension", sets: "2", reps: "15", note: "Triceps finish" },
+                    ]
+                },
+                {
+                    title: "Tuesday — Pull A", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy compound hinge" },
+                        { id: "ex_65", name: "Pull Ups", sets: "4", reps: "8-10", note: "Vertical pull, weighted if possible" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8", note: "Horizontal pull" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "12", note: "Lat width" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Brachialis and bicep" },
+                        { id: "ex_20", name: "Cable Rear Delt Row", sets: "2", reps: "15", note: "Rear delts" },
+                    ]
+                },
+                {
+                    title: "Thursday — Push B", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8", note: "Heavy incline" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "8-10", note: "Triceps focus" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10", note: "Dumbbell variation" },
+                        { id: "ex_47", name: "Lateral Raise Machine", sets: "3", reps: "15", note: "Machine lateral raise" },
+                        { id: "ex_60", name: "Overhead Cable Triceps Extension From Upper Position", sets: "3", reps: "15", note: "Long head triceps" },
+                    ]
+                },
+                {
+                    title: "Friday — Pull B", exercises: [
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "6", note: "Heavy row" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "4", reps: "10", note: "Machine lat work" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "12", note: "Mid-back thickness" },
+                        { id: "ex_36", name: "EZ Curl", sets: "3", reps: "12", note: "Biceps mass builder" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delt isolation" },
+                    ]
+                },
+            ]
+        }]
     },
     {
-        id: "beginner-2x2", title: "Beginner Level 2x2 Full Body", category: "Bodybuilding",
+        id: "chest-back-arms-legs", title: "Chest / Back / Arms / Legs (4-Day)", category: "Bodybuilding",
+        description: "Classic 4-day split popularized by fitness influencers. One major muscle group per day with targeted isolation work.",
+        difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Monday — Chest", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "6-8", note: "Heavy compound" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8-10", note: "Upper chest" },
+                        { id: "ex_29", name: "Dumbbell Chest Fly", sets: "3", reps: "12", note: "Stretch and squeeze" },
+                        { id: "ex_14", name: "Cable Chest Press", sets: "3", reps: "12", note: "Constant tension" },
+                        { id: "ex_63", name: "Pec Deck", sets: "3", reps: "15", note: "Final chest isolation" },
+                    ]
+                },
+                {
+                    title: "Tuesday — Back", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "4", reps: "5", note: "Heavy compound" },
+                        { id: "ex_65", name: "Pull Ups", sets: "4", reps: "8-10", note: "Vertical pull" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8", note: "Heavy horizontal pull" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "12", note: "Lat width" },
+                        { id: "ex_45", name: "Kroc Row", sets: "3", reps: "12", note: "Unilateral back work" },
+                    ]
+                },
+                {
+                    title: "Thursday — Arms", exercises: [
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "4", reps: "8", note: "Compound shoulder" },
+                        { id: "ex_36", name: "EZ Curl", sets: "4", reps: "10", note: "Biceps mass" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Brachialis focus" },
+                        { id: "ex_43", name: "Incline Bench SkullCrushers", sets: "3", reps: "10", note: "Heavy triceps" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "15", note: "Triceps finish" },
+                        { id: "ex_44", name: "Incline Dumbbell Curl", sets: "3", reps: "12", note: "Long head bicep" },
+                    ]
+                },
+                {
+                    title: "Friday — Legs", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "6-8", note: "Heavy quad compound" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8-10", note: "Hamstring focus" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "10-12", note: "Glute isolation" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "15", note: "Hamstring isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "15", note: "Calf development" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "bro-split-5day", title: "5-Day Bro Split", category: "Bodybuilding",
+        description: "Classic bodybuilding split from the golden era. Train one muscle group per day with high volume and maximum pump. Chest, Back, Shoulders, Arms, Legs.",
+        difficulty: "Intermediate", weeks: 8, daysPerWeek: 5,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Monday — Chest", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8", note: "Compound foundation" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "10", note: "Upper chest" },
+                        { id: "ex_55", name: "Machine Chest Press", sets: "3", reps: "10", note: "Machine press" },
+                        { id: "ex_29", name: "Dumbbell Chest Fly", sets: "3", reps: "12", note: "Chest isolation" },
+                        { id: "ex_14", name: "Cable Chest Press", sets: "3", reps: "12", note: "Cable tension" },
+                        { id: "ex_63", name: "Pec Deck", sets: "4", reps: "15", note: "Final pump work" },
+                    ]
+                },
+                {
+                    title: "Tuesday — Back", exercises: [
+                        { id: "ex_65", name: "Pull Ups", sets: "4", reps: "8-10", note: "Vertical pull" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hinge" },
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8", note: "Horizontal pull" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "3", reps: "12", note: "Lat width" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "12", note: "Back thickness" },
+                        { id: "ex_21", name: "Cable Row Seated Narrow Grip", sets: "3", reps: "15", note: "Lower trap focus" },
+                    ]
+                },
+                {
+                    title: "Wednesday — Shoulders", exercises: [
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "4", reps: "6-8", note: "Heavy compound" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "8", note: "Dumbbell variation" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "4", reps: "15", note: "Lateral delt volume" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delts" },
+                        { id: "ex_18", name: "Cable Front Raise", sets: "3", reps: "15", note: "Front delt" },
+                        { id: "ex_47", name: "Lateral Raise Machine", sets: "3", reps: "15", note: "Machine finish" },
+                    ]
+                },
+                {
+                    title: "Thursday — Arms", exercises: [
+                        { id: "ex_36", name: "EZ Curl", sets: "4", reps: "10", note: "Biceps mass" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Brachialis" },
+                        { id: "ex_64", name: "Preacher Curl Barbell", sets: "3", reps: "10", note: "Strict bicep curl" },
+                        { id: "ex_43", name: "Incline Bench SkullCrushers", sets: "4", reps: "8-10", note: "Heavy triceps" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "12", note: "Triceps isolation" },
+                        { id: "ex_25", name: "Crossbody Cable Triceps Extension", sets: "3", reps: "15", note: "Triceps finish" },
+                    ]
+                },
+                {
+                    title: "Friday — Legs", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "8", note: "Heavy quad compound" },
+                        { id: "ex_37", name: "Front Squat", sets: "3", reps: "8", note: "Quad and anterior core" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10", note: "Hamstring emphasis" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "4", reps: "10-12", note: "Glute focus" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_74", name: "Single Leg Leg Curl", sets: "3", reps: "15", note: "Unilateral hamstring" },
+                        { id: "ex_71", name: "Seated Calf Raise Barbell", sets: "4", reps: "15", note: "Calf work" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "upper-lower-3day", title: "Upper / Lower (3-Day)", category: "Strength + Hypertrophy",
         badge: "⭐ Best for Beginners",
-        description: "4-week undulating program, alternating heavy and light/medium days for a balanced full-body burn twice a week.",
-        difficulty: "Beginner", weeks: 4, daysPerWeek: 2,
-        schedule: [
-            {
-                weekLabel: "Block 1", days: [
-                    { title: "Workout 1 (Lower/Shoulders)", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "6-8", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8", note: "Light" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "12-15", note: "Light" }, { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "6-8", note: "Light" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "4", reps: "8-12", note: "Heavy" }] },
-                    { title: "Workout 2 (Chest/Back/Arms)", exercises: [{ id: "ex_12", name: "Bench Press", sets: "3", reps: "8-12", note: "Medium" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12", note: "Medium" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_66", name: "Push Press", sets: "4", reps: "8-12", note: "Heavy" }] }
-                ]
-            },
-            {
-                weekLabel: "Block 2", days: [
-                    { title: "Workout 1 (Lower/Shoulders)", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "6-8", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8", note: "Light" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "12-15", note: "Light" }, { id: "ex_70", name: "Romanian Deadlift", sets: "4", reps: "6-8", note: "Heavy" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "8-12", note: "Medium" }] },
-                    { title: "Workout 2 (Chest/Back/Arms)", exercises: [{ id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12", note: "Heavy" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "8-12", note: "Heavy" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8-12", note: "Heavy" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "8-12", note: "Medium" }] }
-                ]
-            }
-        ]
-    },
-    {
-        id: "heavy-3day-bb", title: "Heavy 3-Day Bodybuilding", category: "Bodybuilding",
-        description: "Classic 3-day split: Push/Pull heavy mix. Week by week volume increases with heavy weights.",
-        difficulty: "Advanced", weeks: 4, daysPerWeek: 3,
-        schedule: [
-            {
-                weekLabel: "Week 1", days: [
-                    { title: "Monday: Chest/Back/Arms", exercises: [{ id: "ex_12", name: "Bench Press", sets: "5", reps: "8-12", note: "Heavy" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Light" }, { id: "ex_1", name: "Arnold Press", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12-15", note: "Light" }] },
-                    { title: "Wednesday: Quads/Shoulders", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "5", reps: "6-8", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "5", reps: "6-8", note: "Heavy" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "8-12", note: "Medium" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "5", reps: "8-12", note: "Heavy" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "8-12", note: "Medium" }] },
-                    { title: "Friday: Chest/Back/Calves", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8", note: "Light" }, { id: "ex_12", name: "Bench Press", sets: "5", reps: "8-12", note: "Heavy" }, { id: "ex_7", name: "Barbell Row", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12-15", note: "Light" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "12-15", note: "Light" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8-12", note: "Medium" }] }
-                ]
-            },
-            {
-                weekLabel: "Week 2", days: [
-                    { title: "Monday", exercises: [{ id: "ex_12", name: "Bench Press", sets: "7", reps: "8-12", note: "Heavy" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "7", reps: "8-12", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_39", name: "Hammer Curl", sets: "4", reps: "12-15", note: "Light" }] },
-                    { title: "Wednesday", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "5", reps: "6-8", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "7", reps: "6-8", note: "Heavy" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "6", reps: "8-12", note: "Heavy" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "5", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "5", reps: "8-12", note: "Heavy" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "5", reps: "8-12", note: "Medium" }] },
-                    { title: "Friday", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8", note: "Light" }, { id: "ex_12", name: "Bench Press", sets: "7", reps: "8-12", note: "Heavy" }, { id: "ex_7", name: "Barbell Row", sets: "7", reps: "8-12", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "12-15", note: "Medium" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "5", reps: "12-15", note: "Medium" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "5", reps: "8-12", note: "Medium" }] }
-                ]
-            }
-        ]
-    },
-    {
-        id: "heavy-2x2-bb", title: "Men's Heavy 2x2 Bodybuilding", category: "Bodybuilding",
-        description: "Intense 4-day (2 on, 1 off) style or 2x/week heavy volume emphasizing absolute load.",
-        difficulty: "Advanced", weeks: 4, daysPerWeek: 4,
-        schedule: [
-            {
-                weekLabel: "Block 1", days: [
-                    { title: "Workout 1", exercises: [{ id: "ex_12", name: "Bench Press", sets: "8", reps: "8-12", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "6-8", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "6-8", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "6", reps: "8-12", note: "Heavy" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "8", reps: "8-12", note: "Heavy" }] },
-                    { title: "Workout 2", exercises: [{ id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12", note: "Medium" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8-12", note: "Medium" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "6", reps: "8-12", note: "Heavy" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "6", reps: "12-15", note: "Heavy" }] },
-                    { title: "Workout 3", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12", note: "Medium" }, { id: "ex_1", name: "Arnold Press", sets: "8", reps: "6-8", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "8", reps: "6-8", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12", note: "Medium" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "8-12", note: "Medium" }] },
-                    { title: "Workout 4", exercises: [{ id: "ex_3", name: "Barbell Biceps Curl", sets: "6", reps: "8-12", note: "Heavy" }, { id: "ex_1", name: "Arnold Press", sets: "6", reps: "8-12", note: "Heavy" }, { id: "ex_39", name: "Hammer Curl", sets: "6", reps: "8-12", note: "Heavy" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "8-12", note: "Medium" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12-15", note: "Medium" }] }
-                ]
-            }
-        ]
-    },
-    {
-        id: "5day-gym-split", title: "5x Gym Per Week Split", category: "Bodybuilding",
-        badge: "🔥 Most Popular",
-        description: "Classic 5-day split hitting everything effectively. Mon: Chest/Tri/Shoulder, Tue: Back/Bi/Forearm, Wed: Leg/Core, Thu: Chest/Tri/Shoulder, Fri: Back/Bi/Forearm.",
-        difficulty: "All Levels", weeks: 4, daysPerWeek: 4,
-        schedule: [
-            {
-                weekLabel: "Standard Week", days: [
-                    { title: "Monday: Chest, Triceps, Shoulders", exercises: [{ id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                    { title: "Tuesday: Back, Biceps, Forearms", exercises: [{ id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "10-12" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8-10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-12" }, { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12-15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15-20" }] },
-                    { title: "Wednesday: Legs and Core", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "4", reps: "8-10" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-15" }, { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10-12" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "20" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "60s" }] },
-                    { title: "Thursday: Chest, Triceps, Shoulders", exercises: [{ id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "15" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12-15" }] },
-                    { title: "Friday: Back, Biceps, Forearms", exercises: [{ id: "ex_65", name: "Pull Ups", sets: "4", reps: "AMRAP" }, { id: "ex_7", name: "Barbell Row", sets: "4", reps: "10-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "10-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12-15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }] }
-                ]
-            }
-        ]
-    },
-    {
-        id: "bench-spec-2x", title: "Bench Specialization (2x/week)", category: "Powerlifting",
-        description: "9-week bench peaking program. 2 bench days per week. Light squat/deadlift maintenance.",
-        difficulty: "Advanced", weeks: 9, daysPerWeek: 3,
-        schedule: [
-            { weekLabel: "Week 1", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2 / 4", reps: "3 / 2", note: "70% / 80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6-8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Don't overdo volume" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "4", reps: "8", note: "65%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 2", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "1/1/1/2/1", reps: "3/3/2/3/2", note: "70%/80%/85%/85%/90%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "4" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "4", reps: "4", note: "72%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 3", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/1/1", reps: "3/3/2/1", note: "65%/75%/85%/90% with 1s Pause" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "4" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/3", reps: "3/3/2", note: "70%/80%/85%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 4", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/3/3", reps: "3/3/3", note: "72%/77%/82%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "4" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "12" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/3/3", reps: "3/3/2", note: "70%/82%/85%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 5", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "3/3/5", reps: "3/3/3", note: "72%/77%/82%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "4" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/5", reps: "3/4", note: "75%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" } ] }
-            ]},
-            { weekLabel: "Week 6", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/4", reps: "3/3/2", note: "70%/75%/80% with Pause + Bands" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/1", reps: "3/1/1", note: "70%/80%/90% with Pause" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8" } ] }
-            ]},
-            { weekLabel: "Week 7", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/3", note: "70%/75% + Bands" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "4" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/3/3/2", reps: "3/3/1/2", note: "70%/75%/85% (Pause)/80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 8", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "1/1/1/1", reps: "3/3/1/1", note: "70%/75%/85%/92% with Pause" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/1/2", reps: "3/2/1", note: "70%/80%/85%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 9 (Peak)", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "1/1/1/1/1", reps: "3/2/2/1/1", note: "70%/80%/85%/92%/102% (PR)" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_27", name: "Deadlift", sets: "3", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/2", note: "70%/80% with Pause" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]}
-        ]
-    },
-    {
-        id: "bench-spec-3x", title: "Bench Specialization (3x/week)", category: "Powerlifting",
-        description: "11-week intensive bench program. High frequency.",
-        difficulty: "Advanced", weeks: 11, daysPerWeek: 3,
-        schedule: [
-            { weekLabel: "Week 1", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2 / 4", reps: "4 / 2", note: "70% / 80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "4", reps: "8", note: "60%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5", note: "No Failure!" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "4", reps: "4", note: "75%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 2", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "1/2/4", reps: "5/4/2", note: "65%/75%/82%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/2/2/2/2", reps: "4/3/2/1/2/3", note: "70%/80%/85%/90%/85%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/2", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 3", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/3", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/2/2/2/1/1", reps: "4/4/3/2/3/4/5", note: "65%/75%/80%/85%/80%/75%/65%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/2", note: "70%/80% with Pause 1s" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 4", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/5", reps: "3/2", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/3/2", reps: "3/2/1/2", note: "70%/80%/90%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/5", reps: "4/3/2", note: "65%/75%/82%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 5", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/5", reps: "4/3/2", note: "65%/75%/80% + Bands" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/6", reps: "3/3", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/3/2/1", reps: "3/3/2/3/6", note: "70%/80%/90%/80%/70%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 6", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/5", reps: "4/3/2", note: "65%/75%/85%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "3/4", reps: "3/3", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/4/1", reps: "3/2/1/6", note: "70%/82%/90%/70%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 7", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "4/2", note: "72%/85%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/3/2", reps: "3/2/2", note: "70%/80%/80% with Pause" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/3/2", reps: "3/2/1/2", note: "72%/80%/85%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 8", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/5", reps: "3/2", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/2", note: "70%/75% + Bands" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "1/1/1/1", reps: "3/2/1/1", note: "70%/80%/90%/95% Test (PR)" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 9", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/3", reps: "3/2/1", note: "65%/75%/85%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/3", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/2/2/3", reps: "3/2/1/2", note: "70%/80%/90%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 10", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "4/2", note: "70%/80%" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/3/1", reps: "3/1/6", note: "70%/80% (Pause)/70%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "4/2", note: "70%/75% + Bands" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]},
-            { weekLabel: "Week 11 (Peak)", days: [
-                { title: "Monday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "2/4", reps: "3/2", note: "70%/75%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Wednesday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "4", reps: "3", note: "70%" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] },
-                { title: "Friday", exercises: [ { id: "ex_12", name: "Bench Press", sets: "1/1/1/1/1", reps: "3/2/2/1/1", note: "70%/80%/85%/92%/102% (PR)" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15" } ] }
-            ]}
-        ]
-    },
-    {
-        id: "adamt-bench", title: "Adam T's Bench Program", category: "Powerlifting",
-        description: "Intense bench block focused on heavy doubles and varying grips.",
-        difficulty: "Advanced", weeks: 4, daysPerWeek: 3,
-        schedule: [
-            {
-                weekLabel: "Standard Week", days: [
-                    { title: "Day 1: Heavy Comp", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "2", note: "85% RPE 8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8" }, { id: "ex_66", name: "Push Press", sets: "3", reps: "15" }] },
-                    { title: "Day 2: Close Grip", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "5", note: "RPE 7" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "6" }] },
-                    { title: "Day 3: Paused", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "3", note: "RPE 7.5" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] }
-                ]
-            }
-        ]
-    },
-    {
-        id: "sam-sulek-4day", title: "Sam Sulek 4-Day Split", category: "Bodybuilding",
-        badge: "🔥 Most Popular",
-        description: "High intensity, high effort bro split popularized by Sam Sulek. Push, Pull, Legs, Arms. Go heavy, train to failure.",
-        difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
-        schedule: [
-            {
-                weekLabel: "Standard Flow", days: [
-                    { title: "Day 1: Chest, Triceps, Shoulders", exercises: [{ id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12", note: "Failure" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-12", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12-15", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "10-12", note: "Failure" }] },
-                    { title: "Day 2: Back, Biceps", exercises: [{ id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12", note: "Failure" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-12", note: "Failure" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "12-15", note: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-12", note: "Failure" }] },
-                    { title: "Day 3: Legs", exercises: [{ id: "ex_41", name: "Hip Thrust", sets: "4", reps: "10-12", note: "Failure" }, { id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8-12", note: "Failure" }, { id: "ex_27", name: "Deadlift", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "3", reps: "12-15", note: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12-15", note: "Failure" }] },
-                    { title: "Day 4: Shoulders, Chest, Back", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12", note: "Failure" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12-15", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12", note: "Failure" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-12", note: "Failure" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "12-15", note: "Failure" }] }
-                ]
-            }
-        ]
-    },
-    {
-        id: "pana-powerbuilding", title: "Pana Powerbuilding", category: "Powerlifting",
-        description: "6-day powerbuilding by French Champion Panagiotis Tarinidis. Focuses on heavy SBD strength and aesthetic hypertrophy. 3 weeks Accumulation, 3 weeks Peaking.",
-        difficulty: "Advanced", weeks: 6, daysPerWeek: 6,
-        schedule: [
-            { weekLabel: "Week 1 (Accumulation)", days: [
-                { title: "Day 1: S/B Volume", exercises: [{ id: "ex_77", name: "Squat", sets: "4", reps: "6", note: "75% / RPE 7" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "6", note: "75% / RPE 7" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 2: Deadlift & Heavy Bench", exercises: [{ id: "ex_27", name: "Deadlift", sets: "4", reps: "6", note: "75% / RPE 7" }, { id: "ex_1", name: "Arnold Press", sets: "1/4", reps: "1/3", note: "90% single, then 85% backoff" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 3: Shoulders & Arms", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "15" }] },
-                { title: "Day 4: Practice S/B", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "6", note: "70% Light" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "6", note: "70% Light" }] },
-                { title: "Day 6: Heavy SBD", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "4", note: "RPE 7-8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "4", note: "RPE 7-8" }, { id: "ex_27", name: "Deadlift", sets: "3", reps: "4", note: "RPE 7-8" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }] },
-                { title: "Day 7 (Optional): Upper Body", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] }
-            ]},
-            { weekLabel: "Week 2 (Accumulation)", days: [
-                { title: "Day 1: S/B Volume", exercises: [{ id: "ex_77", name: "Squat", sets: "4", reps: "5", note: "78% / RPE 8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5", note: "78% / RPE 8" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 2: Deadlift & Heavy Bench", exercises: [{ id: "ex_27", name: "Deadlift", sets: "4", reps: "5", note: "78% / RPE 8" }, { id: "ex_1", name: "Arnold Press", sets: "1/4", reps: "1/3", note: "92% single, then 85% backoff" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 3: Shoulders & Arms", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "15" }] },
-                { title: "Day 4: Practice S/B", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "6", note: "70% Light" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "6", note: "70% Light" }] },
-                { title: "Day 6: Heavy SBD", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "3", note: "RPE 8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "3", note: "RPE 8" }, { id: "ex_27", name: "Deadlift", sets: "3", reps: "3", note: "RPE 8" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }] },
-                { title: "Day 7 (Optional): Upper Body", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] }
-            ]},
-            { weekLabel: "Week 3 (Accumulation)", days: [
-                { title: "Day 1: S/B Volume", exercises: [{ id: "ex_77", name: "Squat", sets: "4", reps: "4", note: "82% / RPE 9" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "4", note: "82% / RPE 9" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 2: Deadlift & Heavy Bench", exercises: [{ id: "ex_27", name: "Deadlift", sets: "4", reps: "4", note: "82% / RPE 9" }, { id: "ex_1", name: "Arnold Press", sets: "1/3", reps: "1/3", note: "95% single, then 85% backoff" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 3: Shoulders & Arms", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "15" }] },
-                { title: "Day 4: Practice S/B", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "6", note: "70% Light" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "6", note: "70% Light" }] },
-                { title: "Day 6: Heavy SBD", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "3", note: "RPE 9-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "3", note: "RPE 9-10" }, { id: "ex_27", name: "Deadlift", sets: "3", reps: "3", note: "RPE 9-10" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }] }
-            ]},
-            { weekLabel: "Week 4 (Peaking)", days: [
-                { title: "Day 1: S/B Volume", exercises: [{ id: "ex_77", name: "Squat", sets: "4", reps: "3", note: "85% / RPE 7.5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "3", note: "85% / RPE 7.5" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 2: Deadlift & Heavy Bench", exercises: [{ id: "ex_27", name: "Deadlift", sets: "4", reps: "3", note: "85% / RPE 7.5" }, { id: "ex_1", name: "Arnold Press", sets: "1/3", reps: "1/2", note: "92% single, then 87% backoff" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 3: Shoulders & Arms", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "15" }] },
-                { title: "Day 4: Practice S/B", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "5", note: "70% Light" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "5", note: "70% Light" }] },
-                { title: "Day 6: Heavy SBD", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "2", note: "RPE 8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "2", note: "RPE 8" }, { id: "ex_27", name: "Deadlift", sets: "3", reps: "2", note: "RPE 8" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }] },
-                { title: "Day 7 (Optional): Upper Body", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] }
-            ]},
-            { weekLabel: "Week 5 (Peaking)", days: [
-                { title: "Day 1: S/B Volume", exercises: [{ id: "ex_77", name: "Squat", sets: "3", reps: "3", note: "88% / RPE 8-9" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "3", note: "88% / RPE 8-9" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 2: Deadlift & Heavy Bench", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "3", note: "88% / RPE 8-9" }, { id: "ex_1", name: "Arnold Press", sets: "1/2", reps: "1/2", note: "95% single, then 90% backoff" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "10" }] },
-                { title: "Day 3: Shoulders & Arms", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "15" }] },
-                { title: "Day 4: Practice S/B", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "4", note: "70% Light" }, { id: "ex_1", name: "Arnold Press", sets: "4", reps: "4", note: "70% Light" }] },
-                { title: "Day 6: Heavy SBD", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "2", reps: "2", note: "RPE 9" }, { id: "ex_1", name: "Arnold Press", sets: "2", reps: "2", note: "RPE 9" }, { id: "ex_27", name: "Deadlift", sets: "2", reps: "2", note: "RPE 9" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10" }] },
-                { title: "Day 7 (Optional): Upper Body", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] }
-            ]},
-            { weekLabel: "Week 6 (1RM Test / PR Week)", days: [
-                { title: "Day 1: S/B Volume", exercises: [{ id: "ex_77", name: "Squat", sets: "3", reps: "2", note: "80% Deload" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "2", note: "80% Deload" }] },
-                { title: "Day 2: Deadlift & Upper", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "2", note: "80% Deload" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }] },
-                { title: "Day 3: Shoulders & Arms (Light)", exercises: [{ id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }] },
-                { title: "Day 4: Rest", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "-", reps: "-" }] },
-                { title: "Day 6: TEST DAY 🚀", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "1", reps: "1", note: "Build up to max" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "1", note: "Build up to max" }, { id: "ex_27", name: "Deadlift", sets: "1", reps: "1", note: "Build up to max" }] }
-            ]}
-        ]
-    },
-    {
-        id: "fst-7-split", title: "FST-7 Bodybuilding Split", category: "Bodybuilding", badge: "🔥 Most Popular",
-        description: "Hany Rambod's Fascia Stretch Training-7. Emphasizes 7 high-volume sets with only 30-45s rest to finish the muscle completely.",
-        difficulty: "Advanced", weeks: 8, daysPerWeek: 5,
-        schedule: [
-            { weekLabel: "Standard Rotation", days: [
-                { title: "Monday: Chest & Biceps", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-12" }, { id: "ex_1", name: "Arnold Press", sets: "7", reps: "10-12", note: "30s rest, stretch hard" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "7", reps: "10-12", note: "30s rest" }] },
-                { title: "Tuesday: Back & Abs", exercises: [{ id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "10" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "7", reps: "10-12", note: "30s rest" }, { id: "ex_1", name: "Arnold Press", sets: "7", reps: "15" }] },
-                { title: "Thursday: Shoulders & Triceps", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "7", reps: "12", note: "30s rest" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_66", name: "Push Press", sets: "7", reps: "10-12", note: "30s rest" }] },
-                { title: "Friday: Quads, Hams, Calves", exercises: [{ id: "ex_77", name: "Squat", sets: "4", reps: "8-10" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-12" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "7", reps: "12", note: "30s rest" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "7", reps: "10-12", note: "30s rest" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "7", reps: "15" }] },
-                { title: "Saturday: Arms (Biceps & Triceps)", exercises: [{ id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8-10" }, { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-10" }, { id: "ex_41", name: "Cable Curl With Bar", sets: "7", reps: "10-12", note: "30s rest" }, { id: "ex_74", name: "Triceps Pushdown With Rope", sets: "7", reps: "10-12", note: "30s rest" }] }
-            ]}
-        ]
-    },
-    {
-        id: "mike-mentzer-3day", title: "Mike Mentzer HIT 3-Day Split", category: "Bodybuilding",
-        badge: "🏆 Gold Standard",
-        description: "Mike Mentzer's Heavy Duty High-Intensity Training. Focuses on 1-2 work sets taken to absolute failure. Maximum intensity, maximum recovery.",
-        difficulty: "Advanced", weeks: 4, daysPerWeek: 3,
-        schedule: [
-            { weekLabel: "Standard Cycle", days: [
-                { title: "Day 1: Chest & Back", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "1-2", reps: "6-10", note: "Pre-exhaust, to failure" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "3-5", note: "Absolute failure immediately after fly" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "1-2", reps: "6-10", note: "Pre-exhaust" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "1", reps: "6-10", note: "Failure" }, { id: "ex_27", name: "Deadlift", sets: "1", reps: "6-8", note: "Max effort" }] },
-                { title: "Day 2: Legs & Abs", exercises: [{ id: "ex_2", name: "Back Extension Frontloaded", sets: "1-2", reps: "12-15", note: "Pre-exhaust" }, { id: "ex_51", name: "Leg Press", sets: "1", reps: "10-15", note: "Immediately after extensions to failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "1", reps: "10-12", note: "Failure" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "1", reps: "15-20", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "15-20", note: "Failure" }] },
-                { title: "Day 3: Shoulders & Arms", exercises: [{ id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "1-2", reps: "8-10", note: "Pre-exhaust" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "6-8", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "8-10", note: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "1", reps: "6-8", note: "Failure" }, { id: "ex_66", name: "Push Press", sets: "1-2", reps: "8-10", note: "Pre-exhaust" }, { id: "ex_28", name: "Dips", sets: "1", reps: "6-8", note: "Failure" }] }
-            ]}
-        ]
-    },
-    {
-        id: "full-body-3x", title: "Full Body 3x/Week", category: "Bodybuilding",
-        description: "A balanced 3-day full body routine perfect for beginners and intermediates looking for high frequency.",
+        description: "Simple and effective 3-day upper/lower split. Perfect for beginners or those with busy schedules. Each muscle group trained twice per week.",
         difficulty: "Beginner", weeks: 8, daysPerWeek: 3,
-        schedule: [
-            { weekLabel: "Standard Week", days: [
-                { title: "Day 1: Full Body A", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8-10" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-10" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "2", reps: "12-15" }, { id: "ex_66", name: "Push Press", sets: "2", reps: "12-15" }] },
-                { title: "Day 2: Full Body B", exercises: [{ id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-10" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-10" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15-20" }] },
-                { title: "Day 3: Full Body C", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "10-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "AMRAP" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "2", reps: "12-15" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "12-15" }] }
-            ]}
-        ]
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Monday — Upper", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "6-8", note: "Heavy horizontal push" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "6-8", note: "Heavy horizontal pull" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8", note: "Vertical press" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "10", note: "Lat work" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "2", reps: "15", note: "Delt isolation" },
+                    ]
+                },
+                {
+                    title: "Wednesday — Lower", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "6-8", note: "Heavy quad compound" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hip hinge" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "10-12", note: "Hamstring isolation" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "3", reps: "15", note: "Calf work" },
+                    ]
+                },
+                {
+                    title: "Friday — Upper", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8-10", note: "Upper chest focus" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-10", note: "Vertical pull" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10", note: "Dumbbell press" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "12", note: "Back isolation" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "2", reps: "15", note: "Triceps finish" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "full-body-4day", title: "Full Body 4x/Week", category: "Bodybuilding",
+        badge: "💪 Editor's Pick",
+        description: "Hit your full body twice per week with four sessions. Efficient for muscle growth and strength. Combines heavy compounds with targeted isolation.",
+        difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Day 1 — Heavy", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "Heavy compound push" },
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "5", note: "Heavy quad compound" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hinge" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "10", note: "Biceps accessory" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Volume", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8-10", note: "Chest hypertrophy" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "4", reps: "10", note: "Lat width" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8", note: "Shoulder work" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                    ]
+                },
+                {
+                    title: "Day 3 — Heavy", exercises: [
+                        { id: "ex_65", name: "Pull Ups", sets: "4", reps: "8", note: "Weighted vertical pull" },
+                        { id: "ex_37", name: "Front Squat", sets: "4", reps: "6", note: "Quad and anterior core" },
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "6", note: "Heavy horizontal pull" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "12", note: "Triceps finish" },
+                    ]
+                },
+                {
+                    title: "Day 4 — Volume", exercises: [
+                        { id: "ex_41", name: "Hip Thrust", sets: "4", reps: "10", note: "Glute hypertrophy" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "3", reps: "12", note: "Lat pump work" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10", note: "Dumbbell press" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "15", note: "Hamstring isolation" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "ppl-6day-advanced", title: "Push / Pull / Legs (6-Day)", category: "Strength + Hypertrophy",
+        badge: "🔥 Most Popular",
+        description: "The legendary Reddit PPL — 6 days per week with Push/Pull/Legs split. Each muscle group trained twice with high volume. Not for the faint-hearted.",
+        difficulty: "Advanced", weeks: 8, daysPerWeek: 6,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Monday — Push A", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "Heavy compound" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "6", note: "Upper chest" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "6", note: "Compound press" },
+                        { id: "ex_55", name: "Machine Chest Press", sets: "3", reps: "8-10", note: "Machine push" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "3", reps: "15", note: "Isolation" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "15", note: "Isolation" },
+                    ]
+                },
+                {
+                    title: "Tuesday — Pull A", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy compound" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-10", note: "Vertical pull" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "6", note: "Horizontal pull" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "3", reps: "10", note: "Lat width" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Biceps" },
+                        { id: "ex_20", name: "Cable Rear Delt Row", sets: "3", reps: "15", note: "Rear delts" },
+                    ]
+                },
+                {
+                    title: "Wednesday — Legs A", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "5", note: "Heavy quad compound" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "8", note: "Glute focus" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8", note: "Hamstring hinge" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "12", note: "Quad isolation" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "Hamstring isolation" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "5", reps: "12", note: "Calf development" },
+                    ]
+                },
+                {
+                    title: "Thursday — Push B", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "6", note: "Heavy incline" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "6", note: "Triceps focus" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "8", note: "Dumbbell variation" },
+                        { id: "ex_29", name: "Dumbbell Chest Fly", sets: "3", reps: "10", note: "Chest isolation" },
+                        { id: "ex_18", name: "Cable Front Raise", sets: "3", reps: "15", note: "Front delt" },
+                        { id: "ex_60", name: "Overhead Cable Triceps Extension From Upper Position", sets: "3", reps: "15", note: "Long head triceps" },
+                    ]
+                },
+                {
+                    title: "Friday — Pull B", exercises: [
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "5", note: "Heavy horizontal pull" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "4", reps: "8", note: "Heavy lat work" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "3", reps: "10", note: "Machine variation" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "10", note: "Back thickness" },
+                        { id: "ex_36", name: "EZ Curl", sets: "3", reps: "10", note: "Biceps mass" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delt" },
+                    ]
+                },
+                {
+                    title: "Saturday — Legs B", exercises: [
+                        { id: "ex_37", name: "Front Squat", sets: "4", reps: "6", note: "Quad focus" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "8", note: "Heavy leg press" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "10", note: "Glute pump" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "4", reps: "12", note: "Hamstring volume" },
+                        { id: "ex_49", name: "Leg Extension One Leg", sets: "3", reps: "15", note: "Quad unilateral" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "5", reps: "15", note: "Calf volume" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "powerbuilding-5day", title: "5-Day Powerbuilding", category: "Powerbuilding",
+        description: "High-frequency powerbuilding split hitting each muscle group twice per week with strength focus on main lifts and hypertrophy on accessories.",
+        difficulty: "Advanced", weeks: 8, daysPerWeek: 5,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Day 1 — Heavy Upper", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "5", note: "Heavy compound 85-90% 1RM" },
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "5", note: "Heavy horizontal pull" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "6", note: "Heavy press" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8", note: "Weighted pull" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Heavy Lower", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "5", note: "Heavy quad work" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hinge" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8", note: "Hamstring accessory" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "12", note: "Calf work" },
+                    ]
+                },
+                {
+                    title: "Day 3 — Volume Upper", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8-10", note: "Chest volume" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "4", reps: "10", note: "Lat width" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10", note: "Dumbbell press" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "12-15", note: "Triceps isolation" },
+                        { id: "ex_36", name: "EZ Curl", sets: "3", reps: "12-15", note: "Biceps isolation" },
+                    ]
+                },
+                {
+                    title: "Day 4 — Volume Lower", exercises: [
+                        { id: "ex_37", name: "Front Squat", sets: "4", reps: "8-10", note: "Quad and core" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "4", reps: "10", note: "Glute development" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "12", note: "Quad volume" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "15", note: "Hamstring isolation" },
+                    ]
+                },
+                {
+                    title: "Day 5 — Intensity Upper", exercises: [
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "4", reps: "6", note: "Triceps and chest strength" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "4", reps: "8", note: "Heavy lat work" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "4", reps: "8", note: "Dumbbell strength" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "Brachialis" },
+                        { id: "ex_43", name: "Incline Bench SkullCrushers", sets: "3", reps: "10", note: "Triceps strength" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "athletic-performance", title: "Athletic Performance", category: "Strength + Hypertrophy",
+        badge: "💎 Elite Performance",
+        description: "For athletes who need power, speed, and conditioning. Combines strength training with explosive movements and conditioning. Train 4 days per week.",
+        difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Day 1 — Lower Power", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "3", note: "Explosive, 80-85% 1RM" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hinge" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "8", note: "Glute power" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "12", note: "Calf explosive power" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Upper Power", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "3", note: "Explosive press 80-85%" },
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "5", note: "Heavy pull" },
+                        { id: "ex_66", name: "Push Press", sets: "3", reps: "5", note: "Explosive overhead" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8", note: "Weighted pull" },
+                    ]
+                },
+                {
+                    title: "Day 3 — Lower Volume", exercises: [
+                        { id: "ex_37", name: "Front Squat", sets: "4", reps: "6", note: "Quad volume and control" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8", note: "Hamstring endurance" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "10", note: "Quad hypertrophy" },
+                        { id: "ex_74", name: "Single Leg Leg Curl", sets: "3", reps: "12", note: "Unilateral hamstring" },
+                    ]
+                },
+                {
+                    title: "Day 4 — Upper Volume", exercises: [
+                        { id: "ex_42", name: "Incline Bench Press", sets: "4", reps: "8", note: "Upper chest volume" },
+                        { id: "ex_46", name: "Lat Pulldown With Neutral Grip 1", sets: "4", reps: "10", note: "Lat width" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "10", note: "Shoulder volume" },
+                        { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "12", note: "Back thickness" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "15", note: "Triceps finish" },
+                    ]
+                },
+            ]
+        }]
     },
     {
         id: "full-body-2x", title: "Full Body 2x/Week", category: "Bodybuilding",
-        description: "A minimalist 2-day full body routine for those with limited time or as a maintenance program.",
-        difficulty: "Beginner", weeks: 8, daysPerWeek: 2,
-        schedule: [
-            { weekLabel: "Standard Week", days: [
-                { title: "Day 1: Full Body 1", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8-10" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-10" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-15" }] },
-                { title: "Day 2: Full Body 2", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "5-8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-12" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-15" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15-20" }] }
-            ]}
-        ]
-    }
+        description: "Minimalist maintenance program — just 2 days per week for busy professionals or those in maintenance phase. Cover all major movement patterns.",
+        difficulty: "All Levels", weeks: 12, daysPerWeek: 2,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Day 1 — Full Body A", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "6", note: "Lower compound" },
+                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "8", note: "Push compound" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-10", note: "Vertical pull" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10", note: "Posterior chain" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "Hamstring accessory" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Full Body B", exercises: [
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "5", note: "Heavy hinge" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8", note: "Upper push" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8", note: "Horizontal pull" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "3", reps: "8", note: "Vertical press" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad accessory" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "powerlifting-conjugate", title: "Conjugate Method (Westside)", category: "Powerlifting",
+        description: "Westside Bar conjugate method for advanced lifters. Max effort upper/lower days and dynamic effort days. Requires reverse hyper and bands.",
+        difficulty: "Advanced", weeks: 12, daysPerWeek: 4,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Day 1 — Max Effort Lower", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "3", reps: "1-3", note: "Max effort, vary exercises (SSB, high bar, pause)" },
+                        { id: "ex_27", name: "Deadlift", sets: "3", reps: "3-5", note: "Max effort variation" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "8", note: "Accessory strength" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "4", reps: "10", note: "Hamstring work" },
+                        { id: "ex_74", name: "Single Leg Leg Curl", sets: "3", reps: "12", note: "Unilateral" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Max Effort Upper", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "3", reps: "1-3", note: "Max effort, vary grips and bars" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "3-5", note: "Max effort incline" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "8", note: "Triceps strength" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "4", reps: "12", note: "Rear delt for pressing stability" },
+                        { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "3", reps: "15", note: "Triceps isolation" },
+                    ]
+                },
+                {
+                    title: "Day 3 — Dynamic Effort Lower", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "8", reps: "3", note: "Dynamic effort @ 50-60% with speed" },
+                        { id: "ex_51", name: "Leg Press", sets: "5", reps: "8", note: "Volume accessory" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10", note: "Hamstring work" },
+                        { id: "ex_74", name: "Single Leg Leg Curl", sets: "3", reps: "12", note: "Unilateral" },
+                    ]
+                },
+                {
+                    title: "Day 4 — Dynamic Effort Upper", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "10", reps: "3", note: "Dynamic effort with bands/chains" },
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "5", reps: "5", note: "Pressing volume" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "4", reps: "10", note: "Lat work" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "4", reps: "12", note: "Biceps for pressing balance" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delt finish" },
+                    ]
+                },
+            ]
+        }]
+    },
+    {
+        id: "dumbbell-only-3day", title: "Dumbbell Only 3-Day", category: "Bodybuilding",
+        description: "Complete workout program using only dumbbells. Perfect for home gym or travel. Compound and isolation exercises designed for dumbbell-only training.",
+        difficulty: "Beginner", weeks: 8, daysPerWeek: 3,
+        schedule: [{
+            weekLabel: "Standard Week", days: [
+                {
+                    title: "Day 1 — Push Focus", exercises: [
+                        { id: "ex_30", name: "Dumbbell Chest Press", sets: "4", reps: "8-10", note: "Flat chest press" },
+                        { id: "ex_32", name: "Dumbbell Incline Press", sets: "3", reps: "10-12", note: "Upper chest" },
+                        { id: "ex_72", name: "Seated Dumbbell Shoulder Press", sets: "3", reps: "8-10", note: "Overhead press" },
+                        { id: "ex_33", name: "Dumbbell Lateral Raise", sets: "3", reps: "15", note: "Lateral delt isolation" },
+                        { id: "ex_52", name: "Lying Dumbbell Triceps Extension 1", sets: "3", reps: "12", note: "Triceps extension" },
+                    ]
+                },
+                {
+                    title: "Day 2 — Pull Focus", exercises: [
+                        { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8", note: "Rowing motion (requires dumbbells)" },
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-12", note: "Bodyweight vertical pull" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "4", reps: "10", note: "Biceps" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "Rear delt" },
+                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "12", note: "Lat and chest stretch" },
+                    ]
+                },
+                {
+                    title: "Day 3 — Legs + Core", exercises: [
+                        { id: "ex_34", name: "Dumbbell Lunge", sets: "3", reps: "10 each leg", note: "Bilateral leg work" },
+                        { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "12", note: "Use as extra leg/serratus work" },
+                        { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "Hamstring isolation" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "15", note: "Quad isolation" },
+                        { id: "ex_40", name: "Hanging Leg Raise", sets: "3", reps: "12", note: "Core hanging work" },
+                        { id: "ex_26", name: "Crunch", sets: "3", reps: "20", note: "Core finish" },
+                    ]
+                },
+            ]
+        }]
+    },
+
 ];
 
 export const PROGRAMS_DATA = _rawPrograms.filter(p => p.id !== "DELETE_ME");

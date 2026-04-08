@@ -115,7 +115,7 @@ export default function Programs() {
                   {program.daysPerWeek} days/wk
                 </span>
               </div>
-              <h3 className="font-bold text-white text-sm mb-1 leading-tight flex-1">{program.title}</h3>
+              <h3 className="font-bold text-white text-sm mb-1 leading-tight flex-1">{t(program.title)}</h3>
               <p className="text-gray-500 text-xs mb-2">{program.weeks} weeks</p>
               <span className="text-xs font-bold px-2 py-1 rounded-md self-start" style={{ backgroundColor: (DIFFICULTY_COLORS[program.difficulty] || '#666') + '20', color: DIFFICULTY_COLORS[program.difficulty] || '#666' }}>
                 {program.difficulty}

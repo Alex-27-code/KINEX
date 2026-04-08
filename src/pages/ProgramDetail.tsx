@@ -47,7 +47,7 @@ export default function ProgramDetail() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
             </svg>
           </button>
-          <h1 className="text-2xl font-extrabold text-white flex-1 leading-tight">{program.title}</h1>
+          <h1 className="text-2xl font-extrabold text-white flex-1 leading-tight">{t(program.title)}</h1>
         </div>
 
         {/* Badges */}
@@ -63,7 +63,7 @@ export default function ProgramDetail() {
           </span>
         </div>
 
-        <p className="text-gray-400 text-sm leading-relaxed">{program.description}</p>
+        <p className="text-gray-400 text-sm leading-relaxed">{t(program.description)}</p>
       </div>
 
       <div className="px-5 py-6 space-y-6">
@@ -95,7 +95,7 @@ export default function ProgramDetail() {
                     {day.exercises.map((ex, ei) => (
                       <div key={ei} className="flex justify-between items-center py-2 border-b border-white/5 last:border-0">
                         <div className="flex-1 mr-4">
-                          <p className="text-gray-200 text-sm font-medium">{ex.name}</p>
+                          <p className="text-gray-200 text-sm font-medium">{t(ex.name)}</p>
                           {ex.note && <p className="text-gray-500 text-xs mt-0.5 italic">{ex.note}</p>}
                         </div>
                         <span className="text-primary font-bold text-sm whitespace-nowrap bg-black/30 px-3 py-1.5 rounded-lg border border-white/5">

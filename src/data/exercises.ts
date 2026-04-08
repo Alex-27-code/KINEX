@@ -26,42 +26,42 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Barbell Biceps Curl",
         category: "Biceps",
         equipment: "Barbell",
-        gifName: "Barbell-biceps-curl.webp"
+        gifName: "barbell-biceps-curl.webp"
     },
     {
         id: "ex_4",
         name: "Barbell Hack Squat Exercise",
         category: "Legs",
         equipment: "Barbell",
-        gifName: "Barbell-Hack-Squat-Exercise.webp"
+        gifName: "barbell-hack-squat-exercise.webp"
     },
     {
         id: "ex_5",
         name: "Barbell Lunge",
         category: "Legs",
         equipment: "Barbell",
-        gifName: "Barbell-Lunge.webp"
+        gifName: "barbell-lunge.webp"
     },
     {
         id: "ex_6",
         name: "Barbell Lying Tricep Extension",
         category: "Triceps",
         equipment: "Barbell",
-        gifName: "Barbell-Lying-Tricep-Extension.webp"
+        gifName: "barbell-lying-tricep-extension.webp"
     },
     {
         id: "ex_7",
         name: "Barbell Row",
         category: "Back",
         equipment: "Barbell",
-        gifName: "Barbell-Row.gif"
+        gifName: "barbell-row.gif"
     },
     {
         id: "ex_8",
         name: "Barbell Shrug",
-        category: "Full Body",
+        category: "Back",
         equipment: "Barbell",
-        gifName: "Barbell-Shrug.webp"
+        gifName: "barbell-shrug.webp"
     },
     {
         id: "ex_9",
@@ -75,13 +75,13 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Barbell Standing Triceps Extension",
         category: "Triceps",
         equipment: "Barbell",
-        gifName: "Barbell-Standing-Triceps-Extension.webp"
+        gifName: "barbell-standing-triceps-extension.webp"
     },
     {
         id: "ex_11",
         name: "Belt Squat",
         category: "Legs",
-        equipment: "Bodyweight",
+        equipment: "Machine",
         gifName: "belt-squat.webp"
     },
     {
@@ -95,8 +95,8 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_13",
         name: "Bulgarian Split Squat Barbell",
         category: "Legs",
-        equipment: "Barbell",
-        gifName: "Bulgarian-split-squat-barbell.webp"
+        equipment: "Dumbbell",
+        gifName: "bulgarian-split-squat-barbell.webp"
     },
     {
         id: "ex_14",
@@ -136,7 +136,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
     {
         id: "ex_19",
         name: "Cable Lateral Raise",
-        category: "Back",
+        category: "Shoulders",
         equipment: "Cable",
         gifName: "cable-lateral-raise.webp"
     },
@@ -165,7 +165,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_23",
         name: "Calf Raise Standing",
         category: "Legs",
-        equipment: "Bodyweight",
+        equipment: "Barbell",
         gifName: "calf-raise-standing.webp"
     },
     {
@@ -173,98 +173,98 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Close Grip Bench Press",
         category: "Chest",
         equipment: "Machine",
-        gifName: "Close-grip-bench-press.webp"
+        gifName: "close-grip-bench-press.webp"
     },
     {
         id: "ex_25",
         name: "Crossbody Cable Triceps Extension",
         category: "Triceps",
         equipment: "Cable",
-        gifName: "Crossbody-Cable-Triceps-Extension.webp"
+        gifName: "crossbody-cable-triceps-extension.webp"
     },
     {
         id: "ex_26",
         name: "Crunch",
         category: "Core",
         equipment: "Bodyweight",
-        gifName: "Crunch.webp"
+        gifName: "crunch.webp"
     },
     {
         id: "ex_27",
         name: "Deadlift",
         category: "Back",
-        equipment: "Bodyweight",
-        gifName: "Deadlift.webp"
+        equipment: "Barbell",
+        gifName: "deadlift.webp"
     },
     {
         id: "ex_28",
         name: "Dips",
-        category: "Full Body",
+        category: "Chest",
         equipment: "Bodyweight",
-        gifName: "Dips.webp"
+        gifName: "dips.webp"
     },
     {
         id: "ex_29",
         name: "Dumbbell Chest Fly",
         category: "Chest",
         equipment: "Dumbbell",
-        gifName: "Dumbbell-Chest-Fly.webp"
+        gifName: "dumbbell-chest-fly.webp"
     },
     {
         id: "ex_30",
         name: "Dumbbell Chest Press",
         category: "Chest",
         equipment: "Dumbbell",
-        gifName: "Dumbbell-Chest-Press.webp"
+        gifName: "dumbbell-chest-press.webp"
     },
     {
         id: "ex_31",
         name: "Dumbbell Front Raise",
         category: "Shoulders",
         equipment: "Dumbbell",
-        gifName: "Dumbbell-Front-Raise.webp"
+        gifName: "dumbbell-front-raise.webp"
     },
     {
         id: "ex_32",
         name: "Dumbbell Incline Press",
         category: "Chest",
         equipment: "Dumbbell",
-        gifName: "Dumbbell-Incline-Press.webp"
+        gifName: "dumbbell-incline-press.webp"
     },
     {
         id: "ex_33",
         name: "Dumbbell Lateral Raise",
-        category: "Back",
+        category: "Shoulders",
         equipment: "Dumbbell",
-        gifName: "Dumbbell-Lateral-Raise.webp"
+        gifName: "dumbbell-lateral-raise.webp"
     },
     {
         id: "ex_34",
         name: "Dumbbell Lunge",
         category: "Legs",
         equipment: "Dumbbell",
-        gifName: "Dumbbell-Lunge.webp"
+        gifName: "dumbbell-lunge.webp"
     },
     {
         id: "ex_35",
         name: "Dumbbell Pullover",
         category: "Chest",
         equipment: "Dumbbell",
-        gifName: "Dumbbell-Pullover.webp"
+        gifName: "dumbbell-pullover.webp"
     },
     {
         id: "ex_36",
         name: "EZ Curl",
         category: "Biceps",
         equipment: "EZ Bar",
-        gifName: "EZ-curl.webp"
+        gifName: "ez-curl.webp"
     },
     {
         id: "ex_37",
         name: "Front Squat",
         category: "Legs",
-        equipment: "Bodyweight",
-        gifName: "Front-squat.webp"
+        equipment: "Barbell",
+        gifName: "front-squat.webp"
     },
     {
         id: "ex_38",
@@ -278,7 +278,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Hammer Curl",
         category: "Biceps",
         equipment: "Bodyweight",
-        gifName: "Hammer-curl.webp"
+        gifName: "hammer-curl.webp"
     },
     {
         id: "ex_40",
@@ -291,29 +291,29 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_41",
         name: "Hip Thrust",
         category: "Legs",
-        equipment: "Bodyweight",
-        gifName: "Hip-thrust.webp"
+        equipment: "Barbell",
+        gifName: "hip-thrust.webp"
     },
     {
         id: "ex_42",
         name: "Incline Bench Press",
         category: "Chest",
         equipment: "Machine",
-        gifName: "Incline-Bench-Press.webp"
+        gifName: "incline-bench-press.webp"
     },
     {
         id: "ex_43",
         name: "Incline Bench SkullCrushers",
         category: "Triceps",
         equipment: "Bodyweight",
-        gifName: "Incline-Bench-SkullCrushers.webp"
+        gifName: "incline-bench-skullcrushers.webp"
     },
     {
         id: "ex_44",
         name: "Incline Dumbbell Curl",
         category: "Biceps",
         equipment: "Dumbbell",
-        gifName: "Incline-Dumbbell-Curl.webp"
+        gifName: "incline-dumbbell-curl.webp"
     },
     {
         id: "ex_45",
@@ -326,13 +326,13 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_46",
         name: "Lat Pulldown With Neutral Grip 1",
         category: "Back",
-        equipment: "Bodyweight",
+        equipment: "Cable",
         gifName: "lat-pulldown-with-neutral-grip-1.webp"
     },
     {
         id: "ex_47",
         name: "Lateral Raise Machine",
-        category: "Back",
+        category: "Shoulders",
         equipment: "Machine",
         gifName: "lateral-raise-machine.webp"
     },
@@ -340,7 +340,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_48",
         name: "Leg Curl Seated",
         category: "Legs",
-        equipment: "Bodyweight",
+        equipment: "Machine",
         gifName: "leg-curl-seated.webp"
     },
     {
@@ -369,13 +369,13 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Lying Dumbbell Triceps Extension 1",
         category: "Triceps",
         equipment: "Dumbbell",
-        gifName: "Lying-Dumbbell-Triceps-Extension-1.webp"
+        gifName: "lying-dumbbell-triceps-extension-1.webp"
     },
     {
         id: "ex_53",
         name: "Lying Leg Curl",
         category: "Legs",
-        equipment: "Bodyweight",
+        equipment: "Machine",
         gifName: "lying-leg-curl.webp"
     },
     {
@@ -417,7 +417,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_59",
         name: "One Arm Lat Pulldown",
         category: "Back",
-        equipment: "Bodyweight",
+        equipment: "Cable",
         gifName: "one-arm-lat-pulldown.webp"
     },
     {
@@ -425,14 +425,14 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Overhead Cable Triceps Extension From Upper Position",
         category: "Triceps",
         equipment: "Cable",
-        gifName: "Overhead-Cable-Triceps-Extension-from-Upper-Position.webp"
+        gifName: "overhead-cable-triceps-extension-from-upper-position.webp"
     },
     {
         id: "ex_61",
         name: "Overhead Press Exercise",
-        category: "Chest",
-        equipment: "Machine",
-        gifName: "Overhead-press-exercise.webp"
+        category: "Shoulders",
+        equipment: "Barbell",
+        gifName: "overhead-press-exercise.webp"
     },
     {
         id: "ex_62",
@@ -474,19 +474,19 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Push Up",
         category: "Chest",
         equipment: "Bodyweight",
-        gifName: "Push-up.webp"
+        gifName: "push-up.webp"
     },
     {
         id: "ex_68",
         name: "Reverse Dumbbell Flyes",
-        category: "Chest",
+        category: "Shoulders",
         equipment: "Dumbbell",
-        gifName: "Reverse-dumbbell-flyes.webp"
+        gifName: "reverse-dumbbell-flyes.webp"
     },
     {
         id: "ex_69",
         name: "Reverse Machine Fly",
-        category: "Chest",
+        category: "Shoulders",
         equipment: "Machine",
         gifName: "reverse-machine-fly.webp"
     },
@@ -494,8 +494,8 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_70",
         name: "Romanian Deadlift",
         category: "Back",
-        equipment: "Bodyweight",
-        gifName: "Romanian-deadlift.webp"
+        equipment: "Barbell",
+        gifName: "romanian-deadlift.webp"
     },
     {
         id: "ex_71",
@@ -509,7 +509,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         name: "Seated Dumbbell Shoulder Press",
         category: "Shoulders",
         equipment: "Dumbbell",
-        gifName: "Seated-dumbbell-shoulder-press.webp"
+        gifName: "seated-dumbbell-shoulder-press.webp"
     },
     {
         id: "ex_73",
@@ -522,7 +522,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_74",
         name: "Single Leg Leg Curl",
         category: "Legs",
-        equipment: "Bodyweight",
+        equipment: "Machine",
         gifName: "single-leg-leg-curl.webp"
     },
     {
@@ -543,7 +543,7 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_77",
         name: "Squat",
         category: "Legs",
-        equipment: "Bodyweight",
+        equipment: "Barbell",
         gifName: "squat.webp"
     },
     {
@@ -557,14 +557,14 @@ export const EXERCISES_DATA: ExerciseDefinition[] = [
         id: "ex_79",
         name: "Triceps Pushdown With Rope",
         category: "Triceps",
-        equipment: "Bodyweight",
+        equipment: "Cable",
         gifName: "triceps-pushdown-with-rope.webp"
     },
     {
         id: "ex_80",
         name: "Triceps Pushdown With Straight Handle",
         category: "Triceps",
-        equipment: "Bodyweight",
+        equipment: "Cable",
         gifName: "triceps-pushdown-with-straight-handle.webp"
     },
 ];

@@ -1,146 +1,125 @@
-// GIF URL resolver for Bourdon94m/Workout-Animated-GIF repository
-const GIF_BASE = 'https://raw.githubusercontent.com/Bourdon94m/Workout-Animated-GIF/main/media';
+// GIF URL lookup for Kinex exercises
+// Priority: Bourdon94m (descriptive names) > mohamedatef90 (hash names) > local files
+//
+// Bourdon94m: https://raw.githubusercontent.com/Bourdon94m/Workout-Animated-GIF/main/media/{filename}
+// mohamedatef90: https://raw.githubusercontent.com/mohamedatef90/exercise-library/main/gifs/{hash}.gif
 
-const NAME_MAP: Record<string, string> = {
-  // Exercises from exercises.ts → actual repo filenames
-  'arnold-press': 'dumbbell_arnold_press.gif',
-  'arnold-press-webp': 'dumbbell_arnold_press.gif',
-  'arnold-press-v2': 'dumbbell_arnold_press_v._2.gif',
-  'arnold-press-v-2': 'dumbbell_arnold_press_v._2.gif',
-  'back-extension-frontloaded': 'back_extension_frontloaded.gif',
-  'back-extension-frontloaded-webp': 'back_extension_frontloaded.gif',
-  'barbell-biceps-curl': 'barbell_biceps_curl.gif',
-  'barbell-biceps-curl-webp': 'barbell_biceps_curl.gif',
-  'barbell-hack-squat-exercise': 'barbell_hack_squat.gif',
-  'barbell-hack-squat-exercise-webp': 'barbell_hack_squat.gif',
-  'barbell-hack-squat': 'barbell_hack_squat.gif',
-  'barbell-lunge': 'barbell_lunge.gif',
-  'barbell-lunge-webp': 'barbell_lunge.gif',
-  'barbell-lying-tricep-extension': 'barbell_lying_tricep_extension.gif',
-  'barbell-lying-tricep-extension-webp': 'barbell_lying_tricep_extension.gif',
-  'barbell-row': 'barbell_bent_over_row.gif',
-  'barbell-row-webp': 'barbell_bent_over_row.gif',
-  'barbell-row.gif': 'barbell_bent_over_row.gif',
-  'barbell-shrug': 'barbell_shrug.gif',
-  'barbell-shrug-webp': 'barbell_shrug.gif',
-  'barbell-standing-calf-raise-2': 'barbell_standing_calf_raise.gif',
-  'barbell-standing-calf-raise-2-webp': 'barbell_standing_calf_raise.gif',
-  'barbell-standing-calf-raise': 'barbell_standing_calf_raise.gif',
-  'bench-press': 'barbell_bench_press.gif',
-  'bench-press-webp': 'barbell_bench_press.gif',
-  'bench-press.gif': 'barbell_bench_press.gif',
-  'bent-over-row': 'dumbbell_bent_over_row.gif',
-  'bent-over-row-webp': 'dumbbell_bent_over_row.gif',
-  'bicep-curl': 'dumbbell_biceps_curl.gif',
-  'bicep-curl-webp': 'dumbbell_biceps_curl.gif',
-  'cable-crunch': 'cable_crunch.gif',
-  'cable-crunch-webp': 'cable_crunch.gif',
-  'cable-fly': 'cable_fly.gif',
-  'cable-fly-webp': 'cable_fly.gif',
-  'calf-raise': 'standing_calf_raise.gif',
-  'calf-raise-webp': 'standing_calf_raise.gif',
-  'crunch': 'crunch.gif',
-  'crunch-webp': 'crunch.gif',
-  'deadlift': 'barbell_deadlift.gif',
-  'deadlift-webp': 'barbell_deadlift.gif',
-  'decline-bench-press': 'barbell_decline_bench_press.gif',
-  'decline-bench-press-webp': 'barbell_decline_bench_press.gif',
-  'dumbbell-fly': 'dumbbell_fly.gif',
-  'dumbbell-fly-webp': 'dumbbell_fly.gif',
-  'dumbbell-curl': 'dumbbell_biceps_curl.gif',
-  'dumbbell-curl-webp': 'dumbbell_biceps_curl.gif',
-  'dumbbell-row': 'dumbbell_bent_over_row.gif',
-  'dumbbell-row-webp': 'dumbbell_bent_over_row.gif',
-  'dumbbell-shoulder-press': 'dumbbell_shoulder_press.gif',
-  'dumbbell-shoulder-press-webp': 'dumbbell_shoulder_press.gif',
-  'face-pull': 'face_pull.gif',
-  'face-pull-webp': 'face_pull.gif',
-  'front-squat': 'barbell_front_squat.gif',
-  'front-squat-webp': 'barbell_front_squat.gif',
-  'good-morning': 'barbell_good_morning.gif',
-  'good-morning-webp': 'barbell_good_morning.gif',
-  'hack-squat': 'hack_squat.gif',
-  'hack-squat-webp': 'hack_squat.gif',
-  'hammer-curl': 'dumbbell_hammer_curl.gif',
-  'hammer-curl-webp': 'dumbbell_hammer_curl.gif',
-  'hip-thrust': 'barbell_hip_thrust.gif',
-  'hip-thrust-webp': 'barbell_hip_thrust.gif',
-  'incline-bench-press': 'barbell_incline_bench_press.gif',
-  'incline-bench-press-webp': 'barbell_incline_bench_press.gif',
-  'incline-dumbbell-press': 'dumbbell_incline_bench_press.gif',
-  'incline-dumbbell-press-webp': 'dumbbell_incline_bench_press.gif',
-  'lateral-raise': 'lateral_raise.gif',
-  'lateral-raise-webp': 'lateral_raise.gif',
-  'lat-pulldown': 'cable_lat_pulldown.gif',
-  'lat-pulldown-webp': 'cable_lat_pulldown.gif',
-  'lat-pulldown-wide': 'cable_wide_grip_lat_pulldown.gif',
-  'lat-pulldown-wide-webp': 'cable_wide_grip_lat_pulldown.gif',
-  'leg-press': 'leg_press.gif',
-  'leg-press-webp': 'leg_press.gif',
-  'leg-curl': 'lying_leg_curl.gif',
-  'leg-curl-webp': 'lying_leg_curl.gif',
-  'leg-extension': 'leg_extension.gif',
-  'leg-extension-webp': 'leg_extension.gif',
-  'overhead-press': 'barbell_overhead_press.gif',
-  'overhead-press-webp': 'barbell_overhead_press.gif',
-  'overhead-tricep-extension': 'overhead_tricep_extension.gif',
-  'overhead-tricep-extension-webp': 'overhead_tricep_extension.gif',
-  'plank': 'front_plank.gif',
-  'plank-webp': 'front_plank.gif',
-  'preacher-curl': 'preacher_curl.gif',
-  'preacher-curl-webp': 'preacher_curl.gif',
-  'pull-up': 'pull_up.gif',
-  'pull-up-webp': 'pull_up.gif',
-  'push-up': 'push_up.gif',
-  'push-up-webp': 'push_up.gif',
-  'romanian-deadlift': 'romanian_deadlift.gif',
-  'romanian-deadlift-webp': 'romanian_deadlift.gif',
-  'russian-twist': 'russian_twist.gif',
-  'russian-twist-webp': 'russian_twist.gif',
-  'seated-calf-raise': 'seated_calf_raise.gif',
-  'seated-calf-raise-webp': 'seated_calf_raise.gif',
-  'shoulder-press': 'dumbbell_shoulder_press.gif',
-  'shoulder-press-webp': 'dumbbell_shoulder_press.gif',
-  'shrug': 'barbell_shrug.gif',
-  'shrug-webp': 'barbell_shrug.gif',
-  'side-plank': 'side_plank.gif',
-  'side-plank-webp': 'side_plank.gif',
-  'squat': 'barbell_squat.gif',
-  'squat-webp': 'barbell_squat.gif',
-  't-bar-row': 't_bar_row.gif',
-  't-bar-row-webp': 't_bar_row.gif',
-  'tricep-dip': 'tricep_dip.gif',
-  'tricep-dip-webp': 'tricep_dip.gif',
-  'tricep-pushdown': 'cable_tricep_pushdown.gif',
-  'tricep-pushdown-webp': 'cable_tricep_pushdown.gif',
-  'upright-row': 'upright_row.gif',
-  'upright-row-webp': 'upright_row.gif',
-  'wrist-curl': 'wrist_curl.gif',
-  'wrist-curl-webp': 'wrist_curl.gif',
+// Bourdon94m mapping: our gifName -> actual filename in repo
+const BOURDON_MAP: Record<string, string> = {
+  'arnold-press.webp': 'dumbbell_arnold_press.gif',
+  'barbell-lunge.webp': 'barbell_lunge.gif',
+  'barbell-shrug.webp': 'barbell_shrug.gif',
+  'bench-press.webp': 'barbell_bench_press.gif',
+  'cable-front-raise.webp': 'cable_front_raise.gif',
+  'cable-lateral-raise.webp': 'cable_lateral_raise.gif',
+  'deadlift.webp': 'barbell_deadlift.gif',
+  'dumbbell-front-raise.webp': 'dumbbell_front_raise.gif',
+  'dumbbell-lateral-raise.webp': 'dumbbell_lateral_raise.gif',
+  'dumbbell-lunge.webp': 'dumbbell_lunge.gif',
+  'dumbbell-pullover.webp': 'dumbbell_pullover.gif',
+  'front-squat.webp': 'barbell_front_squat.gif',
+  'hammer-curl.webp': 'dumbbell_hammer_curl.gif',
+  'hanging-leg-raise.webp': 'hanging_leg_raise.gif',
+  'incline-bench-press.webp': 'barbell_incline_bench_press.gif',
+  'push-press.webp': 'dumbbell_push_press.gif',
+  'romanian-deadlift.webp': 'barbell_romanian_deadlift.gif',
+  'squat.webp': 'dumbbell_squat.gif',
 };
 
-function normalize(str: string): string {
-  return str
-    .toLowerCase()
-    .replace(/\.(webp|gif|png|jpg|jpeg)$/i, '')
-    .replace(/[_\s-]+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .trim();
-}
+// mohamedatef90 mapping: our gifName -> hash (only when bourdon94m doesn't have it)
+const MOHA_MAP: Record<string, string> = {
+  'barbell-biceps-curl.webp': 'Yza7XrQ.gif',
+  'barbell-hack-squat-exercise.webp': 'Yza7XrQ.gif',
+  'barbell-lying-tricep-extension.webp': 'Yza7XrQ.gif',
+  'barbell-row.gif': 'Yza7XrQ.gif',
+  'barbell-standing-calf-raise-2.webp': 'Yza7XrQ.gif',
+  'barbell-standing-triceps-extension.webp': 'Yza7XrQ.gif',
+  'belt-squat.webp': 'arsYEd3.gif',
+  'bulgarian-split-squat-barbell.webp': 'arsYEd3.gif',
+  'cable-chest-press.webp': 'KHPZL0b.gif',
+  'cable-crunch.webp': 'KHPZL0b.gif',
+  'cable-curl-with-bar.webp': 'KHPZL0b.gif',
+  'cable-curl-with-rope.webp': 'KHPZL0b.gif',
+  'cable-rear-delt-row.webp': 'KHPZL0b.gif',
+  'cable-row-seated-narrow-grip.webp': 'KHPZL0b.gif',
+  'cable-row-seated-single-arm.webp': 'KHPZL0b.gif',
+  'calf-raise-standing.webp': '9JprnPh.gif',
+  'close-grip-bench-press.webp': 'vrhHa6D.gif',
+  'crossbody-cable-triceps-extension.webp': 'KHPZL0b.gif',
+  'crunch.webp': 'tZkGYZ9.gif',
+  'dips.webp': 'LkoAWAE.gif',
+  'dumbbell-chest-fly.webp': 'BU15nH4.gif',
+  'dumbbell-chest-press.webp': 'BU15nH4.gif',
+  'dumbbell-incline-press.webp': 'BU15nH4.gif',
+  'ez-curl.webp': '3omWx6P.gif',
+  'hack-squat-machine.gif': '5VCj6iH.gif',
+  'hip-thrust.webp': 'f7Y9eDZ.gif',
+  'incline-bench-skullcrushers.webp': '3TZduzM.gif',
+  'incline-dumbbell-curl.webp': '3TZduzM.gif',
+  'lat-pulldown-with-neutral-grip-1.webp': '4IKbhHV.gif',
+  'lateral-raise-machine.webp': '4IKbhHV.gif',
+  'leg-curl-seated.webp': '3omWx6P.gif',
+  'leg-extension-one-leg.webp': '7HcfMBP.gif',
+  'leg-extension-seated.webp': '7HcfMBP.gif',
+  'leg-press.webp': 'khlHMqs.gif',
+  'lying-dumbbell-triceps-extension-1.webp': 'GxDwDX0.gif',
+  'lying-leg-curl.webp': 'GxDwDX0.gif',
+  'machine-chest-fly.webp': 'IeDEXTe.gif',
+  'machine-chest-press.webp': 'IeDEXTe.gif',
+  'machine-lat-pulldown.webp': 'IeDEXTe.gif',
+  'machine-overhead-tricep-extension.webp': 'IeDEXTe.gif',
+  'machine-shoulder-press.webp': 'IeDEXTe.gif',
+  'one-arm-lat-pulldown.webp': '4IKbhHV.gif',
+  'overhead-cable-triceps-extension-from-upper-position.webp': 'NAkmgdx.gif',
+  'overhead-press-exercise.webp': 'NAkmgdx.gif',
+  'overhead-tricep-extension-lower-position.webp': 'NAkmgdx.gif',
+  'preacher-curl-barbell.webp': 'SYJ4Bkt.gif',
+  'pull-ups.webp': '4IKbhHV.gif',
+  'push-up.webp': 'A9qxk2F.gif',
+  'reverse-dumbbell-flyes.webp': 'sTfvVsG.gif',
+  'reverse-machine-fly.webp': 'sTfvVsG.gif',
+  'seated-calf-raise-barbell.webp': 'RoV1Rfa.gif',
+  'seated-dumbbell-shoulder-press.webp': 'RoV1Rfa.gif',
+  'seated-machine-row.webp': 'RoV1Rfa.gif',
+  'single-leg-leg-curl.webp': 'arsYEd3.gif',
+  'smith-machine-lunge.webp': 'MzNnwx9.gif',
+  'spider-curl-does-whatever-a-spider-curl-does-2.webp': 'VdLZ3nB.gif',
+  't-bar-row-machine.webp': 'IeDEXTe.gif',
+  'triceps-pushdown-with-rope.webp': '7HcfMBP.gif',
+  'triceps-pushdown-with-straight-handle.webp': '7HcfMBP.gif',
+};
 
-export function getGifUrl(gifName: string | undefined): string | null {
-  if (!gifName || gifName.trim() === '') return null;
-  const original = gifName.trim();
-  const key1 = normalize(original);
-  const mapped1 = NAME_MAP[key1];
-  if (mapped1) return `${GIF_BASE}/${mapped1}`;
-  const key2 = normalize(original).replace(/\.webp$/, '');
-  const mapped2 = NAME_MAP[key2];
-  if (mapped2) return `${GIF_BASE}/${mapped2}`;
-  const base = original.split('/').pop() || original;
-  const key3 = normalize(base);
-  const mapped3 = NAME_MAP[key3];
-  if (mapped3) return `${GIF_BASE}/${mapped3}`;
-  const fallback = key3.replace(/-/g, '_') + '.gif';
-  return `${GIF_BASE}/${fallback}`;
+const BOURDON_BASE = 'https://raw.githubusercontent.com/Bourdon94m/Workout-Animated-GIF/main/media';
+const MOHA_BASE = 'https://raw.githubusercontent.com/mohamedatef90/exercise-library/main/gifs';
+
+export function getGifUrl(gifName?: string): string | null {
+  if (!gifName) return null;
+
+  // 1. Bourdon94m (descriptive, high quality)
+  if (BOURDON_MAP[gifName]) {
+    return `${BOURDON_BASE}/${BOURDON_MAP[gifName]}`;
+  }
+
+  // 2. mohamedatef90 (hash-based, fallback)
+  if (MOHA_MAP[gifName]) {
+    return `${MOHA_BASE}/${MOHA_MAP[gifName]}`;
+  }
+
+  // 3. Local Bourdon94m files (9 we already have downloaded)
+  const LOCAL: Record<string, string> = {
+    'barbell-lunge.webp': '/gifs/barbell_lunge.gif',
+    'barbell-shrug.webp': '/gifs/barbell_shrug.gif',
+    'cable-front-raise.webp': '/gifs/cable_front_raise.gif',
+    'cable-lateral-raise.webp': '/gifs/cable_lateral_raise.gif',
+    'dumbbell-front-raise.webp': '/gifs/dumbbell_front_raise.gif',
+    'dumbbell-lateral-raise.webp': '/gifs/dumbbell_lateral_raise.gif',
+    'dumbbell-lunge.webp': '/gifs/dumbbell_lunge.gif',
+    'dumbbell-pullover.webp': '/gifs/dumbbell_pullover.gif',
+    'hanging-leg-raise.webp': '/gifs/hanging_leg_raise.gif',
+  };
+  if (LOCAL[gifName]) {
+    return LOCAL[gifName];
+  }
+
+  return null;
 }

@@ -37,6 +37,7 @@ export default function ActiveWorkout() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [saving, setSaving] = useState(false);
+  const [customExercise, setCustomExercise] = useState('');
   const [elapsed, setElapsed] = useState(0);
   const [imageModal, setImageModal] = useState<string | null>(null);
   const startTimeRef = useRef(Date.now());
@@ -81,6 +82,22 @@ export default function ActiveWorkout() {
       gifName: def.gifName,
       sets: [{ id: Math.random().toString(), reps: '', weight: '', completed: false }],
     }]);
+    setModalOpen(false);
+    setSearch('');
+    setSelectedCategory(null);
+  };
+
+  const addCustomExercise = () => {
+    const name = customExercise.trim();
+    if (!name) return;
+    setExercises(prev => [...prev, {
+      id: Math.random().toString(),
+      exerciseId: 'custom',
+      name,
+      gifName: undefined,
+      sets: [{ id: Math.random().toString(), reps: '', weight: '', completed: false }],
+    }]);
+    setCustomExercise('');
     setModalOpen(false);
     setSearch('');
     setSelectedCategory(null);
@@ -152,7 +169,8 @@ export default function ActiveWorkout() {
   const filtered = EXERCISES_DATA.filter(e => {
     const matchCat = selectedCategory ? e.category === selectedCategory : true;
     const matchSearch = e.name.toLowerCase().includes(search.toLowerCase());
-    return matchCat && matchSearch;
+    const hasGif = !!getGifUrl(e.gifName);
+    return matchCat && matchSearch && hasGif;
   });
 
   return (
@@ -301,6 +319,26 @@ export default function ActiveWorkout() {
             </div>
           </div>
 
+          {/* Custom exercise input */}
+          <div className="px-4 py-2 bg-surface border-b border-border">
+            <div className="flex items-center gap-2">
+              <input
+                value={customExercise}
+                onChange={e => setCustomExercise(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addCustomExercise()}
+                placeholder={t('add_custom_exercise_placeholder') || '... or add your own exercise'}
+                className="flex-1 bg-background border border-border rounded-xl px-3 py-2 text-white text-sm outline-none placeholder-gray-500"
+              />
+              <button
+                onClick={addCustomExercise}
+                disabled={!customExercise.trim()}
+                className="px-4 py-2 bg-primary text-black font-bold rounded-xl disabled:opacity-30 text-sm"
+              >
+                + {t('add') || 'Add'}
+              </button>
+            </div>
+          </div>
+
           {/* Category chips */}
           <div className="px-4 py-2 bg-surface border-b border-border overflow-x-auto hide-scrollbar">
             <div className="flex gap-2">
@@ -323,7 +361,7 @@ export default function ActiveWorkout() {
           </div>
 
           {/* Exercise list */}
-          <div className="flex-1 overflow-y-auto pb-4">
+          <div className="flex-1 min-h-0 overflow-y-auto">
             {filtered.map(def => {
               const gifUrl = getGifUrl(def.gifName) || null;
               return (
@@ -344,8 +382,8 @@ export default function ActiveWorkout() {
                     )}
                   </div>
                   <div className="flex-1">
-                    <p className="text-white font-bold text-sm">{def.name}</p>
-                    <p className="text-gray-500 text-xs">{def.category} · {def.equipment}</p>
+                    <p className="text-white font-bold text-sm">{t(def.name)}</p>
+                    <p className="text-gray-500 text-xs">{t(def.category)} · {t(def.equipment)}</p>
                   </div>
                   <svg className="w-6 h-6 text-primary flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" d="M12 4v16m8-8H4"/>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { collection, doc, getDocs, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
-import { analyzeFoodImage } from '../utils/gemini';
+import { analyzeFoodImage, parseAIError } from '../utils/gemini';
 
 type FoodItem = {
   id: string;
@@ -36,6 +36,9 @@ export default function Nutrition() {
   const [scanError, setScanError] = useState<string | null>(null);
   const [correctionText, setCorrectionText] = useState('');
   const [base64Image, setBase64Image] = useState<string>('');
+  const [pendingImage, setPendingImage] = useState<{file: File; base64: string} | null>(null);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [imageComment, setImageComment] = useState('');
   const [targetModal, setTargetModal] = useState(false);
   const [tempTarget, setTempTarget] = useState('');
   const [manualModal, setManualModal] = useState(false);
@@ -143,7 +146,7 @@ export default function Nutrition() {
       setCorrectionText('');
       setScanState('result');
     } catch (e: any) {
-      setScanError(e.message || (isRu ? 'Ошибка' : 'Error'));
+      setScanError(parseAIError(e, isRu));
       setScanState('result');
     }
   };
@@ -178,7 +181,7 @@ export default function Nutrition() {
       setScanResult(foodItem);
       setScanState('result');
     } catch (e: any) {
-      setScanError(e.message || (isRu ? 'Ошибка сканирования' : 'Scan failed'));
+      setScanError(parseAIError(e, isRu));
       setScanState('idle');
     }
   };
@@ -204,7 +207,13 @@ export default function Nutrition() {
   };
 
   const saveManual = async () => {
-    if (!manualName || !manualCals || !fbUser) return;
+    if (!manualName || !manualCals) {
+      return;
+    }
+    if (!fbUser) {
+      alert(isRu ? 'Сначала войди в аккаунт через Профиль' : 'Please log in via Profile first');
+      return;
+    }
     const item: FoodItem = {
       id: Date.now().toString(),
       name: manualName,
@@ -303,7 +312,7 @@ export default function Nutrition() {
                 type="text"
                 value={correctionText}
                 onChange={e => setCorrectionText(e.target.value)}
-                placeholder={isRu ? 'Что было не так? Опишите...' : 'What was wrong? Describe...'}
+                placeholder={t('what_was_wrong_placeholder')}
                 className="input-field w-full text-sm mb-2"
               />
             </div>
@@ -338,8 +347,69 @@ export default function Nutrition() {
 
       {/* Error */}
       {scanError && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-2xl p-4 mb-4">
-          <p className="text-red-400 text-sm">{scanError}</p>
+        <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4 mb-4 flex items-start gap-3">
+          <span className="text-2xl">🤖</span>
+          <p className="text-yellow-300 text-sm leading-relaxed flex-1">{scanError}</p>
+        </div>
+      )}
+
+      {/* Photo Comment Modal */}
+      {showImageModal && pendingImage && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+          <div className="bg-surface rounded-2xl p-5 w-full max-w-sm border border-border">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white font-bold text-lg">{l('Photo for AI', 'Фото для ИИ')}</h3>
+              <button onClick={() => { setShowImageModal(false); setPendingImage(null); setImageComment(''); }} className="text-gray-400">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div className="bg-black/30 rounded-xl p-2 mb-4 flex justify-center">
+              <img src={`data:image/jpeg;base64,${pendingImage.base64}`} alt="Preview" className="h-32 object-contain rounded-lg" />
+            </div>
+            <textarea
+              value={imageComment}
+              onChange={e => setImageComment(e.target.value)}
+              placeholder={t('add_comment_placeholder')}
+              className="input-field w-full text-sm mb-4 resize-none"
+              rows={3}
+            />
+            <button
+              onClick={async () => {
+                if (!pendingImage) return;
+                setShowImageModal(false);
+                setScanState('scanning');
+                setScanError(null);
+                setScanResult(null);
+                setBase64Image(pendingImage.base64);
+                try {
+                  const result = await analyzeFoodImage(pendingImage.base64, imageComment || undefined);
+                  const foodItem: FoodItem = {
+                    id: Date.now().toString(),
+                    name: result.meal || 'Food',
+                    calories: result.calories || 0,
+                    protein: result.protein || 0,
+                    carbs: result.carbs || 0,
+                    fats: result.fats || 0,
+                    fiber: result.fiber || 0,
+                    breakdown: result.breakdown,
+                    timestamp: serverTimestamp(),
+                  };
+                  setScanResult(foodItem);
+                  setScanState('result');
+                } catch (e: any) {
+                  setScanError(parseAIError(e, isRu));
+                  setScanState('idle');
+                }
+                setPendingImage(null);
+                setImageComment('');
+              }}
+              className="w-full bg-primary text-black font-extrabold py-3 rounded-xl active:scale-95 transition-transform"
+            >
+              🤖 {l('Send to AI', 'Отправить ИИ')}
+            </button>
+          </div>
         </div>
       )}
 
@@ -355,8 +425,8 @@ export default function Nutrition() {
 
       {/* Image Buttons */}
       <div className="grid grid-cols-2 gap-3 mb-4">
-        <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
-        <input type="file" accept="image/*" capture="environment" ref={cameraInputRef} className="hidden" onChange={e => { if (e.target.files?.[0]) handleImageScan(e.target.files[0]); e.target.value = ''; }} />
+        <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={e => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = (ev) => { const base64 = (ev.target?.result as string).split(',')[1] || ''; setPendingImage({ file, base64 }); setImageComment(''); setShowImageModal(true); }; reader.readAsDataURL(file); } e.target.value = ''; }} />
+        <input type="file" accept="image/*" capture="environment" ref={cameraInputRef} className="hidden" onChange={e => { const file = e.target.files?.[0]; if (file) { const reader = new FileReader(); reader.onload = (ev) => { const base64 = (ev.target?.result as string).split(',')[1] || ''; setPendingImage({ file, base64 }); setImageComment(''); setShowImageModal(true); }; reader.readAsDataURL(file); } e.target.value = ''; }} />
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={scanState === 'scanning'}
