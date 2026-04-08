@@ -23,7 +23,7 @@ const BOURDON_MAP: Record<string, string> = {
   'incline-bench-press.webp': 'barbell_incline_bench_press.gif',
   'push-press.webp': 'dumbbell_push_press.gif',
   'romanian-deadlift.webp': 'barbell_romanian_deadlift.gif',
-  'squat.webp': 'dumbbell_squat.gif',
+  'squat.webp': 'barbell_full_squat.gif',
 };
 
 // mohamedatef90 mapping: our gifName -> hash (only when bourdon94m doesn't have it)
@@ -64,11 +64,11 @@ const MOHA_MAP: Record<string, string> = {
   'leg-press.webp': 'khlHMqs.gif',
   'lying-dumbbell-triceps-extension-1.webp': 'GxDwDX0.gif',
   'lying-leg-curl.webp': 'GxDwDX0.gif',
-  'machine-chest-fly.webp': 'IeDEXTe.gif',
-  'machine-chest-press.webp': 'IeDEXTe.gif',
-  'machine-lat-pulldown.webp': 'IeDEXTe.gif',
-  'machine-overhead-tricep-extension.webp': 'IeDEXTe.gif',
-  'machine-shoulder-press.webp': 'IeDEXTe.gif',
+  'machine-chest-fly.webp': 'Pr9Rhf4.gif',
+  'machine-chest-press.webp': 'WbNq5Xu.gif',
+  'machine-lat-pulldown.webp': 'ecpY0rH.gif',
+  'machine-overhead-tricep-extension.webp': 'o8aOcrz.gif',
+  'machine-shoulder-press.webp': '67n3r98.gif',
   'one-arm-lat-pulldown.webp': '4IKbhHV.gif',
   'overhead-cable-triceps-extension-from-upper-position.webp': 'NAkmgdx.gif',
   'overhead-press-exercise.webp': 'NAkmgdx.gif',
@@ -82,9 +82,9 @@ const MOHA_MAP: Record<string, string> = {
   'seated-dumbbell-shoulder-press.webp': 'RoV1Rfa.gif',
   'seated-machine-row.webp': 'RoV1Rfa.gif',
   'single-leg-leg-curl.webp': 'arsYEd3.gif',
-  'smith-machine-lunge.webp': 'MzNnwx9.gif',
+  'smith-machine-lunge.webp': 'HsjbB1z.gif',
   'spider-curl-does-whatever-a-spider-curl-does-2.webp': 'VdLZ3nB.gif',
-  't-bar-row-machine.webp': 'IeDEXTe.gif',
+  't-bar-row-machine.webp': 'FVM1AUZ.gif',
   'triceps-pushdown-with-rope.webp': '7HcfMBP.gif',
   'triceps-pushdown-with-straight-handle.webp': '7HcfMBP.gif',
 };
