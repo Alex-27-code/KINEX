@@ -1546,6 +1546,52 @@ const _rawPrograms: Program[] = [
             ]}
         ]
     },
+
+    {
+        id: "sam-sulek-4day", title: "Sam Sulek 4-Day Split", category: "Bodybuilding",
+        badge: "🔥 Most Popular",
+        description: "High intensity, high effort bro split popularized by Sam Sulek. Push, Pull, Legs, Arms. Go heavy, train to failure.",
+        difficulty: "Intermediate", weeks: 8, daysPerWeek: 4,
+        schedule: [
+            {
+                weekLabel: "Standard Flow", days: [
+                    { title: "Day 1: Chest, Triceps, Shoulders", exercises: [
+                        { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-12", note: "To failure" },
+                        { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "8-12", note: "To failure" },
+                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_19", name: "Cable Lateral Raise", sets: "4", reps: "12-15", note: "To failure" },
+                        { id: "ex_80", name: "Triceps Pushdown With Straight Handle", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_57", name: "Machine Overhead Tricep Extension", sets: "3", reps: "12-15", note: "To failure" }
+                    ]},
+                    { title: "Day 2: Back, Biceps", exercises: [
+                        { id: "ex_65", name: "Pull Ups", sets: "3", reps: "8-12", note: "To failure" },
+                        { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-12", note: "To failure" },
+                        { id: "ex_56", name: "Machine Lat Pulldown", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "10-12", note: "To failure" },
+                        { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12-15", note: "To failure" }
+                    ]},
+                    { title: "Day 3: Legs", exercises: [
+                        { id: "ex_77", name: "Squat", sets: "4", reps: "8-12", note: "To failure" },
+                        { id: "ex_41", name: "Hip Thrust", sets: "4", reps: "10-12", note: "To failure" },
+                        { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_50", name: "Leg Extension Seated", sets: "3", reps: "12-15", note: "To failure" },
+                        { id: "ex_53", name: "Lying Leg Curl", sets: "3", reps: "12-15", note: "To failure" },
+                        { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "15-20", note: "To failure" }
+                    ]},
+                    { title: "Day 4: Shoulders, Arms", exercises: [
+                        { id: "ex_61", name: "Overhead Press Exercise", sets: "4", reps: "8-12", note: "To failure" },
+                        { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_19", name: "Cable Lateral Raise", sets: "4", reps: "12-15", note: "To failure" },
+                        { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "To failure" },
+                        { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "10-12", note: "To failure" },
+                        { id: "ex_28", name: "Dips", sets: "3", reps: "8-12", note: "To failure" }
+                    ]}
+                ]
+            }
+        ]
+    },
 ];
 
 export const PROGRAMS_DATA = _rawPrograms.filter(p => p.id !== "DELETE_ME");

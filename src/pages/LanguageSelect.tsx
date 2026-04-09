@@ -15,7 +15,10 @@ export default function LanguageSelect() {
   const selectLang = (code: string) => {
     i18n.changeLanguage(code);
     localStorage.setItem('kinex_lang', code);
-    navigate('/auth');
+    // Stay on the same page, just change language
+    if (location.pathname === '/language') {
+      navigate('/auth');
+    }
   };
 
   return (
