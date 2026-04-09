@@ -1,6 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyCIFedcQdaQUV4B175MHS4V4XvqAoQ7fOc';
+const PROXY_URL = import.meta.env.VITE_AI_PROXY_URL || '/api';
+
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 export interface FoodAnalysis {
@@ -35,8 +37,8 @@ function friendlyError(error: any, isRu: boolean): string {
   
   if (msg.includes('403') || msg.includes('403 Forbidden') || msg.includes('location is not supported') || msg.includes('API_KEY_INVALID') || msg.includes('INVALID_ARGUMENT')) {
     return isRu 
-      ? '⚠️ Ошибка авторизации AI. Проверьте API ключ Gemini в настройках.'
-      : '⚠️ AI authorization error. Check your Gemini API key in settings.';
+      ? '⚠️ AI временно недоступен. Попробуйте через минуту.'
+      : '⚠️ AI temporarily unavailable. Try again in a minute.';
   }
   if (msg.includes('quota') || msg.includes('RESOURCE_EXHAUSTED') || msg.includes('429')) {
     return isRu
@@ -63,7 +65,6 @@ function friendlyError(error: any, isRu: boolean): string {
       ? '🤖 AI дал нечёткий ответ. Попробуйте ещё раз с другим фото.'
       : '🤖 AI gave unclear response. Try again with a different photo.';
   }
-  // Generic fallback — don't expose raw technical message
   return isRu
     ? '🤖 Что-то пошло не так с AI. Попробуйте ещё раз или опишите еду вручную.'
     : '🤖 Something went wrong with AI. Try again or log food manually.';
@@ -73,8 +74,39 @@ export async function analyzeFoodImage(
   base64Image: string,
   userContext?: string
 ): Promise<FoodAnalysis> {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+  // Try proxy first (Vercel serverless in US — bypasses geo-block)
+  if (PROXY_URL !== 'false') {
+    try {
+      const response = await fetch(`${PROXY_URL}/analyze-food`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Image, context: userContext }),
+      });
 
+      if (response.ok) {
+        const data = await response.json();
+        if (data && (data.meal || data.calories)) {
+          return {
+            meal: String(data.meal || 'Food'),
+            calories: Number(data.calories) || 0,
+            protein: Number(data.protein) || 0,
+            carbs: Number(data.carbs) || 0,
+            fats: Number(data.fats) || 0,
+            fiber: Number(data.fiber) || 0,
+            breakdown: String(data.breakdown || ''),
+          };
+        }
+      } else {
+        const errText = await response.text();
+        console.warn('Proxy error:', response.status, errText);
+      }
+    } catch (e) {
+      console.warn('Proxy fetch failed, falling back to direct SDK:', e);
+    }
+  }
+
+  // Fallback: direct SDK call (works from supported regions)
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
   const prompt = `You are a professional nutritionist. Analyze this food image and provide accurate nutritional information.
 ${userContext ? `User feedback: "${userContext}". Please reconsider.\n` : ''}
 Return EXACTLY this JSON (no markdown, no code blocks):
@@ -88,42 +120,24 @@ Important: calories realistic for portion, all values in grams.`;
     ]);
 
     const text = result.response.text?.trim() || '';
-
-    if (text.toLowerCase().includes('unable') ||
-        text.toLowerCase().includes('safety') ||
-        text.toLowerCase().includes('harmful') ||
-        text.toLowerCase().includes('blocked')) {
+    if (text.toLowerCase().includes('unable') || text.toLowerCase().includes('safety') || text.toLowerCase().includes('blocked')) {
       throw new Error('BLOCKED_SAFETY');
     }
 
     const json = extractJSON(text);
     if (json && json.calories && json.meal) {
-      return {
-        meal: String(json.meal || 'Food'),
-        calories: Number(json.calories) || 0,
-        protein: Number(json.protein) || 0,
-        carbs: Number(json.carbs) || 0,
-        fats: Number(json.fats) || 0,
-        fiber: Number(json.fiber) || 0,
-        breakdown: String(json.breakdown || ''),
-      };
+      return { meal: String(json.meal || 'Food'), calories: Number(json.calories) || 0, protein: Number(json.protein) || 0, carbs: Number(json.carbs) || 0, fats: Number(json.fats) || 0, fiber: Number(json.fiber) || 0, breakdown: String(json.breakdown || '') };
     }
-
     throw new Error('PARSE_FAILED');
   } catch (error: any) {
     const msg = error?.message || String(error);
-    if (msg === 'BLOCKED_SAFETY' || msg === 'PARSE_FAILED') {
-      throw new Error(msg); // let caller handle
-    }
-    // Wrap ALL errors in friendly message
+    if (msg === 'BLOCKED_SAFETY' || msg === 'PARSE_FAILED') throw new Error(msg);
     throw new Error(`AI_ERROR:${msg.slice(0, 200)}`);
   }
 }
 
 export function parseAIError(error: any, isRu: boolean): string {
   const msg = String(error?.message || error || '');
-  if (msg.startsWith('AI_ERROR:')) {
-    return friendlyError({ message: msg.slice(9) }, isRu);
-  }
+  if (msg.startsWith('AI_ERROR:')) return friendlyError({ message: msg.slice(9) }, isRu);
   return friendlyError(error, isRu);
 }
