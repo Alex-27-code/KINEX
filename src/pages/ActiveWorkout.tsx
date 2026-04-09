@@ -305,7 +305,7 @@ export default function ActiveWorkout() {
               <input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="Search exercises..."
+                placeholder={t('search_exercises') || 'Search exercises...'}
                 className="flex-1 bg-transparent text-white text-sm outline-none placeholder-gray-500"
                 autoFocus
               />
@@ -392,7 +392,7 @@ export default function ActiveWorkout() {
               );
             })}
             {filtered.length === 0 && (
-              <p className="text-gray-500 text-center py-8">No exercises found</p>
+              <p className="text-gray-500 text-center py-8">{t('no_exercises_found') || 'No exercises found'}</p>
             )}
           </div>
         </div>
