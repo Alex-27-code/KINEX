@@ -857,44 +857,7 @@ const _rawPrograms: Program[] = [
         ]
     }]
 },
-
-{
-    id: "german-volume-training", title: "German Volume Training", category: "Bodybuilding",
-    description: "10×10 protocol. 10 sets of 10 reps @ 60% 1RM for primary muscle. legendary for rapid muscle growth. Only one main lift per session.",
-    difficulty: "Advanced", weeks: 6, daysPerWeek: 4,
-    schedule: [{
-        weekLabel: "Standard Week", days: [
-            {
-                title: "Day 1 — Chest GVT", exercises: [
-                    { id: "ex_12", name: "Bench Press", sets: "10", reps: "10", note: "10×10 @ 60% 1RM, rest 60-90s between sets" },
-                    { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "10", note: "3×10 secondary press" },
-                    { id: "ex_29", name: "Dumbbell Chest Fly", sets: "3", reps: "12", note: "3×12 isolation" },
-                ]
-            },
-            {
-                title: "Day 2 — Back GVT", exercises: [
-                    { id: "ex_65", name: "Pull Ups", sets: "10", reps: "10", note: "10×10 @ 60% (bodyweight or added)" },
-                    { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10", note: "3×10 secondary" },
-                    { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "12", note: "3×12 isolation" },
-                ]
-            },
-            {
-                title: "Day 3 — Legs GVT", exercises: [
-                    { id: "ex_77", name: "Squat", sets: "10", reps: "10", note: "10×10 @ 60% 1RM" },
-                    { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "10", note: "3×10 glutes" },
-                    { id: "ex_53", name: "Lying Leg Curl", sets: "3", reps: "12", note: "3×12 hamstrings" },
-                ]
-            },
-            {
-                title: "Day 4 — Shoulders/Arms", exercises: [
-                    { id: "ex_61", name: "Overhead Press Exercise", sets: "10", reps: "10", note: "10×10 @ 60% 1RM" },
-                    { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "12", note: "3×12" },
-                    { id: "ex_24", name: "Close Grip Bench Press", sets: "3", reps: "12", note: "3×12" },
-                ]
-            },
-        ]
-    }]
-},
+,
 
 {
     id: "4day-upper-lower-hypertrophy", title: "4-Day Upper/Lower Hypertrophy", category: "Bodybuilding",
@@ -1077,52 +1040,7 @@ const _rawPrograms: Program[] = [
         ]
     }]
 },
-
-{
-    id: "gvt-powerbuilding", title: "GVT Powerbuilding", category: "Powerbuilding",
-    description: "German Volume Training principles applied to powerbuilding. 10×10 for main lifts @ 60%, then 3×10 for accessory. Pure size and strength.",
-    difficulty: "Advanced", weeks: 8, daysPerWeek: 4,
-    schedule: [{
-        weekLabel: "Standard Week", days: [
-            {
-                title: "Day 1 — Squat + Bench GVT", exercises: [
-                    { id: "ex_77", name: "Squat", sets: "10", reps: "10", note: "10×10 @ 60% TM, rest 60-90s" },
-                    { id: "ex_12", name: "Bench Press", sets: "10", reps: "10", note: "10×10 @ 60% TM" },
-                    { id: "ex_42", name: "Incline Bench Press", sets: "3", reps: "10", note: "3×10" },
-                    { id: "ex_19", name: "Cable Lateral Raise", sets: "3", reps: "15", note: "3×15" },
-                    { id: "ex_48", name: "Leg Curl Seated", sets: "3", reps: "12", note: "3×12" },
-                ]
-            },
-            {
-                title: "Day 2 — Deadlift + Overhead GVT", exercises: [
-                    { id: "ex_27", name: "Deadlift", sets: "10", reps: "10", note: "10×10 @ 60% TM" },
-                    { id: "ex_61", name: "Overhead Press Exercise", sets: "10", reps: "10", note: "10×10 @ 60% TM" },
-                    { id: "ex_56", name: "Machine Lat Pulldown", sets: "3", reps: "10", note: "3×10" },
-                    { id: "ex_68", name: "Reverse Dumbbell Flyes", sets: "3", reps: "15", note: "3×15" },
-                    { id: "ex_80", name: "Triceps Pushdown With Straight Handle", sets: "3", reps: "15", note: "3×15" },
-                ]
-            },
-            {
-                title: "Day 3 — Squat 2 + Bench 2", exercises: [
-                    { id: "ex_77", name: "Squat", sets: "5", reps: "5", note: "5×5 @ 75-80% (strength day)" },
-                    { id: "ex_12", name: "Bench Press", sets: "5", reps: "5", note: "5×5 @ 75-80%" },
-                    { id: "ex_41", name: "Hip Thrust", sets: "3", reps: "10", note: "3×10" },
-                    { id: "ex_73", name: "Seated Machine Row", sets: "3", reps: "10", note: "3×10" },
-                    { id: "ex_23", name: "Calf Raise Standing", sets: "4", reps: "15", note: "4×15" },
-                ]
-            },
-            {
-                title: "Day 4 — Deadlift 2 + Overhead 2", exercises: [
-                    { id: "ex_27", name: "Deadlift", sets: "5", reps: "5", note: "5×5 @ 75-80% (strength day)" },
-                    { id: "ex_61", name: "Overhead Press Exercise", sets: "5", reps: "5", note: "5×5 @ 75-80%" },
-                    { id: "ex_7", name: "Barbell Row", sets: "4", reps: "8", note: "4×8" },
-                    { id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "10", note: "3×10" },
-                    { id: "ex_39", name: "Hammer Curl", sets: "3", reps: "12", note: "3×12" },
-                ]
-            },
-        ]
-    }]
-},
+,
 
 {
     id: "upper-lower-powerbuilding", title: "Upper/Lower Powerbuilding (4-Day)", category: "Powerbuilding",
@@ -1577,9 +1495,57 @@ const _rawPrograms: Program[] = [
     }]
 },
 
+
+    {
+        id: "fst-7-split", title: "FST-7 Bodybuilding Split", category: "Bodybuilding", badge: "🔥 Most Popular",
+        description: "Hany Rambod's Fascia Stretch Training-7. Emphasizes 7 high-volume sets with only 30-45s rest to finish the muscle completely.",
+        difficulty: "Advanced", weeks: 8, daysPerWeek: 5,
+        schedule: [
+            { weekLabel: "Standard Rotation", days: [
+                { title: "Monday: Chest & Biceps", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-12" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-12" }, { id: "ex_1", name: "Arnold Press", sets: "7", reps: "10-12", note: "30s rest, stretch hard" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "7", reps: "10-12", note: "30s rest" }] },
+                { title: "Tuesday: Back & Abs", exercises: [{ id: "ex_35", name: "Dumbbell Pullover", sets: "4", reps: "10" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "7", reps: "10-12", note: "30s rest" }, { id: "ex_1", name: "Arnold Press", sets: "7", reps: "15" }] },
+                { title: "Thursday: Shoulders & Triceps", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "4", reps: "8-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "12" }, { id: "ex_1", name: "Arnold Press", sets: "7", reps: "12", note: "30s rest" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10" }, { id: "ex_66", name: "Push Press", sets: "7", reps: "10-12", note: "30s rest" }] },
+                { title: "Friday: Quads, Hams, Calves", exercises: [{ id: "ex_77", name: "Squat", sets: "4", reps: "8-10" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-12" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "7", reps: "12", note: "30s rest" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "7", reps: "10-12", note: "30s rest" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "7", reps: "15" }] },
+                { title: "Saturday: Arms (Biceps & Triceps)", exercises: [{ id: "ex_3", name: "Barbell Biceps Curl", sets: "4", reps: "8-10" }, { id: "ex_12", name: "Bench Press", sets: "4", reps: "8-10" }, { id: "ex_16", name: "Cable Curl With Bar", sets: "7", reps: "10-12", note: "30s rest" }, { id: "ex_79", name: "Triceps Pushdown With Rope", sets: "7", reps: "10-12", note: "30s rest" }] }
+            ]}
+        ]
+    },
+    {
+        id: "mike-mentzer-3day", title: "Mike Mentzer HIT 3-Day Split", category: "Bodybuilding",
+        badge: "🏆 Gold Standard",
+        description: "Mike Mentzer's Heavy Duty High-Intensity Training. Focuses on 1-2 work sets taken to absolute failure. Maximum intensity, maximum recovery.",
+        difficulty: "Advanced", weeks: 4, daysPerWeek: 3,
+        schedule: [
+            { weekLabel: "Standard Cycle", days: [
+                { title: "Day 1: Chest & Back", exercises: [{ id: "ex_1", name: "Arnold Press", sets: "1-2", reps: "6-10", note: "Pre-exhaust, to failure" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "3-5", note: "Absolute failure immediately after fly" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "1-2", reps: "6-10", note: "Pre-exhaust" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "1", reps: "6-10", note: "Failure" }, { id: "ex_27", name: "Deadlift", sets: "1", reps: "6-8", note: "Max effort" }] },
+                { title: "Day 2: Legs & Abs", exercises: [{ id: "ex_2", name: "Back Extension Frontloaded", sets: "1-2", reps: "12-15", note: "Pre-exhaust" }, { id: "ex_51", name: "Leg Press", sets: "1", reps: "10-15", note: "Immediately after extensions to failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "1", reps: "10-12", note: "Failure" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "1", reps: "15-20", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "15-20", note: "Failure" }] },
+                { title: "Day 3: Shoulders & Arms", exercises: [{ id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "1-2", reps: "8-10", note: "Pre-exhaust" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "6-8", note: "Failure" }, { id: "ex_1", name: "Arnold Press", sets: "1", reps: "8-10", note: "Failure" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "1", reps: "6-8", note: "Failure" }, { id: "ex_66", name: "Push Press", sets: "1-2", reps: "8-10", note: "Pre-exhaust" }, { id: "ex_28", name: "Dips", sets: "1", reps: "6-8", note: "Failure" }] }
+            ]}
+        ]
+    },
+    {
+        id: "full-body-3x", title: "Full Body 3x/Week", category: "Bodybuilding",
+        description: "A balanced 3-day full body routine perfect for beginners and intermediates looking for high frequency.",
+        difficulty: "Beginner", weeks: 8, daysPerWeek: 3,
+        schedule: [
+            { weekLabel: "Standard Week", days: [
+                { title: "Day 1: Full Body A", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8-10" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-10" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "2", reps: "12-15" }, { id: "ex_66", name: "Push Press", sets: "2", reps: "12-15" }] },
+                { title: "Day 2: Full Body B", exercises: [{ id: "ex_70", name: "Romanian Deadlift", sets: "3", reps: "8-10" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-10" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-10" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "15-20" }] },
+                { title: "Day 3: Full Body C", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "10-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "AMRAP" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "10-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "10-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "2", reps: "12-15" }, { id: "ex_2", name: "Back Extension Frontloaded", sets: "2", reps: "12-15" }] }
+            ]}
+        ]
+    },
+    {
+        id: "full-body-2x", title: "Full Body 2x/Week", category: "Bodybuilding",
+        description: "A minimalist 2-day full body routine for those with limited time or as a maintenance program.",
+        difficulty: "Beginner", weeks: 8, daysPerWeek: 2,
+        schedule: [
+            { weekLabel: "Standard Week", days: [
+                { title: "Day 1: Full Body 1", exercises: [{ id: "ex_4", name: "Barbell Hack Squat Exercise", sets: "3", reps: "8-10" }, { id: "ex_12", name: "Bench Press", sets: "3", reps: "8-10" }, { id: "ex_35", name: "Dumbbell Pullover", sets: "3", reps: "8-12" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12" }, { id: "ex_3", name: "Barbell Biceps Curl", sets: "3", reps: "10-15" }] },
+                { title: "Day 2: Full Body 2", exercises: [{ id: "ex_27", name: "Deadlift", sets: "3", reps: "5-8" }, { id: "ex_1", name: "Arnold Press", sets: "3", reps: "8-12" }, { id: "ex_7", name: "Barbell Row", sets: "3", reps: "8-12" }, { id: "ex_51", name: "Leg Press", sets: "3", reps: "10-15" }, { id: "ex_9", name: "Barbell Standing Calf Raise 2", sets: "3", reps: "15-20" }] }
+            ]}
+        ]
+    },
 ];
 
-const _programs = _rawPrograms;
-
-export default _programs;
-export { _rawPrograms as PROGRAMS_DATA };
+export const PROGRAMS_DATA = _rawPrograms.filter(p => p.id !== "DELETE_ME");
