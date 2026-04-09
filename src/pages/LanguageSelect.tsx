@@ -1,5 +1,6 @@
-import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const LANGUAGES = [
   { code: 'en', flag: '🇬🇧', labelKey: 'lang_en' },
@@ -15,11 +16,16 @@ export default function LanguageSelect() {
   const selectLang = (code: string) => {
     i18n.changeLanguage(code);
     localStorage.setItem('kinex_lang', code);
-    // Stay on the same page, just change language
-    if (location.pathname === '/language') {
-      navigate('/auth');
-    }
+    // Navigate to auth after language selection
+    navigate('/auth');
   };
+
+  // If already on /auth page, just stay
+  useEffect(() => {
+    if (window.location.pathname === '/auth') {
+      // nothing needed
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
