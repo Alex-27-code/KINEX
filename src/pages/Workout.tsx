@@ -47,7 +47,7 @@ export default function Workout() {
   const [selectedDate, setSelectedDate] = useState(todayStr);
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-36">
       {/* Header */}
       <div className="bg-surface rounded-b-3xl px-5 pt-8 pb-6 mb-0">
         <div className="flex justify-between items-center mb-6">

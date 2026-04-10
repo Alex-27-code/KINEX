@@ -8,6 +8,7 @@ import { analyzeFoodImage, parseAIError } from '../utils/gemini';
 type FoodItem = {
   id: string;
   name: string;
+  displayName?: string;
   calories: number;
   protein: number;
   carbs: number;
@@ -116,6 +117,10 @@ export default function Nutrition() {
 
   const acceptScan = async () => {
     if (!scanResult) return;
+    if (!fbUser) {
+      alert(isRu ? 'Сначала войди в аккаунт через Профиль' : 'Please log in via Profile first');
+      return;
+    }
     await saveFoodItem(scanResult);
     setScanState('idle');
     setScanResult(null);
