@@ -99,7 +99,7 @@
   "photo_for_ai": "Foto para IA",
   "send_to_ai": "Enviar a IA",
   "add_comment_placeholder": "Añade un comentario (qué era, condiciones especiales)...",
-  "what_was_wrong_placeholder": "Qué estaba mal? Describe...",
+  "what_was_wrong_placeholder": "¿Qué estaba mal? (ej. \"sin cebolla, doble queso\")",
   "Day A (Mon/Wed/Fri)": "Día A",
   "Day B (Tue/Thu/Sat)": "Día B",
   "Workout A (Mon/Fri)": "Entrenamiento A",
@@ -639,5 +639,16 @@
   "ai_explanation": "AI Analysis",
   "nutrition_info": "Nutrition Info",
   "serving_size": "Serving size",
-  "servings": "Servings"
+  "servings": "Servings",
+  "Like": "Me gusta",
+  "Dislike": "No me gusta",
+  "Recalculate": "Recalcular",
+  "Recalculating": "Recalculando...",
+  "kcal_left": "kcal restantes",
+  "kcal_over": "kcal de más",
+  "Protein": "Proteína",
+  "Carbs": "Carbohidratos",
+  "Fats": "Grasas",
+  "Fiber": "Fibra",
+  "result_not_right": "Resultado incorrecto. Ingrese corrección:"
 }

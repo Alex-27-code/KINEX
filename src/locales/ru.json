@@ -220,7 +220,7 @@
   "photo_for_ai": "Фото для ИИ",
   "send_to_ai": "Отправить ИИ",
   "add_comment_placeholder": "Добавьте комментарий (что это было, особые условия)...",
-  "what_was_wrong_placeholder": "Что было не так? Опишите...",
+  "what_was_wrong_placeholder": "Что было не так? (например: \"без лука, двойной сыр\")",
   "Day A (Mon/Wed/Fri)": "День А (Пн/Ср/Пт)",
   "Day B (Tue/Thu/Sat)": "День Б (Вт/Чт/Сб)",
   "Workout A (Mon/Fri)": "Тренировка А (Пн/Пт)",
@@ -635,5 +635,16 @@
   "serving_size": "Serving size",
   "servings": "Servings",
   "show_password": "Show password",
-  "hide_password": "Hide password"
+  "hide_password": "Hide password",
+  "Like": "Нравится",
+  "Dislike": "Не нравится",
+  "Recalculate": "Пересчитать",
+  "Recalculating": "Пересчитываем...",
+  "kcal_left": "ккал осталось",
+  "kcal_over": "ккал перебор",
+  "Protein": "Белок",
+  "Carbs": "Угл",
+  "Fats": "Жиры",
+  "Fiber": "Клетчатка",
+  "result_not_right": "Результат не понравился. Введите исправление:"
 }

@@ -173,8 +173,12 @@ export default function Profile() {
       <div className="bg-surface rounded-3xl p-5 border-2 border-primary relative overflow-hidden mb-6 shadow-[0_0_15px_rgba(173,255,0,0.15)]">
         <h2 className="text-xl font-bold text-white mb-1">KINEX <span className="text-primary">PRO</span></h2>
         <p className="text-gray-400 text-sm mb-4">{t('Полный доступ к ИИ питанию, 80+ анимаций упражнений и автогенерация программ.', 'Full access to AI Nutrition, 80+ Exercise Animations, and auto-generated programs.')}</p>
-        <button className="w-full bg-primary text-black font-extrabold py-3 rounded-xl active:scale-95 transition-transform">
-          {t('⭐ Оплатить 500 звёзд', '⭐ Pay 500 Stars')}
+        <button onClick={() => {
+          if (window.Telegram && window.Telegram.WebApp) {
+            window.Telegram.WebApp.openTelegramLink('https://t.me/KinexProBot');
+          }
+        }} className="w-full bg-primary text-black font-extrabold py-3 rounded-xl active:scale-95 transition-transform">
+          {t('⭐ Подписаться в Telegram', '⭐ Subscribe via Telegram')}
         </button>
       </div>
 

@@ -220,7 +220,7 @@
   "photo_for_ai": "Photo for AI",
   "send_to_ai": "Send to AI",
   "add_comment_placeholder": "Add a comment (what was it, special conditions)...",
-  "what_was_wrong_placeholder": "What was wrong? Describe...",
+  "what_was_wrong_placeholder": "What was wrong? (e.g. \"no onion, double cheese\")",
   "Day A (Mon/Wed/Fri)": "Day A (Mon/Wed/Fri)",
   "Day B (Tue/Thu/Sat)": "Day B (Tue/Thu/Sat)",
   "Workout A (Mon/Fri)": "Workout A (Mon/Fri)",
@@ -641,5 +641,16 @@
   "log_out": "🚪 Log Out",
   "logout_confirm": "Are you sure you want to log out?",
   "show_password": "Show password",
-  "hide_password": "Hide password"
+  "hide_password": "Hide password",
+  "Like": "Like",
+  "Dislike": "Dislike",
+  "Recalculate": "Recalculate",
+  "Recalculating": "Recalculating...",
+  "kcal_left": "kcal left",
+  "kcal_over": "kcal over",
+  "Protein": "Protein",
+  "Carbs": "Carbs",
+  "Fats": "Fats",
+  "Fiber": "Fiber",
+  "result_not_right": "Result not right. Enter correction:"
 }

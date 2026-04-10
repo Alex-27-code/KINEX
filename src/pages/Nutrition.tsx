@@ -238,10 +238,15 @@ export default function Nutrition() {
     setTargetModal(false);
   };
 
-  const l = (en: string, ru: string) => isRu ? ru : en;
+  const l = (en: string, ru: string, de?: string, es?: string) => {
+    if (i18n.language === 'ru') return ru;
+    if (i18n.language === 'de') return de || en;
+    if (i18n.language === 'es') return es || en;
+    return en;
+  };
 
   return (
-    <div className="min-h-screen bg-background px-5 pt-8 pb-8">
+    <div className="min-h-screen bg-background px-5 pt-8 pb-36">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-extrabold text-primary">AI {l('Nutrition', 'Питание')}</h1>
@@ -265,14 +270,14 @@ export default function Nutrition() {
         <div className="flex justify-between text-xs mb-4">
           <span className="text-gray-600">0</span>
           <span className={`font-bold ${remaining >= 0 ? 'text-primary' : 'text-red-400'}`}>
-            {remaining >= 0 ? `${remaining} ${l('kcal left', 'ккал осталось')}` : `${Math.abs(remaining)} ${l('kcal over', 'ккал перебор')}`}
+            {remaining >= 0 ? `${remaining} ${l('kcal left', 'ккал осталось', 'kcal übrig', 'kcal restantes')}` : `${Math.abs(remaining)} ${l('kcal over', 'ккал перебор', 'kcal über', 'kcal de más')}`}
           </span>
         </div>
         <div className="grid grid-cols-4 gap-2 text-center border-t border-border pt-4">
-          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Protein', 'Белок')}</p><p className="font-bold text-white text-sm">{currentProtein}g</p></div>
-          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Carbs', 'Угл')}</p><p className="font-bold text-white text-sm">{currentCarbs}g</p></div>
-          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Fats', 'Жиры')}</p><p className="font-bold text-white text-sm">{currentFats}g</p></div>
-          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Fiber', 'Клетч')}</p><p className="font-bold text-white text-sm">{currentFiber}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Protein', 'Белок', 'Protein', 'Proteína')}</p><p className="font-bold text-white text-sm">{currentProtein}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Carbs', 'Угл', 'Kohlenhydraten', 'Carbohidratos')}</p><p className="font-bold text-white text-sm">{currentCarbs}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Fats', 'Жиры', 'Fette', 'Grasas')}</p><p className="font-bold text-white text-sm">{currentFats}g</p></div>
+          <div><p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{l('Fiber', 'Клетч', 'Ballast', 'Fibra')}</p><p className="font-bold text-white text-sm">{currentFiber}g</p></div>
         </div>
       </div>
 
@@ -280,12 +285,12 @@ export default function Nutrition() {
       {(scanState === 'result' || scanState === 'correcting' || scanState === 'rescanning') && scanResult && (
         <div className="bg-surface border border-primary/40 rounded-2xl p-5 mb-4">
           {scanState === 'correcting' && (
-            <p className="text-primary text-sm font-bold mb-3">✗ {isRu ? 'Результат не понравился. Введите исправление:' : 'Result not right. Enter correction:'}</p>
+            <p className="text-primary text-sm font-bold mb-3">✗ {l('Result not right. Enter correction:', 'Результат не понравился. Введите исправление:', 'Ergebnis nicht richtig. Korrektur eingeben:', 'Resultado incorrecto. Ingrese corrección:')}</p>
           )}
 
           <div className="flex justify-between items-start mb-3">
             <div>
-              <p className="text-primary font-bold text-lg">{scanResult.name}</p>
+              <p className="text-primary font-bold text-lg">{scanResult.displayName || scanResult.name}</p>
               <p className="text-white text-3xl font-black">{scanResult.calories} <span className="text-primary text-lg font-normal">kcal</span></p>
             </div>
             <button onClick={() => { setScanState('idle'); setScanResult(null); setCorrectionText(''); }} className="text-gray-400 p-1">
@@ -323,21 +328,21 @@ export default function Nutrition() {
               <svg className="w-5 h-5 text-primary animate-spin mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
-              <span className="text-primary text-sm font-bold">{l('Recalculating...', 'Пересчитываем...')}</span>
+              <span className="text-primary text-sm font-bold">{l('Recalculating...', 'Пересчитываем...', 'Berechne...', 'Recalculando...')}</span>
             </div>
           ) : (
             <div className="flex gap-2">
               <button onClick={acceptScan} className="flex-1 bg-primary text-black font-extrabold py-3 rounded-xl active:scale-95 transition-transform">
-                ✓ {l('Like', 'Нравится')}
+                ✓ {l('Like', 'Нравится', 'Gefällt mir', 'Me gusta')}
               </button>
               {scanState !== 'correcting' && (
                 <button onClick={dislikeScan} className="flex-1 bg-white/10 text-white font-bold py-3 rounded-xl active:scale-95 transition-transform">
-                  ✗ {l('Dislike', 'Не нравится')}
+                  ✗ {l('Dislike', 'Не нравится', 'Nicht gefallen', 'No me gusta')}
                 </button>
               )}
               {scanState === 'correcting' && (
                 <button onClick={recalculateScan} disabled={!correctionText.trim()} className="flex-1 bg-primary text-black font-extrabold py-3 rounded-xl active:scale-95 transition-transform disabled:opacity-40">
-                  {l('Recalculate', 'Пересчитать')}
+                  {l('Recalculate', 'Пересчитать', 'Neuberechnen', 'Recalcular')}
                 </button>
               )}
             </div>
