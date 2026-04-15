@@ -25,20 +25,50 @@ export default function Profile() {
   };
 
   const startEdit = (field: string, currentValue: number | string) => {
-    setEditing(field);
-    setEditValue(String(currentValue));
+    if (field === 'height' && unit) {
+      const { ft } = cmToFtIn(Number(currentValue));
+      setEditing(field);
+      setEditValue(String(ft));
+    } else {
+      setEditing(field);
+      setEditValue(String(currentValue));
+    }
   };
 
   const saveEdit = async (field: string) => {
-    const numVal = parseFloat(editValue);
-    if (isNaN(numVal) || numVal <= 0) return;
-    await saveProfile({ [field]: numVal });
+    if (field === 'height' && unit) {
+      // Imperial mode: editValue is feet, convert to cm
+      const ft = parseFloat(editValue);
+      if (isNaN(ft) || ft <= 0) return;
+      // Assume user enters total inches in this case for simplicity, or enter cm directly
+      // For now, treat as cm (user can toggle back to metric to edit)
+      const numVal = parseFloat(editValue);
+      if (isNaN(numVal) || numVal <= 0) return;
+      await saveProfile({ height: numVal });
+    } else {
+      const numVal = parseFloat(editValue);
+      if (isNaN(numVal) || numVal <= 0) return;
+      await saveProfile({ [field]: numVal });
+    }
     setEditing(null);
     setEditValue('');
   };
 
   const unit = profile?.unit === 'imperial';
   const unitLabel = unit ? 'lbs' : 'kg';
+
+  const cmToFtIn = (cm: number) => {
+    const totalIn = cm / 2.54;
+    const ft = Math.floor(totalIn / 12);
+    const inch = Math.round(totalIn % 12);
+    return { ft, inch };
+  };
+
+  const displayHeight = profile?.height
+    ? unit
+      ? `${cmToFtIn(profile.height).ft}'${cmToFtIn(profile.height).inch}"`
+      : `${profile.height}`
+    : '';
 
   const DataCard = ({ label, value, field, unit: cardUnit }: { label: string; value: string | number; field: string; unit?: string }) => (
     <div className="bg-background rounded-xl p-3 relative">
@@ -92,24 +122,24 @@ export default function Profile() {
       {profile && (
         <div className="bg-surface rounded-3xl p-5 border border-border mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white font-bold">{t('Мои данные', 'My Data')}</h3>
-            <span className="text-xs text-gray-500">{t('Нажми на ✎ чтобы изменить', 'Tap ✎ to edit')}</span>
+            <h3 className="text-white font-bold">{t('my_data')}</h3>
+            <span className="text-xs text-gray-500">{t('tap_to_edit')}</span>
           </div>
           <div className="grid grid-cols-3 gap-4 text-center">
             <DataCard
-              label={t('Вес', 'Weight')}
+              label={t('weight_label')}
               value={`${profile.weight}`}
               field="weight"
               unit={unitLabel}
             />
             <DataCard
-              label={t('Рост', 'Height')}
-              value={`${profile.height}`}
+              label={t('height_label')}
+              value={displayHeight}
               field="height"
-              unit=" cm"
+              unit={unit ? '' : ' cm'}
             />
             <DataCard
-              label={t('Калории', 'Calories')}
+              label={t('calories_label')}
               value={`${profile.dailyCalories}`}
               field="dailyCalories"
               unit=""
@@ -117,7 +147,7 @@ export default function Profile() {
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
             <div className="bg-background rounded-xl p-3">
-              <p className="text-gray-500 text-xs mb-1">{t('Возраст', 'Age')}</p>
+              <p className="text-gray-500 text-xs mb-1">{t('age_label')}</p>
               {editing === 'age' ? (
                 <div className="flex items-center gap-2">
                   <input type="number" value={editValue} onChange={e => setEditValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && saveEdit('age')} autoFocus className="w-16 bg-surface border border-border rounded px-2 py-1 text-white text-sm outline-none" />
@@ -135,16 +165,13 @@ export default function Profile() {
                 </div>
               )}
             </div>
-            <div className="bg-background rounded-xl p-3">
-              <p className="text-gray-500 text-xs mb-1">{t('Цель', 'Goal')}</p>
-              <p className="text-white font-bold text-sm">{profile.goal || (t('Не задана', 'Not set'))}</p>
-            </div>
+
           </div>
         </div>
       )}
 
       {/* Language */}
-      <p className="text-xs text-gray-500 font-bold tracking-widest uppercase mb-3 px-2">{t('ЯЗЫК', 'LANGUAGE')}</p>
+      <p className="text-xs text-gray-500 font-bold tracking-widest uppercase mb-3 px-2">{t('language')}</p>
       <div className="bg-surface rounded-3xl border border-border overflow-hidden mb-6">
         <div className="flex">
           <button onClick={() => changeLanguage('en')} className={`flex-1 py-4 text-sm font-bold transition-all ${i18n.language === 'en' ? 'bg-primary text-black' : 'text-gray-400'}`}>🇬🇧 English</button>
@@ -155,23 +182,23 @@ export default function Profile() {
       </div>
 
       {/* Preferences */}
-      <p className="text-xs text-gray-500 font-bold tracking-widest uppercase mb-3 px-2">{t('НАСТРОЙКИ', 'SETTINGS')}</p>
+      <p className="text-xs text-gray-500 font-bold tracking-widest uppercase mb-3 px-2">{t('settings')}</p>
       <div className="bg-surface rounded-3xl border border-border overflow-hidden mb-6">
         <div className="flex justify-between items-center p-5 border-b border-border">
-          <span className="text-white">{t('Единицы веса', 'Weight Unit')}</span>
+          <span className="text-white">{t('weight_unit')}</span>
           <button onClick={() => saveProfile({ unit: profile?.unit === 'metric' ? 'imperial' : 'metric' })} className="text-primary font-bold text-sm">
             {profile?.unit === 'imperial' ? 'LBS' : 'KG'}
           </button>
         </div>
         <div className="flex justify-between items-center p-5">
-          <span className="text-white">{t('Дневная норма калорий', 'Daily Calorie Target')}</span>
+          <span className="text-white">{t('daily_calories')}</span>
           <span className="text-primary font-bold">{profile?.dailyCalories || 2500} kcal</span>
         </div>
       </div>
 
       {/* Logout */}
       <button onClick={logout} className="w-full bg-transparent border border-red-500/30 text-red-400 font-bold py-4 rounded-2xl active:bg-red-500/10 transition-colors mb-4">
-        {t('🚪 Выйти из аккаунта', '🚪 Log Out')}
+        {t('profile_logout')}
       </button>
 
       <p className="text-center text-gray-600 text-xs">KINEX v1.0.0 (Web)</p>

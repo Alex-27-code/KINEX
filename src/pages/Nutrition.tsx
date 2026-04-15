@@ -135,7 +135,7 @@ export default function Nutrition() {
     if (!base64Image || !correctionText.trim()) return;
     setScanState('rescanning');
     try {
-      const result = await analyzeFoodImage(base64Image, correctionText);
+      const result = await analyzeFoodImage(base64Image, correctionText, i18n.language);
       const foodItem: FoodItem = {
         id: Date.now().toString(),
         name: result.meal || 'Food',
@@ -171,7 +171,7 @@ export default function Nutrition() {
       });
       setBase64Image(base64);
 
-      const result = await analyzeFoodImage(base64);
+      const result = await analyzeFoodImage(base64, undefined, i18n.language);
       const foodItem: FoodItem = {
         id: Date.now().toString(),
         name: result.meal || 'Food',
@@ -394,7 +394,7 @@ export default function Nutrition() {
                 setScanResult(null);
                 setBase64Image(pendingImage.base64);
                 try {
-                  const result = await analyzeFoodImage(pendingImage.base64, imageComment || undefined);
+                  const result = await analyzeFoodImage(pendingImage.base64, imageComment || undefined, i18n.language);
                   const foodItem: FoodItem = {
                     id: Date.now().toString(),
                     name: result.meal || 'Food',
@@ -409,6 +409,7 @@ export default function Nutrition() {
                   setScanResult(foodItem);
                   setScanState('result');
                 } catch (e: any) {
+                  console.error('[Nutrition] analyzeFoodImage error:', e?.message || e, '| error detail:', JSON.stringify(e?.response || e?.status || e));
                   setScanError(parseAIError(e, isRu));
                   setScanState('idle');
                 }

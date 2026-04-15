@@ -35,7 +35,7 @@ export default function WorkoutDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { fbUser } = useAuth();
+  const { fbUser, profile } = useAuth();
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -232,7 +232,7 @@ export default function WorkoutDetail() {
               {/* Sets header */}
               <div className="flex gap-2 mb-2 px-1">
                 <span className="text-gray-500 text-xs w-10 text-center">{t('set') || 'Set'}</span>
-                <span className="text-gray-500 text-xs w-20 text-center">{t('kg') || 'kg'}</span>
+                <span className="text-gray-500 text-xs w-20 text-center">{profile?.unit === 'imperial' ? 'lbs' : 'kg'}</span>
                 <span className="text-gray-500 text-xs w-20 text-center">{t('reps') || 'Reps'}</span>
                 <span className="w-14" />
               </div>
