@@ -41,6 +41,17 @@ function friendlyError(msg: string, isRu: boolean): string {
 }
 
 export async function analyzeFoodImage(base64Image: string, userContext?: string): Promise<FoodAnalysis> {
+  // Helper to build result
+  const ok = (data: any): FoodAnalysis => ({
+    meal: String(data.meal || 'Food'),
+    calories: Number(data.calories) || 0,
+    protein: Number(data.protein) || 0,
+    carbs: Number(data.carbs) || 0,
+    fats: Number(data.fats) || 0,
+    fiber: Number(data.fiber) || 0,
+    breakdown: String(data.breakdown || ''),
+  });
+
   try {
     const response = await fetch(PROXY_URL + '/analyze-food', {
       method: 'POST',
@@ -49,23 +60,17 @@ export async function analyzeFoodImage(base64Image: string, userContext?: string
     });
     if (response.ok) {
       const data = await response.json();
-      if (data && (data.meal || data.calories)) {
-        return {
-          meal: String(data.meal || 'Food'),
-          calories: Number(data.calories) || 0,
-          protein: Number(data.protein) || 0,
-          carbs: Number(data.carbs) || 0,
-          fats: Number(data.fats) || 0,
-          fiber: Number(data.fiber) || 0,
-          breakdown: String(data.breakdown || ''),
-        };
+      // Return even if calories=0 or meal=unknown — never throw
+      if (data && (data.meal || data.calories || data.protein || data.carbs || data.fats)) {
+        return ok(data);
       }
+      // If only error field present (e.g. {error: "No response from AI"}), fall through to Gemini
     }
   } catch (e) {
     console.warn('Proxy failed:', e);
   }
 
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
   const prompt = 'You are a professional nutritionist. Analyze this food image and provide accurate nutritional information. Return EXACTLY this JSON: {"meal":"food name","calories":250,"protein":20,"carbs":30,"fats":10,"fiber":5,"breakdown":"brief"}';
 
   try {
@@ -73,8 +78,9 @@ export async function analyzeFoodImage(base64Image: string, userContext?: string
     const text = result.response.text?.trim() || '';
     if (!text) throw new Error('EMPTY_RESPONSE');
     const json = extractJSON(text);
-    if (json && json.calories && json.meal) {
-      return { meal: String(json.meal), calories: Number(json.calories), protein: Number(json.protein)||0, carbs: Number(json.carbs)||0, fats: Number(json.fats)||0, fiber: Number(json.fiber)||0, breakdown: String(json.breakdown||'') };
+    // Return whatever we got — even {meal:"unknown", calories:0} is a valid result
+    if (json && (json.meal || json.calories != null)) {
+      return { meal: String(json.meal || 'Food'), calories: Number(json.calories) || 0, protein: Number(json.protein)||0, carbs: Number(json.carbs)||0, fats: Number(json.fats)||0, fiber: Number(json.fiber)||0, breakdown: String(json.breakdown||'') };
     }
     throw new Error('PARSE_FAILED');
   } catch (error: any) {
