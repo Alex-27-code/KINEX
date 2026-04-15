@@ -105,14 +105,18 @@ export default function Nutrition() {
   });
 
   const saveFoodItem = async (item: FoodItem) => {
-    if (!fbUser) return;
-    const dateStr = getLocalDateString();
-    const logRef = doc(db, `users/${fbUser.uid}/nutrition`, dateStr);
-    const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
-    const existing = snap.docs.find(d => d.id === dateStr);
-    const existingItems = existing?.data()?.items || [];
-    await setDoc(logRef, { items: [...existingItems, item], date: dateStr }, { merge: true });
-    setLog(prev => [item, ...prev]);
+    if (!fbUser?.uid) return;
+    try {
+      const dateStr = getLocalDateString();
+      const logRef = doc(db, `users/${fbUser.uid}/nutrition`, dateStr);
+      const snap = await getDocs(collection(db, `users/${fbUser.uid}/nutrition`));
+      const existing = snap.docs.find(d => d.id === dateStr);
+      const existingItems = existing?.data()?.items || [];
+      await setDoc(logRef, { items: [...existingItems, item], date: dateStr, updatedAt: serverTimestamp() }, { merge: true });
+      setLog(prev => [item, ...prev]);
+    } catch (err) {
+      console.error('[Nutrition] saveFoodItem error:', err);
+    }
   };
 
   const acceptScan = async () => {
@@ -157,7 +161,10 @@ export default function Nutrition() {
   };
 
   const handleImageScan = async (file: File) => {
-    if (!fbUser) return;
+    if (!fbUser) {
+      setScanError(isRu ? 'Сначала войди в аккаунт через Профиль' : 'Please log in via Profile first');
+      return;
+    }
     setScanState('scanning');
     setScanError(null);
     setScanResult(null);
@@ -166,7 +173,7 @@ export default function Nutrition() {
       const reader = new FileReader();
       const base64 = await new Promise<string>((resolve, reject) => {
         reader.onload = (e) => resolve((e.target?.result as string).split(',')[1] || '');
-        reader.onerror = reject;
+        reader.onerror = () => reject(new Error('Failed to read file'));
         reader.readAsDataURL(file);
       });
       setBase64Image(base64);
