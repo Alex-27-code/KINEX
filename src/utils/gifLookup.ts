@@ -133,6 +133,12 @@ const MOHA_MAP: Record<string, string> = {
   // SMITH MACHINE UPPER (additional)
   'smith-machine-shoulder.webp': '903mzG8.gif', // already listed above
   'smith-machine-bench.webp': 'trqKQv2.gif',     // already listed above
+
+  // MISSING (found via mohamedatef90 exercises.json)
+  'dumbbell-incline-press.webp': 'bfiHMpI.gif',    // dumbbell incline press on exercise ball
+  'machine-shoulder-press.webp': '67n3r98.gif',     // lever shoulder press
+  'belt-squat.webp': '5VCj6iH.gif',                // barbell hack squat (belt squat proxy)
+  'barbell-standing-calf-raise-2.webp': '8ozhUIZ.gif', // barbell standing calf raise
 };
 
 const MOHA_BASE = 'https://raw.githubusercontent.com/mohamedatef90/exercise-library/main/gifs';

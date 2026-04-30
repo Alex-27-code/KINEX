@@ -14,7 +14,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-[#1A1A1A]/95 backdrop-blur-xl border-t border-border z-50 pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#1A1A1A]/95 backdrop-blur-xl border-t border-border z-40 pb-[env(safe-area-inset-bottom)]">
       <div className="max-w-lg mx-auto flex justify-around items-center py-2">
         {tabs.map(t => {
           const active = t.path === '/' ? pathname === '/' : pathname.startsWith(t.path);

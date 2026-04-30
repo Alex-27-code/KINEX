@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { EXERCISES_DATA } from '../data/exercises';
 import { useAuth } from '../hooks/useAuth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '../firebaseConfig';
+import { db } from '../firebaseConfig';
 import { getGifUrl } from '../utils/gifLookup';
 
 type ExerciseDefinition = {
@@ -47,6 +47,25 @@ export default function ActiveWorkout() {
 
   // Load from template if passed
   useEffect(() => {
+    // First try sessionStorage (preferred, avoids URL length limits)
+    const stored = sessionStorage.getItem('kinex_workout_template');
+    if (stored) {
+      sessionStorage.removeItem('kinex_workout_template');
+      try {
+        const parsed = JSON.parse(stored);
+        const loaded: WorkoutExercise[] = parsed.map((ex: any) => {
+          const count = parseInt(String(ex.sets)) || 1;
+          const sets: Set[] = [];
+          for (let i = 0; i < count; i++) {
+            sets.push({ id: Math.random().toString(), weight: '', reps: String(ex.reps || ''), completed: false });
+          }
+          return { id: Math.random().toString(), exerciseId: ex.id, name: ex.name, sets, gifName: ex.gifName || '' };
+        });
+        setExercises(loaded);
+        return;
+      } catch (_) {}
+    }
+    // Fallback: try URL param (for deep links)
     const template = searchParams.get('template');
     if (template) {
       try {
@@ -57,7 +76,7 @@ export default function ActiveWorkout() {
           for (let i = 0; i < count; i++) {
             sets.push({ id: Math.random().toString(), weight: '', reps: String(ex.reps || ''), completed: false });
           }
-          return { id: Math.random().toString(), exerciseId: ex.id, name: ex.name, sets, gifName: undefined };
+          return { id: Math.random().toString(), exerciseId: ex.id, name: ex.name, sets, gifName: ex.gifName || '' };
         });
         setExercises(loaded);
       } catch (_) {}
@@ -94,7 +113,7 @@ export default function ActiveWorkout() {
       id: Math.random().toString(),
       exerciseId: 'custom',
       name,
-      gifName: undefined,
+      gifName: "",
       sets: [{ id: Math.random().toString(), reps: '', weight: '', completed: false }],
     }]);
     setCustomExercise('');
@@ -143,15 +162,15 @@ export default function ActiveWorkout() {
 
   const finishWorkout = async () => {
     if (exercises.length === 0) return;
-    if (!auth.currentUser) {
+    if (!fbUser) {
       alert('Not logged in. Please refresh and log in again.');
       return;
     }
     setSaving(true);
     try {
-      const workoutRef = doc(db, 'users', auth.currentUser.uid, 'workouts', `${Date.now()}`);
+      const workoutRef = doc(db, 'users', fbUser.uid, 'workouts', `${Date.now()}`);
       await setDoc(workoutRef, {
-        userId: auth.currentUser.uid,
+        userId: fbUser.uid,
         title: 'Workout',
         duration: Math.round(elapsed / 60),
         exercises,
@@ -168,9 +187,9 @@ export default function ActiveWorkout() {
 
   const filtered = EXERCISES_DATA.filter(e => {
     const matchCat = selectedCategory ? e.category === selectedCategory : true;
-    const matchSearch = e.name.toLowerCase().includes(search.toLowerCase());
-    const hasGif = !!getGifUrl(e.gifName);
-    return matchCat && matchSearch && hasGif;
+    const translated = t(e.name).toLowerCase();
+    const matchSearch = translated.includes(search.toLowerCase()) || e.name.toLowerCase().includes(search.toLowerCase());
+    return matchCat && matchSearch;
   });
 
   return (
@@ -286,9 +305,9 @@ export default function ActiveWorkout() {
 
       {/* Exercise Picker Modal */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col">
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col" style={{ height: '100dvh' }}>
           <div className="bg-surface border-b border-border px-4 py-4 flex items-center justify-between">
-            <h2 className="text-white font-bold text-lg">Select Exercise</h2>
+            <h2 className="text-white font-bold text-lg">{t('Select Exercise')}</h2>
             <button onClick={() => { setModalOpen(false); setSearch(''); setSelectedCategory(null); }} className="text-gray-400">
               <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12"/>
@@ -307,7 +326,6 @@ export default function ActiveWorkout() {
                 onChange={e => setSearch(e.target.value)}
                 placeholder={t('search_exercises') || 'Search exercises...'}
                 className="flex-1 bg-transparent text-white text-sm outline-none placeholder-gray-500"
-                autoFocus
               />
               {search && (
                 <button onClick={() => setSearch('')} className="text-gray-500">
@@ -339,14 +357,13 @@ export default function ActiveWorkout() {
             </div>
           </div>
 
-          {/* Category chips */}
-          <div className="px-4 py-2 bg-surface border-b border-border overflow-x-auto hide-scrollbar">
-            <div className="flex gap-2">
+          <div className="sticky top-0 z-10 bg-surface border-b border-border overflow-x-auto hide-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="flex gap-2 px-4 py-2 min-h-[48px] items-center">
               <button
                 onClick={() => setSelectedCategory(null)}
                 className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${!selectedCategory ? 'bg-primary text-black' : 'bg-white/10 text-gray-300'}`}
               >
-                All
+                {t('all')}
               </button>
               {categories.map(cat => (
                 <button
@@ -354,14 +371,14 @@ export default function ActiveWorkout() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${selectedCategory === cat ? 'bg-primary text-black' : 'bg-white/10 text-gray-300'}`}
                 >
-                  {cat}
+                  {t(cat)}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Exercise list */}
-          <div className="flex-1 min-h-0 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto pb-36 min-h-0">
             {filtered.map(def => {
               const gifUrl = getGifUrl(def.gifName) || null;
               return (
@@ -392,7 +409,13 @@ export default function ActiveWorkout() {
               );
             })}
             {filtered.length === 0 && (
-              <p className="text-gray-500 text-center py-8">{t('no_exercises_found') || 'No exercises found'}</p>
+              <div className="flex flex-col items-center justify-center py-16 px-6">
+                <svg className="w-16 h-16 text-gray-600 mb-4" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 10.803z"/>
+                </svg>
+                <p className="text-gray-400 text-center font-medium">{t('no_exercises_found')}</p>
+                {search && <p className="text-gray-600 text-xs mt-1 text-center">Попробуй другое слово</p>}
+              </div>
             )}
           </div>
         </div>

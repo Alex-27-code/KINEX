@@ -32,9 +32,9 @@ export default function ProgramDetail() {
   const unit = profile?.unit === 'imperial' ? 'lbs' : 'kg';
 
   const startWorkout = (exercises: any[]) => {
-    // Encode exercises as JSON query param
-    const encoded = encodeURIComponent(JSON.stringify(exercises));
-    navigate(`/active-workout?template=${encoded}`);
+    // Use sessionStorage to avoid URL length limits
+    sessionStorage.setItem('kinex_workout_template', JSON.stringify(exercises));
+    navigate('/active-workout');
   };
 
   return (

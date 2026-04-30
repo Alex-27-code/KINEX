@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
-import { db, auth } from '../firebaseConfig';
+import { db } from '../firebaseConfig';
 import { getGifUrl } from '../utils/gifLookup';
 import { EXERCISES_DATA } from '../data/exercises';
 type ExerciseDefinition = { id: string; name: string; category: string; equipment: string; gifName?: string; };
@@ -39,16 +39,17 @@ export default function WorkoutDetail() {
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [customExercise, setCustomExercise] = useState('');
 
   useEffect(() => {
-    if (!id || !fbUser || !auth.currentUser) return;
+    if (!id || !fbUser || !fbUser) return;
     const load = async () => {
       try {
-        const snap = await getDoc(doc(db, 'users', auth.currentUser.uid, 'workouts', id));
+        const snap = await getDoc(doc(db, 'users', fbUser.uid, 'workouts', id));
         if (snap.exists()) {
           setWorkout({ id: snap.id, ...snap.data() } as Workout);
         }
@@ -59,14 +60,16 @@ export default function WorkoutDetail() {
   }, [id, fbUser]);
 
   const saveWorkout = async () => {
-    if (!workout || !auth.currentUser) return;
+    if (!workout || !fbUser) return;
     setSaving(true);
     try {
-      await setDoc(doc(db, 'users', auth.currentUser.uid, 'workouts', workout.id), {
+      await setDoc(doc(db, 'users', fbUser.uid, 'workouts', workout.id), {
         exercises: workout.exercises,
         duration: workout.duration,
         timestamp: workout.timestamp,
       }, { merge: true });
+      setJustSaved(true);
+      setTimeout(() => setJustSaved(false), 2000);
     } catch (e) {
       console.error(e);
     }
@@ -74,10 +77,10 @@ export default function WorkoutDetail() {
   };
 
   const deleteWorkout = async () => {
-    if (!workout || !auth.currentUser) return;
+    if (!workout || !fbUser) return;
     if (!confirm(t('delete_workout_confirm') || 'Delete this workout?')) return;
     try {
-      await deleteDoc(doc(db, 'users', auth.currentUser.uid, 'workouts', workout.id));
+      await deleteDoc(doc(db, 'users', fbUser.uid, 'workouts', workout.id));
       navigate('/workout');
     } catch (e) {
       console.error(e);
@@ -199,7 +202,7 @@ export default function WorkoutDetail() {
         </div>
         <div className="flex gap-2">
           <button onClick={saveWorkout} disabled={saving} className="text-primary font-bold text-sm px-3 py-2 disabled:opacity-40">
-            {saving ? '...' : t('save') || 'Save'}
+            {saving ? '...' : justSaved ? `✓ ${t('saved') || 'Сохранено'}` : t('save') || 'Save'}
           </button>
           <button onClick={deleteWorkout} className="text-red-400 font-bold text-sm px-3 py-2">
             {t('delete') || 'Delete'}
@@ -339,7 +342,7 @@ export default function WorkoutDetail() {
           </div>
 
           {/* Category chips */}
-          <div className="px-4 py-2 bg-surface border-b border-border overflow-x-auto hide-scrollbar">
+          <div className="px-4 py-2 bg-surface border-b border-border overflow-x-auto hide-scrollbar sticky top-0 z-10">
             <div className="flex gap-2">
               <button
                 onClick={() => setSelectedCategory(null)}
@@ -363,7 +366,8 @@ export default function WorkoutDetail() {
           <div className="flex-1 min-h-0 overflow-y-auto">
             {EXERCISES_DATA.filter(e => {
               const matchCat = !selectedCategory || e.category === selectedCategory;
-              const matchSearch = e.name.toLowerCase().includes(search.toLowerCase());
+              const translated = t(e.name).toLowerCase();
+              const matchSearch = translated.includes(search.toLowerCase()) || e.name.toLowerCase().includes(search.toLowerCase());
               const hasGif = !!getGifUrl(e.gifName);
               return matchCat && matchSearch && hasGif;
             }).map(def => {

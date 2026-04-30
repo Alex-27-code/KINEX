@@ -142,7 +142,7 @@ export default function Nutrition() {
       const result = await analyzeFoodImage(base64Image, correctionText, i18n.language);
       const foodItem: FoodItem = {
         id: Date.now().toString(),
-        name: result.meal || 'Food',
+        name: result.meal || l('Food', 'Еда'),
         calories: result.calories || 0,
         protein: result.protein || 0,
         carbs: result.carbs || 0,
@@ -181,7 +181,7 @@ export default function Nutrition() {
       const result = await analyzeFoodImage(base64, undefined, i18n.language);
       const foodItem: FoodItem = {
         id: Date.now().toString(),
-        name: result.meal || 'Food',
+        name: result.meal || l('Food', 'Еда'),
         calories: result.calories || 0,
         protein: result.protein || 0,
         carbs: result.carbs || 0,
@@ -404,7 +404,7 @@ export default function Nutrition() {
                   const result = await analyzeFoodImage(pendingImage.base64, imageComment || undefined, i18n.language);
                   const foodItem: FoodItem = {
                     id: Date.now().toString(),
-                    name: result.meal || 'Food',
+                    name: result.meal || l('Food', 'Еда'),
                     calories: result.calories || 0,
                     protein: result.protein || 0,
                     carbs: result.carbs || 0,
