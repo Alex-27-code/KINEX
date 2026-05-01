@@ -59,84 +59,38 @@ function processResult(data: any): FoodAnalysis {
   fiber = Number(fiber) || 0;
 
   const calcCals = Math.round(protein * 4 + carbs * 4 + fats * 9);
-
-  // --- Per-100g auto-detection and scaling ---
-  // Known per-100g calorie values for common foods
-  const per100gCals: Record<string, number> = {
-    'chicken': 72, 'куриц': 72, 'грудк': 72,
-    'rice': 130, 'рис': 130,
-    'beef': 250, 'говядин': 250, 'свинин': 260,
-    'salmon': 208, 'лосос': 208,
-    'tuna': 132, 'тунец': 132,
-    'egg': 155, 'яйц': 155,
-    'pasta': 157, 'паст': 157,
-    'milk': 61, 'молоко': 61,
-    'banana': 105, 'банан': 105,
-    'apple': 52, 'яблок': 52,
-    'bread': 265, 'хлеб': 265,
-    'porridge': 68, 'каша': 68,
-    'shwarm': 290, 'шаурма': 290,
-  };
-
-  // Detect if model returned per-100g by comparing to known values
-  let scaled = false;
-  if (calories > 0) {
-    for (const [key, per100] of Object.entries(per100gCals)) {
-      if (meal.toLowerCase().includes(key)) {
-        // If returned cals ≈ known per-100g value (within 40%) → it's per-100g
-        if (per100 > 0 && Math.abs(calories - per100) / per100 < 0.40) {
-          const portionGrams: Record<string, number> = {
-            'chicken': 250, 'куриц': 250, 'грудк': 250,
-            'rice': 300, 'рис': 300,
-            'beef': 250, 'говядин': 250, 'свинин': 250,
-            'salmon': 200, 'лосос': 200,
-            'tuna': 150, 'тунец': 150,
-            'egg': 100, 'яйц': 100,
-            'pasta': 300, 'паст': 300,
-            'milk': 250, 'молоко': 250,
-            'banana': 120, 'банан': 120,
-            'apple': 180, 'яблок': 180,
-            'bread': 100, 'хлеб': 100,
-            'porridge': 300, 'каша': 300,
-            'shwarm': 300, 'шаурма': 300,
-          };
-          const grams = portionGrams[key] || 250;
-          const scale = grams / 100;
-          calories = Math.round(calories * scale);
-          protein = Math.round(protein * scale);
-          carbs = Math.round(carbs * scale);
-          fats = Math.round(fats * scale);
-          fiber = Math.round((fiber || 0) * scale);
-          scaled = true;
-        }
-        break;
-      }
-    }
-  }
-
-  // If meal is generic — try database lookup
-  const genericMeals = ['food', 'meal', 'mixed', 'unknown', 'mixed meal', 'dish', 'блюдо'];
+  const genericMeals = ['food', 'meal', 'mixed', 'unknown', 'mixed meal', 'dish', 'блюдо', 'unknown food'];
   const isGeneric = genericMeals.includes(meal.toLowerCase());
 
+  // Step 1: if specific product name and AI returned non-zero → accept as-is (with macro sanity check)
+  if (!isGeneric && calories > 0 && calcCals > 0) {
+    const diff = Math.abs(calcCals - calories) / Math.max(calories, 1);
+    if (diff > 0.20) {
+      // Macro sanity check: prefer calcCals when significantly different
+      calories = calcCals;
+    }
+    return { meal, calories, protein, carbs, fats, fiber, breakdown: '' };
+  }
+
+  // Step 2: specific product name with 0 calories from AI → ACCEPT (e.g. protein supplement with 0kcal label)
+  // Zero-calorie products ARE valid. Don't override with fallback.
+  if (!isGeneric && calories === 0) {
+    return { meal, calories, protein, carbs, fats, fiber, breakdown: '' };
+  }
+
+  // Step 3: generic name → try database lookup
   if (isGeneric) {
     const known = lookupFood(meal);
     if (known) {
-      ({ calories, protein, carbs, fats, fiber } = known);
-    } else {
-      calories = 450; protein = 18; carbs = 48; fats = 18; fiber = 4;
+      return { meal: known.cals > 0 ? meal : 'Food', calories: known.cals, protein: known.p, carbs: known.c, fats: known.f, fiber: known.fib, breakdown: '' };
     }
-  } else if (!scaled && (calories === 0 || calcCals === 0) && meal && meal.length > 1 && meal.length < 100) {
-    const known = lookupFood(meal);
-    if (known) {
-      ({ calories, protein, carbs, fats, fiber } = known);
-    } else if (calories === 0) {
-      calories = 450; protein = 18; carbs = 48; fats = 18; fiber = 4;
-    }
-  } else if (calcCals > 0 && calories === 0) {
+    // Fallback for truly generic
+    return { meal: 'Food', calories: 450, protein: 18, carbs: 48, fats: 18, fiber: 4, breakdown: '' };
+  }
+
+  // Step 4: specific name, AI returned 0 but we have macro data → recalculate (protein-only products)
+  if (calories === 0 && calcCals > 0) {
     calories = calcCals;
-  } else if (calories > 0 && calcCals > 0 && !scaled) {
-    const diff = Math.abs(calcCals - calories) / Math.max(calories, 1);
-    if (diff > 0.20) calories = calcCals;
   }
 
   return { meal, calories, protein, carbs, fats, fiber, breakdown: '' };
@@ -174,15 +128,9 @@ export async function analyzeFoodImage(
     if (apiRes.ok) {
       const data = await apiRes.json();
       if (data && (data.meal || data.calories != null)) {
-        return {
-          meal: String(data.meal || 'Food'),
-          calories: Number(data.calories) || 0,
-          protein: Number(data.protein) || 0,
-          carbs: Number(data.carbs) || 0,
-          fats: Number(data.fats) || 0,
-          fiber: Number(data.fiber) || 0,
-          breakdown: String(data.breakdown || ''),
-        };
+        const result = processResult(data);
+        console.log('[gemini.ts] Server API result:', result);
+        return result;
       }
       if (data?.error) {
         console.warn('[gemini.ts] Server API error:', data.error);
@@ -198,7 +146,9 @@ export async function analyzeFoodImage(
     try {
       const lang = String(locale || 'en').toLowerCase().slice(0, 2);
       const li = { ru: 'Отвечай на РУССКОМ языке.', de: 'Antworte auf DEUTSCH.', es: 'Responde en ESPAÑOL.', en: 'Respond in ENGLISH.' }[lang] || 'Respond in ENGLISH.';
-      const sysPrompt = `Ты профессиональный диетолог. Определи ВСЕ продукты на фото и оцени пищевую ценность ВСЕЙ порции (целой тарелки). JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Если несколько продуктов — опиши ВСЕ. Всегда давай реальную оценку, никогда не говори "не могу".`;
+      const sysPrompt = lang === 'ru'
+        ? `Ты профессиональный диетолог. Определи ВСЕ продукты на фото и оцени пищевую ценность ВСЕЙ порции (целой тарелки). JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Если несколько продуктов — опиши ВСЕ. Всегда давай реальную оценку, никогда не говори "не могу".`
+        : 'Professional nutritionist. Identify ALL foods in photo. Estimate nutritional values for the WHOLE PLATE. JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Always estimate, never say unable.';
 
       const oaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -206,7 +156,7 @@ export async function analyzeFoodImage(
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           messages: [
-            { role: 'system', content: lang === 'ru' ? sysPrompt : 'Professional nutritionist. Identify ALL foods in photo. Estimate nutritional values for the WHOLE PLATE. JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Always estimate, never say unable.' },
+            { role: 'system', content: sysPrompt },
             { role: 'user', content: [
               { type: 'text', text: userContext ? `Корректировка: ${userContext}.` : 'Analyze this food photo. Identify ALL foods and estimate nutritional values for the whole portion.' },
               { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + base64Image, 'detail': 'high' } }
@@ -223,7 +173,7 @@ export async function analyzeFoodImage(
         if (!json) { const m = oaiText.match(/\{[\s\S]*?\}/); if (m) try { json = JSON.parse(m[0]); } catch (_) {} }
         if (json && (json.meal || json.calories != null)) {
           console.log('[gemini.ts] OpenAI fallback succeeded:', json);
-          return { meal: String(json.meal || 'Food'), calories: Number(json.calories)||0, protein: Number(json.protein)||0, carbs: Number(json.carbs)||0, fats: Number(json.fats)||0, fiber: Number(json.fiber)||0, breakdown: '' };
+          return processResult(json);
         }
       }
       console.warn('[gemini.ts] OpenAI fallback: no valid JSON');

@@ -15,10 +15,10 @@ export default async function handler(req, res) {
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
     const requestBody = {
       contents: [{ parts: [
-        { text: 'Return JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Whole portion.' },
+        { text: 'Отвечай на РУССКОМ языке. Диетолог. JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЯ порция целиком (не на 100г). Если на фото еда — опиши её и посчитай калории для всего продукта. Никогда не пиши "unknown" или 0 калорий если видишь еду.' },
         { inlineData: { mimeType: 'image/jpeg', data: image } }
       ]}],
-      generationConfig: { responseMimeType: 'application/json' },
+      // NOTE: NOT using responseMimeType — it forces 0 calories when model can't compute precisely
     };
 
     const response = await fetch(apiUrl, {
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     try { parsed = JSON.parse(text); } catch {}
 
     if (parsed?.error) {
-      return res.status(200).json({ error: parsed.error.message || 'Google API error', keyUsed: GEMINI_KEY.slice(0, 8) });
+      return res.status(200).json({ error: parsed.error.message || 'Google API error' });
     }
 
     const aiText = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
@@ -40,28 +40,35 @@ export default async function handler(req, res) {
       return res.status(200).json({ error: 'EMPTY_RESPONSE' });
     }
 
+    // Strip markdown code fences if present
+    let cleanText = aiText.trim();
+    if (cleanText.startsWith('```')) {
+      cleanText = cleanText.replace(/^```json\s*/, '').replace(/```\s*$/, '').trim();
+    }
+
     let json = null;
-    try { json = JSON.parse(aiText); } catch {}
+    try { json = JSON.parse(cleanText); } catch {}
     if (!json) {
-      const s = aiText.indexOf('{');
-      const e = aiText.lastIndexOf('}');
+      const s = cleanText.indexOf('{');
+      const e = cleanText.lastIndexOf('}');
       if (s !== -1 && e !== -1) {
-        try { json = JSON.parse(aiText.slice(s, e + 1)); } catch {}
+        try { json = JSON.parse(cleanText.slice(s, e + 1)); } catch {}
       }
     }
 
-    if (!json) {
-      return res.status(200).json({ error: 'PARSE_FAILED', text: aiText.slice(0, 100) });
+    // Handle alternative field names (Gemini sometimes returns different schema)
+    const meal = String(json?.meal || json?.product_name || json?.name || 'Food');
+    const calories = Number(json?.calories || json?.calories_estimated || json?.kcal || 0);
+    const protein = Number(json?.protein || 0);
+    const carbs = Number(json?.carbs || 0);
+    const fats = Number(json?.fats || 0);
+    const fiber = Number(json?.fiber || 0);
+
+    if (!json || (!calories && !protein && !carbs)) {
+      return res.status(200).json({ error: 'PARSE_FAILED', text: aiText.slice(0, 150) });
     }
 
-    return res.status(200).json({
-      meal: String(json.meal || 'Food'),
-      calories: Number(json.calories) || 0,
-      protein: Number(json.protein) || 0,
-      carbs: Number(json.carbs) || 0,
-      fats: Number(json.fats) || 0,
-      fiber: Number(json.fiber) || 0,
-    });
+    return res.status(200).json({ meal, calories, protein, carbs, fats, fiber });
   } catch (err) {
     return res.status(200).json({ error: err.message || 'Unknown error' });
   }
