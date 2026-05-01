@@ -11,16 +11,18 @@ export default async function handler(req, res) {
   if (!image) { res.status(400).json({ error: 'No image provided' }); return; }
   if (!GEMINI_KEY) { res.status(500).json({ error: 'GEMINI_API_KEY not set' }); return; }
 
+  console.log('[ai-proxy] Request received. image length:', image.length, 'key exists:', !!GEMINI_KEY);
+
   const lang = String(locale || 'en').toLowerCase().slice(0, 2);
   const li = { ru: 'Отвечай на РУССКОМ языке.', de: 'Antworte auf DEUTSCH.', es: 'Responde en ESPAÑOL.', en: 'Respond in ENGLISH.' }[lang] || 'Respond in ENGLISH.';
 
   const prompts = {
     ru: context
       ? `${li} Корректировка: "${context}". JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЯ порция, не на 100г. Если несколько продуктов — все через запятую. НИКОГДА не пиши "unknown".`
-      : `${li} Диетолог. JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЯ порция на фото, не на 100г. Если на фото еда — опиши её, НИКОГДА не говори "unknown" или "unable". Если несколько продуктов — опиши все компоненты.`,
+      : `${li} Диетолог. JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЯ порция на фото, не на 100г. Если на фото еда — опиши её, НИКОГДА не говори "unknown" или "unable". Если несколько продуктов — опиши все компоненты. Отвечай ТОЛЬКО валидным JSON.`,
     en: context
       ? `${li} Correct: "${context}". JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. WHOLE portion.`
-      : `${li} Nutritionist. JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. WHOLE portion. If food is visible — describe it, NEVER say "unknown".`,
+      : `${li} Nutritionist. JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. WHOLE portion. If food is visible — describe it, NEVER say "unknown". Respond with ONLY valid JSON.`,
     de: context
       ? `${li} Korrigieren: "${context}". JSON: {"meal":"Gericht","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Ganzes Portion.`
       : `${li} Ernährungsberater. JSON: {"meal":"Gericht","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Ganzes Portion. Niemals "unknown" sagen.`,
@@ -30,37 +32,46 @@ export default async function handler(req, res) {
   };
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompts[lang] || prompts.en }, { inlineData: { mimeType: 'image/jpeg', data: image } }] }],
-          generationConfig: { responseMimeType: 'application/json' },
-        }),
-      }
-    );
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
+    const requestBody = {
+      contents: [{ parts: [{ text: prompts[lang] || prompts.en }, { inlineData: { mimeType: 'image/jpeg', data: image } }] }],
+      generationConfig: { responseMimeType: 'application/json' },
+    };
+
+    console.log('[ai-proxy] Sending to Gemini. URL:', apiUrl.slice(0, 80));
+    console.log('[ai-proxy] Body size:', JSON.stringify(requestBody).length);
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
 
     const raw = await response.text();
+    console.log('[ai-proxy] Gemini status:', response.status, 'raw len:', raw.length, 'raw:', raw.slice(0, 200));
+
     let data;
     try { data = JSON.parse(raw); } catch (_) { data = {}; }
 
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    if (!text) return res.status(200).json({ error: 'EMPTY_RESPONSE' });
+    console.log('[ai-proxy] Parsed text:', text.slice(0, 100));
+
+    if (!text || text === 'null') {
+      return res.status(200).json({ error: 'EMPTY_RESPONSE' });
+    }
 
     let json = null;
     try { json = JSON.parse(text); } catch (_) {}
     if (!json) {
-      const idx1 = text.indexOf('{');
-      const idx2 = text.lastIndexOf('}');
-      if (idx1 >= 0 && idx2 > idx1) {
-        try { json = JSON.parse(text.slice(idx1, idx2 + 1)); } catch (_) {}
+      const start = text.indexOf('{');
+      const end = text.lastIndexOf('}');
+      if (start !== -1 && end !== -1 && end > start) {
+        try { json = JSON.parse(text.slice(start, end + 1)); } catch (_) {}
       }
     }
 
     if (!json || (json.meal == null && json.calories == null)) {
-      return res.status(200).json({ error: 'PARSE_FAILED', detail: text.slice(0, 100) });
+      return res.status(200).json({ error: 'PARSE_FAILED' });
     }
 
     return res.status(200).json({
@@ -72,7 +83,7 @@ export default async function handler(req, res) {
       fiber: Number(json.fiber) || 0,
     });
   } catch (err) {
-    console.error('gemini-analyze error:', err);
+    console.error('[ai-proxy] Exception:', err.message || err);
     return res.status(200).json({ error: err.message || 'Unknown error' });
   }
 }
