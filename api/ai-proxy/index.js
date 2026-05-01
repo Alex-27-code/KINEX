@@ -25,46 +25,20 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(requestBody),
-      // Vercel-specific: try with redirect: 'follow'
-      redirect: 'follow',
     });
 
     const text = await response.text();
-    
-    if (!text || text === 'null' || text.trim() === '') {
-      return res.status(200).json({ error: 'EMPTY_RESPONSE' });
-    }
+    let parsed = null;
+    try { parsed = JSON.parse(text); } catch { /* raw text */ }
 
-    let parsed;
-    try { parsed = JSON.parse(text); } catch { parsed = null; }
-
-    const aiText = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    if (!aiText) {
-      return res.status(200).json({ error: 'EMPTY_RESPONSE', parsedKeys: parsed ? Object.keys(parsed).join(',') : 'none' });
-    }
-
-    let json = null;
-    try { json = JSON.parse(aiText); } catch {}
-    if (!json) {
-      const s = aiText.indexOf('{');
-      const e = aiText.lastIndexOf('}');
-      if (s !== -1 && e !== -1) {
-        try { json = JSON.parse(aiText.slice(s, e + 1)); } catch {}
-      }
-    }
-
-    if (!json) {
-      return res.status(200).json({ error: 'PARSE_FAILED', text: aiText.slice(0, 150) });
-    }
-
-    return res.status(200).json({
-      meal: String(json.meal || 'Food'),
-      calories: Number(json.calories) || 0,
-      protein: Number(json.protein) || 0,
-      carbs: Number(json.carbs) || 0,
-      fats: Number(json.fats) || 0,
-      fiber: Number(json.fiber) || 0,
+    // DEBUG: return what we got from Google
+    return res.status(200).json({ 
+      googleStatus: response.status,
+      googleOk: response.ok,
+      parsedHasError: !!(parsed?.error),
+      errorObj: parsed?.error || null,
+      rawFirst200: text.slice(0, 200),
+      textFound: (parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '').slice(0, 50)
     });
   } catch (err) {
     return res.status(200).json({ error: err.message || 'Unknown error' });
