@@ -166,7 +166,7 @@ export async function analyzeFoodImage(
 ): Promise<FoodAnalysis> {
   // --- STEP 0: Try server-side API first (bypasses VPN blocks on client) ---
   try {
-    const apiRes = await fetch('/api/gemini-analyze', {
+    const apiRes = await fetch('/api/ai-proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image: base64Image, context: userContext, locale }),
@@ -192,84 +192,43 @@ export async function analyzeFoodImage(
     console.warn('[gemini.ts] Server API call failed:', e?.message);
   }
 
-  // --- STEP 1: Gemini SDK fallback ---
-  const lang = String(locale || 'en').toLowerCase().slice(0, 2);
-
-  const langInstructions: Record<string, string> = {
-    ru: 'Отвечай на РУССКОМ языке.',
-    de: 'Antworte auf DEUTSCH.',
-    es: 'Responde en ESPAÑOL.',
-    en: 'Respond in ENGLISH.',
-  };
-  const li = langInstructions[lang] || langInstructions.en;
-
-  // Standard portion sizes (in grams) for common foods — RETURN VALUES FOR THE WHOLE PORTION
-  const promptsByLang: Record<string, string> = {
-    ru: userContext
-      ? `Пользователь хочет скорректировать: "${userContext}". ${li} Верни JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЕГДА возвращай калории и БЖУ ДЛЯ ВСЕЙ ПОДАЧИ (целой порции), а не на 100г. Примеры порций: куриная грудка 200-300г (~160ккал), рис 200-300г (~260ккал), пельмени 250-400г (~520ккал), оливье 300г (~380ккал), супы 400-600мл (~300ккал), вторые блюда 300-500г.`
-      : `${li} Профессиональный диетолог. ВСЕГДА возвращай калории и БЖУ ДЛЯ ВСЕЙ ПОДАЧИ (целой порции на фото), а не на 100г. JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Если НЕ еда (интерфейс приложения) - {"meal":""}. Примеры целых порций: куриная грудка 200-300г (130-195ккал, 26-39г белка), рис 200-300г (260-390ккал), пельмени/вареники 300г (~520ккал, 22г белка), оливье 300г (~380ккал), супы 400мл (~200-350ккал), салаты 300г (~250ккал). Оценивай размер порции на глаз и возвращай значения для ВСЕЙ порции.`,
-    de: userContext
-      ? `Korrigieren: "${userContext}". ${li} JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Ganzes Portion, nicht pro 100g.`
-      : `${li} Ernährungsberater. JSON: {"meal":"Gericht","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Ganzes Portion auf dem Foto, nicht pro 100g.`,
-    es: userContext
-      ? `Corregir: "${userContext}". ${li} JSON: {"meal":"nombre","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Porción completa, no por 100g.`
-      : `${li} Nutricionista. JSON: {"meal":"plato","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Porción completa en la foto, no por 100g.`,
-    en: userContext
-      ? `Correct: "${userContext}". ${li} JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ALWAYS return values for the WHOLE PORTION shown, not per 100g. Examples: chicken breast 200-300g (~160kcal), rice 200-300g (~260kcal), pelmeni 300g (~520kcal).`
-      : `${li} Nutritionist. JSON: {"meal":"food name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ALWAYS return values for the WHOLE PORTION in the photo, not per 100g. Estimate portion size and return values for the entire serving.`,
-  };
-
-  const prompt = promptsByLang[lang] || promptsByLang.en;
-
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-2.5-flash',
-    generationConfig: { responseMimeType: 'application/json' },
-  });
-
-  const backoffs = [3000, 6000];
-  for (let attempt = 0; attempt < 2; attempt++) {
+  // --- STEP 1: OpenAI GPT-4o-mini fallback (client-side, VPN might not block OpenAI) ---
+  const OPENAI_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+  if (OPENAI_KEY) {
     try {
-      const result = await model.generateContent([
-        prompt,
-        { inlineData: { mimeType: 'image/jpeg', data: base64Image } },
-      ]);
-      const text = result.response.text?.trim() || '';
-      console.log(`[gemini.ts] Gemini attempt ${attempt} raw text:`, text.slice(0, 200));
-      if (!text || text === 'null' || text === '{}') throw new Error('EMPTY_RESPONSE');
+      const lang = String(locale || 'en').toLowerCase().slice(0, 2);
+      const li = { ru: 'Отвечай на РУССКОМ языке.', de: 'Antworte auf DEUTSCH.', es: 'Responde en ESPAÑOL.', en: 'Respond in ENGLISH.' }[lang] || 'Respond in ENGLISH.';
+      const sysPrompt = `Ты профессиональный диетолог. Определи ВСЕ продукты на фото и оцени пищевую ценность ВСЕЙ порции (целой тарелки). JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Если несколько продуктов — опиши ВСЕ. Всегда давай реальную оценку, никогда не говори "не могу".`;
 
-      let json: any = null;
-      try { json = JSON.parse(text); } catch (_) {}
-      if (!json) {
-        const m = text.match(/\{[\s\S]*\}/);
-        if (m) { try { json = JSON.parse(m[0]); } catch (_) {} }
+      const oaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + OPENAI_KEY },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: lang === 'ru' ? sysPrompt : 'Professional nutritionist. Identify ALL foods in photo. Estimate nutritional values for the WHOLE PLATE. JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Always estimate, never say unable.' },
+            { role: 'user', content: [
+              { type: 'text', text: userContext ? `Корректировка: ${userContext}.` : 'Analyze this food photo. Identify ALL foods and estimate nutritional values for the whole portion.' },
+              { type: 'image_url', image_url: { url: 'data:image/jpeg;base64,' + base64Image, 'detail': 'high' } }
+            ]},
+          ],
+          max_tokens: 350,
+        }),
+      });
+      const oaiData = await oaiRes.json();
+      const oaiText = oaiData?.choices?.[0]?.message?.content || '';
+      if (oaiText) {
+        let json: any = null;
+        try { json = JSON.parse(oaiText); } catch (_) {}
+        if (!json) { const m = oaiText.match(/\{[\s\S]*?\}/); if (m) try { json = JSON.parse(m[0]); } catch (_) {} }
+        if (json && (json.meal || json.calories != null)) {
+          console.log('[gemini.ts] OpenAI fallback succeeded:', json);
+          return { meal: String(json.meal || 'Food'), calories: Number(json.calories)||0, protein: Number(json.protein)||0, carbs: Number(json.carbs)||0, fats: Number(json.fats)||0, fiber: Number(json.fiber)||0, breakdown: '' };
+        }
       }
-
-      if (json && (json.meal || json.calories != null)) {
-        if (!json.meal || json.meal === '') throw new Error('BAD_PHOTO');
-        return {
-          meal: String(json.meal),
-          calories: Number(json.calories) || 0,
-          protein: Number(json.protein) || 0,
-          carbs: Number(json.carbs) || 0,
-          fats: Number(json.fats) || 0,
-          fiber: Number(json.fiber) || 0,
-          breakdown: String(json.breakdown || ''),
-        };
-      }
-      throw new Error('PARSE_FAILED');
+      console.warn('[gemini.ts] OpenAI fallback: no valid JSON');
     } catch (e: any) {
-      const msg = e?.message || String(e);
-      console.warn(`[gemini.ts] Caught error: "${msg}" | attempt: ${attempt}`);
-      const isRetriable = msg.includes('503') || msg.includes('429') || msg.includes('QUOTA') || msg.includes('UNAVAILABLE') || msg === 'EMPTY_RESPONSE' || msg === 'PARSE_FAILED';
-      console.warn(`[gemini.ts] Gemini attempt ${attempt} failed: "${msg}" | retriable=${isRetriable}`);
-      if (attempt < 1 && isRetriable) {
-        console.warn(`[gemini.ts] Retrying in ${backoffs[attempt]}ms...`);
-        await new Promise(r => setTimeout(r, backoffs[attempt]));
-        continue;
-      }
-      if (msg === 'BAD_PHOTO') throw e;
-      console.warn(`[gemini.ts] Gemini final failure, breaking.`);
-      break;
+      console.warn('[gemini.ts] OpenAI fallback error:', e?.message);
     }
   }
 
