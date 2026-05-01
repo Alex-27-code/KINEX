@@ -40,7 +40,7 @@ export default async function handler(req, res) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompts[lang] || prompts.en }, { inlineData: { mimeType: 'image/jpeg', data: image } }] }],
-            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 512 },
+            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 800 };
           }),
         }
       );
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
       if (!text) return { error: 'EMPTY_RESPONSE' };
       let json = null;
       try { json = JSON.parse(text); } catch (_) {}
-      if (!json) { const m = text.match(/\{[\s\S]*?\}/); if (m) try { json = JSON.parse(m[0]); } catch (_) {} }
+      if (!json) { const m = text.match(/\{[\s\S]*\}/); if (m) try { json = JSON.parse(m[0]); } catch (_) {} }
       if (!json || (json.meal == null && json.calories == null)) return { error: 'PARSE_FAILED' };
       return {
         meal: String(json.meal || 'Food'),
@@ -104,7 +104,7 @@ RULES:
       if (!text) return { error: 'OPENAI_EMPTY' };
       let json = null;
       try { json = JSON.parse(text); } catch (_) {}
-      if (!json) { const m = text.match(/\{[\s\S]*?\}/); if (m) try { json = JSON.parse(m[0]); } catch (_) {} }
+      if (!json) { const m = text.match(/\{[\s\S]*\}/); if (m) try { json = JSON.parse(m[0]); } catch (_) {} }
       if (!json || (json.meal == null && json.calories == null)) return { error: 'OPENAI_PARSE_FAILED' };
       return {
         meal: String(json.meal || 'Food'),
@@ -134,7 +134,7 @@ RULES:
       result.meal === 'Unable to identify' ||
       result.meal === 'No food visible' ||
       result.meal === '' ||
-      (result.calories === 0 && result.protein === 0 && result.carbs === 0 && result.fats === 0)
+      (result.calories === 0 && result.protein === 0 && result.carbs === 0 && result.fats === 0 && result.fiber === 0)
     );
 
     if (!result.error && !isGarbage) break;
