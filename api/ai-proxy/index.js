@@ -19,17 +19,17 @@ export default async function handler(req, res) {
     if (!GEMINI_KEY) return { error: 'NO_GEMINI_KEY' };
     const prompts = {
       ru: context
-        ? `${li} Корректировка: "${context}". JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЯ порция на фото, не на 100г. Если несколько продуктов — перечисли все через запятую.`
-        : `${li} Диетолог. JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЯ порция на фото. Если несколько разных продуктов — опиши ВСЕ, например "курица + рис + салат". Оценивай размер порции на глаз.`,
+        ? `${li} Корректировка: "${context}". JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. ВСЯ порция на фото, не на 100г. Если несколько продуктов — перечисли ВСЕ через запятую ("курица + рис + овощи"). Дай РЕАЛЬНУЮ оценку порции. НИКОГДА не пиши "unknown" или "unable to identify". Если на фото еда — опиши её и оцени КАЛОРИИ И БЕЛКИ ДЛЯ ВСЕЙ ПОДАЧИ.`
+        : `${li} Диетолог. ВСЯ порция на фото, не на 100г. ВАЖНО: если на фото несколько продуктов (тарелка с разными блюдами, обед из нескольких компонентов) — опиши ВСЕ компоненты и дай суммарную оценку для целой тарелки. Примеры: "шашлык + лаваш + салат" (~800ккал, 40г белка), "куриная грудка + рис + огурцы" (~500ккал, 45г белка). Дай реальную оценку калорий и БЖУ. Если на фото ОДИН продукт — тоже дай оценку. JSON: {"meal":"название","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. НИКОГДА не говори "unknown" или "unable" — если на фото есть еда, опиши её.`,
       en: context
         ? `${li} Correct: "${context}". JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. WHOLE portion. If multiple foods — list all.`
-        : `${li} Nutritionist. JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. WHOLE portion. If multiple foods on photo — identify ALL of them and estimate total nutritional value for the entire plate. Be specific.`,
+        : `${li} Nutritionist. JSON: {"meal":"foods on plate","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. IMPORTANT: If the photo shows multiple foods (a plate with different dishes, a meal with several components) — identify ALL components and give the TOTAL nutritional value for the whole plate. NEVER say "unknown" or "unable" if food is visible. If there's food in the image, describe it and estimate.`,
       de: context
         ? `${li} Korrigieren: "${context}". JSON: {"meal":"Gericht","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Ganzes Portion.`
-        : `${li} Ernährungsberater. JSON: {"meal":"Gericht","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Ganzes Portion. Wenn mehrere Speisen — alle erfassen.`,
+        : `${li} Ernährungsberater. JSON: {"meal":"Gericht","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. WICHTIG: Wenn mehrere Speisen auf dem Teller sind — alle erfassen und Gesamtnährwerte schätzen. Niemals "unknown" sagen.`,
       es: context
         ? `${li} Corregir: "${context}". JSON: {"meal":"plato","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Porción completa.`
-        : `${li} Nutricionista. JSON: {"meal":"plato","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Porción completa. Si hay varios alimentos — identificar todos.`,
+        : `${li} Nutricionista. JSON: {"meal":"plato","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Si hay varios alimentos — identificarlos todos y dar valor total. Nunca decir "unknown".`,
     };
 
     try {
@@ -126,7 +126,20 @@ RULES:
   for (const p of prefer) {
     if (p === 'gemini') { result = await tryGemini(); }
     else { result = await tryOpenAI(); }
-    if (!result.error) break;
+
+    // Re-check after each attempt: reject garbage responses
+    const isGarbage = !result.error && (
+      !result.meal ||
+      result.meal === 'unknown' ||
+      result.meal === 'Unable to identify' ||
+      result.meal === 'No food visible' ||
+      result.meal === '' ||
+      (result.calories === 0 && result.protein === 0 && result.carbs === 0 && result.fats === 0)
+    );
+
+    if (!result.error && !isGarbage) break;
+    if (result.error) console.warn(`[ai-proxy] ${p} failed: ${result.error}, trying next...`);
+    if (isGarbage) console.warn(`[ai-proxy] ${p} returned garbage (meal="${result.meal}", cals=${result.calories}), trying next...`);
   }
 
   if (result.error) return res.status(200).json({ error: result.error });
