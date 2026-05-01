@@ -1,4 +1,4 @@
-const GEMINI_KEY = process.env.GEMINI_API_KEY;
+const API_KEY = process.env.VITE_GEMINI_API_KEY || process.env.GEMINI_API_KEY;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
   const { image, context, locale } = req.body || {};
   if (!image) { res.status(400).json({ error: 'No image provided' }); return; }
-  if (!GEMINI_KEY) { res.status(500).json({ error: 'GEMINI_API_KEY not set' }); return; }
+  if (!API_KEY) { res.status(500).json({ error: 'API_KEY not configured' }); return; }
 
   const lang = String(locale || 'en').toLowerCase().slice(0, 2);
   const li = { ru: 'Отвечай на РУССКОМ языке. JSON only.', de: 'Antworte auf DEUTSCH. JSON only.', es: 'Responde en ESPAÑOL. JSON only.', en: 'Respond in ENGLISH. JSON only.' }[lang] || 'Respond in ENGLISH. JSON only.';
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   };
 
   try {
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
     const requestBody = {
       contents: [{ parts: [{ text: prompts[lang] || prompts.en }, { inlineData: { mimeType: 'image/jpeg', data: image } }] }],
       generationConfig: { responseMimeType: 'application/json' },
@@ -43,13 +43,12 @@ export default async function handler(req, res) {
     });
 
     const responseText = await response.text();
-    console.log('Gemini raw response status:', response.status, 'body:', responseText.slice(0, 300));
 
     let data;
     try { data = JSON.parse(responseText); } catch (_) { data = {}; }
 
     const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    if (!text) return res.status(200).json({ error: 'EMPTY_RESPONSE', detail: responseText.slice(0, 100) });
+    if (!text) return res.status(200).json({ error: 'EMPTY_RESPONSE' });
 
     let json = null;
     try { json = JSON.parse(text); } catch (_) {}
@@ -57,7 +56,7 @@ export default async function handler(req, res) {
       const m = text.match(/\{[\s\S]*?\}/);
       if (m) try { json = JSON.parse(m[0]); } catch (_) {}
     }
-    if (!json || (json.meal == null && json.calories == null)) return res.status(200).json({ error: 'PARSE_FAILED', text: text.slice(0, 100) });
+    if (!json || (json.meal == null && json.calories == null)) return res.status(200).json({ error: 'PARSE_FAILED' });
     return res.status(200).json({ meal: String(json.meal || 'Food'), calories: Number(json.calories)||0, protein: Number(json.protein)||0, carbs: Number(json.carbs)||0, fats: Number(json.fats)||0, fiber: Number(json.fiber)||0 });
   } catch (err) {
     console.error('gemini-analyze error:', err);
