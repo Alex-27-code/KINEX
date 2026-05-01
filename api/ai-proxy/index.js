@@ -40,7 +40,7 @@ export default async function handler(req, res) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompts[lang] || prompts.en }, { inlineData: { mimeType: 'image/jpeg', data: image } }] }],
-            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 800 };
+            generationConfig: { responseMimeType: 'application/json', maxOutputTokens: 800,
           }),
         }
       );
