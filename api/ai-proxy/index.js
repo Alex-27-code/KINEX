@@ -19,10 +19,13 @@ export default async function handler(req, res) {
     
     const apiReqBody = {
       contents: [{ parts: [
-        { text: 'Return JSON only: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Whole portion.' },
+        { text: 'Return JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Whole portion.' },
         { inlineData: { mimeType: 'image/jpeg', data: image } }
       ]}],
     };
+
+    console.log('[ai-proxy] Making fetch to:', apiUrl.slice(0, 80));
+    console.log('[ai-proxy] Request body keys:', JSON.stringify(apiReqBody).slice(0, 100));
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -30,32 +33,26 @@ export default async function handler(req, res) {
       body: JSON.stringify(apiReqBody),
     });
 
-    const raw = await response.text();
+    console.log('[ai-proxy] Response status:', response.status);
+    console.log('[ai-proxy] Response ok:', response.ok);
+    console.log('[ai-proxy] Response headers content-type:', response.headers.get('content-type'));
+    console.log('[ai-proxy] Response body type:', typeof response.body);
 
-    // DEBUG: What is raw?
-    console.log('[ai-proxy] raw:', raw.slice(0, 300));
-    console.log('[ai-proxy] raw length:', raw.length);
-    console.log('[ai-proxy] response.status:', response.status);
+    const raw = await response.text();
+    console.log('[ai-proxy] Raw response (first 200):', raw.slice(0, 200));
+    console.log('[ai-proxy] Raw response length:', raw.length);
 
     if (!raw || raw === 'null') {
-      console.log('[ai-proxy] empty/bad raw');
       return res.status(200).json({ error: 'EMPTY_RESPONSE' });
     }
 
     let parsed;
-    try { 
-      parsed = JSON.parse(raw); 
-      console.log('[ai-proxy] parsed OK, keys:', Object.keys(parsed));
-    } catch { 
-      parsed = {}; 
-      console.log('[ai-proxy] parse failed');
-    }
+    try { parsed = JSON.parse(raw); } catch { parsed = {}; }
 
     const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    console.log('[ai-proxy] text:', text.slice(0, 100));
+    console.log('[ai-proxy] Extracted text (first 100):', text.slice(0, 100));
 
     if (!text) {
-      console.log('[ai-proxy] no text');
       return res.status(200).json({ error: 'EMPTY_RESPONSE' });
     }
 
@@ -64,13 +61,10 @@ export default async function handler(req, res) {
     if (!json) {
       const s = text.indexOf('{');
       const e = text.lastIndexOf('}');
-      console.log('[ai-proxy] extract s=%d e=%d', s, e);
       if (s !== -1 && e !== -1) {
         try { json = JSON.parse(text.slice(s, e + 1)); } catch {}
       }
     }
-
-    console.log('[ai-proxy] final json:', json);
 
     if (!json) {
       return res.status(200).json({ error: 'PARSE_FAILED', text: text.slice(0, 100) });
@@ -85,7 +79,7 @@ export default async function handler(req, res) {
       fiber: Number(json.fiber) || 0,
     });
   } catch (err) {
-    console.error('[ai-proxy] ERROR:', err.message || err);
-    return res.status(200).json({ error: err.message || 'Unknown error' });
+    console.error('[ai-proxy] FATAL ERROR:', err.message || err);
+    return res.status(200).json({ error: 'FETCH_FAILED: ' + (err.message || 'Unknown') });
   }
 }
