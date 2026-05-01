@@ -1,4 +1,4 @@
-const GEMINI_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+const GEMINI_KEY = process.env.GEMINI_API_KEY;
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -9,9 +9,10 @@ export default async function handler(req, res) {
 
   const { image } = req.body || {};
   if (!image) { res.status(400).json({ error: 'No image provided' }); return; }
-  if (!GEMINI_KEY) { res.status(500).json({ error: 'No API key found' }); return; }
+  if (!GEMINI_KEY) { res.status(500).json({ error: 'GEMINI_API_KEY not set' }); return; }
 
   try {
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
     const requestBody = {
       contents: [{ parts: [
         { text: 'Return JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Whole portion.' },
@@ -20,21 +21,18 @@ export default async function handler(req, res) {
       generationConfig: { responseMimeType: 'application/json' },
     };
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody),
-      }
-    );
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
+    });
 
     const text = await response.text();
     let parsed = null;
     try { parsed = JSON.parse(text); } catch {}
 
     if (parsed?.error) {
-      return res.status(200).json({ error: parsed.error.message || 'Google API error', keyUsed: GEMINI_KEY.slice(0, 10) });
+      return res.status(200).json({ error: parsed.error.message || 'Google API error', keyUsed: GEMINI_KEY.slice(0, 8) });
     }
 
     const aiText = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
