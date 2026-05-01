@@ -1,3 +1,5 @@
+const GEMINI_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '';
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -7,15 +9,62 @@ export default async function handler(req, res) {
 
   const { image } = req.body || {};
   if (!image) { res.status(400).json({ error: 'No image provided' }); return; }
+  if (!GEMINI_KEY) { res.status(500).json({ error: 'No API key found' }); return; }
 
-  // List ALL env vars that contain certain keywords
-  const relevantKeys = Object.keys(process.env).filter(k => 
-    k.includes('GEMINI') || k.includes('API') || k.includes('KEY') || k.includes('VERCEL') || k.includes('OPENAI')
-  ).sort();
+  try {
+    const requestBody = {
+      contents: [{ parts: [
+        { text: 'Return JSON: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Whole portion.' },
+        { inlineData: { mimeType: 'image/jpeg', data: image } }
+      ]}],
+      generationConfig: { responseMimeType: 'application/json' },
+    };
 
-  return res.status(200).json({ 
-    envKeys: relevantKeys,
-    geminiKey: process.env.GEMINI_API_KEY ? 'FOUND:' + process.env.GEMINI_API_KEY.slice(0, 8) : 'MISSING',
-    viteGeminiKey: process.env.VITE_GEMINI_API_KEY ? 'FOUND:' + process.env.VITE_GEMINI_API_KEY.slice(0, 8) : 'MISSING',
-  });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      }
+    );
+
+    const text = await response.text();
+    let parsed = null;
+    try { parsed = JSON.parse(text); } catch {}
+
+    if (parsed?.error) {
+      return res.status(200).json({ error: parsed.error.message || 'Google API error', keyUsed: GEMINI_KEY.slice(0, 10) });
+    }
+
+    const aiText = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!aiText) {
+      return res.status(200).json({ error: 'EMPTY_RESPONSE' });
+    }
+
+    let json = null;
+    try { json = JSON.parse(aiText); } catch {}
+    if (!json) {
+      const s = aiText.indexOf('{');
+      const e = aiText.lastIndexOf('}');
+      if (s !== -1 && e !== -1) {
+        try { json = JSON.parse(aiText.slice(s, e + 1)); } catch {}
+      }
+    }
+
+    if (!json) {
+      return res.status(200).json({ error: 'PARSE_FAILED', text: aiText.slice(0, 100) });
+    }
+
+    return res.status(200).json({
+      meal: String(json.meal || 'Food'),
+      calories: Number(json.calories) || 0,
+      protein: Number(json.protein) || 0,
+      carbs: Number(json.carbs) || 0,
+      fats: Number(json.fats) || 0,
+      fiber: Number(json.fiber) || 0,
+    });
+  } catch (err) {
+    return res.status(200).json({ error: err.message || 'Unknown error' });
+  }
 }
