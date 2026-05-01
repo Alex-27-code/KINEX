@@ -17,7 +17,6 @@ export default async function handler(req, res) {
   try {
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`;
     
-    // WITHOUT responseMimeType - let Gemini respond naturally
     const apiReqBody = {
       contents: [{ parts: [
         { text: 'Return JSON only: {"meal":"name","calories":N,"protein":N,"carbs":N,"fats":N,"fiber":N}. Whole portion.' },
@@ -33,17 +32,31 @@ export default async function handler(req, res) {
 
     const raw = await response.text();
 
+    // DEBUG: What is raw?
+    console.log('[ai-proxy] raw:', raw.slice(0, 300));
+    console.log('[ai-proxy] raw length:', raw.length);
+    console.log('[ai-proxy] response.status:', response.status);
+
     if (!raw || raw === 'null') {
+      console.log('[ai-proxy] empty/bad raw');
       return res.status(200).json({ error: 'EMPTY_RESPONSE' });
     }
 
     let parsed;
-    try { parsed = JSON.parse(raw); } catch { parsed = {}; }
+    try { 
+      parsed = JSON.parse(raw); 
+      console.log('[ai-proxy] parsed OK, keys:', Object.keys(parsed));
+    } catch { 
+      parsed = {}; 
+      console.log('[ai-proxy] parse failed');
+    }
 
     const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    console.log('[ai-proxy] text:', text.slice(0, 100));
 
     if (!text) {
-      return res.status(200).json({ error: 'EMPTY_RESPONSE', rawLen: raw.length });
+      console.log('[ai-proxy] no text');
+      return res.status(200).json({ error: 'EMPTY_RESPONSE' });
     }
 
     let json = null;
@@ -51,10 +64,13 @@ export default async function handler(req, res) {
     if (!json) {
       const s = text.indexOf('{');
       const e = text.lastIndexOf('}');
+      console.log('[ai-proxy] extract s=%d e=%d', s, e);
       if (s !== -1 && e !== -1) {
         try { json = JSON.parse(text.slice(s, e + 1)); } catch {}
       }
     }
+
+    console.log('[ai-proxy] final json:', json);
 
     if (!json) {
       return res.status(200).json({ error: 'PARSE_FAILED', text: text.slice(0, 100) });
@@ -69,6 +85,7 @@ export default async function handler(req, res) {
       fiber: Number(json.fiber) || 0,
     });
   } catch (err) {
+    console.error('[ai-proxy] ERROR:', err.message || err);
     return res.status(200).json({ error: err.message || 'Unknown error' });
   }
 }
